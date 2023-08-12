@@ -1,0 +1,36 @@
+expression : let variable assign expression
+           : relational-expression ((and|or) relational-expression)*
+
+relational-expression : not relational-expression 
+                      : arithmatic-expression ((lt|gt|lte|gte|nte|e) arithmatic-expression)*
+
+arithmatic-expression : term ((plus|minus) term)*
+
+term : factor ((mul|div) factor)*
+
+factor : (plus|minus) factor
+       : power
+
+power : call ( power factor)*
+
+call : atom lb ((expression (comma expression)*)? rb
+
+atom : int|float|string|variable|input-string
+     : lp expression rp
+     : show expression
+     : if-statement
+     : collection-statement
+     : for-loop-statement
+     : function-statement
+     : delete variable (comma variable)*
+     : use string
+
+variable : variable (lsquare expression rsquare)*
+         | variable
+collection-statement : lb (expression ( comma expression )*)? rb
+
+for-loop-statement : for variable lb (expression (comma expression )? ) rb colon expression
+                  | (newline statement)
+
+function-statement : variable fun lb ((variable ( comma variable)*)? rb colon expression
+                    |(newline statement)
