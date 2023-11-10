@@ -122,7 +122,7 @@ class Interpretor:
         variable = node.variable.value
 
         if variable in self.global_symbol_table:
-            return self.global_symbol_table[variable] , None
+            return self.global_symbol_table[variable].string , None
         else:
             return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
 
@@ -415,9 +415,9 @@ class Interpretor:
         
         function =  Types.UserDefinedFunction(self.file , variable , params  , body)
 
-        self.global_symbol_table[variable] = function
-
-        return  None , None
+        self.global_symbol_table[variable] = function 
+        
+        return  None , None 
 
 
         
@@ -455,12 +455,12 @@ class Interpretor:
             except:
                 return None , WrongImportError(self.file , f"Cannot use '{module_name}' as module.")
 
-        if not code:
-            try:
-                with open(module_name) as script:
-                    code = script.read()
-            except:
-                return None , RunTimeError(self.file , f"file '{module_name}' doesn't exists.")
+        # if not code:
+        #     try:
+        #         with open(module_name) as script:
+        #             code = script.read()
+        #     except:
+        #         return None , RunTimeError(self.file , f"file '{module_name}' doesn't exists.")
         
         file = "<" + module_name +">"
         lexer  = Lexer(file , code)
@@ -486,6 +486,7 @@ class Interpretor:
 if __name__ == "__main__":
 
     file = "<Core>"
+    import os
 
 
     symbol_table = {
@@ -532,16 +533,23 @@ if __name__ == "__main__":
     }
 
     
-    
+    count_ctrl_c = 0
     while True:
+
         try:
             code = input("Squig > ")
 
         except KeyboardInterrupt:
+            count_ctrl_c += 1
+            if count_ctrl_c == 3:
+                break
             print("Type 'exit' to close the console.")
             continue
         if code == 'exit':
             break
+        elif code == 'clear':
+            os.system("cls")
+            continue
         if not code:
             continue
         lexer = Lexer(file , code)

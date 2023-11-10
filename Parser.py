@@ -13,7 +13,6 @@ class NumberNode:
         return f"{self.factor.value}"
     
 
-
 class StringNode:
 
     def __init__(self,string):
@@ -424,9 +423,9 @@ class Parser:
                         return None , WrongSyntaxError(self.file , "Expected a '[' in staring indexing statement.")
                     self.next()
                     indexs.append(index)
-                return StringAccessNode(string , indexs) , None
+                return StringAccessNode(Token(token_type=token_string  , token_value=string.value) , indexs) , None
 
-            return StringNode(string) , None
+            return StringNode(Token(token_type=token_string , token_value=string.value)) , None
 
         elif self.current_token.type == token_variable:
             variable = self.current_token
@@ -557,6 +556,86 @@ class Parser:
                 return None , error
             return UseNode(module_name) , None
         
+    
+    def function_statement(self , function_name):
+
+        self.next()
+
+        if self.current_token.type != token_lb:
+            return None, WrongSyntaxError(self.file , "Expected a '{' after the 'function' keyword in " + function_name.value)
+        
+        self.next()
+        param_list = []
+        if self.current_token.type == token_variable:
+            param_name , error = self.expression()
+            if error:
+                return None , WrongSyntaxError(self.file , "Something went wrong in function definition.")
+            param_list.append(param_name.variable)
+
+            while self.current_token.type == token_comma:
+                self.next()
+                param_name , error = self.expression()
+                if error:
+                    return None , WrongSyntaxError(self.file , 'something went worng in function deefinition.')
+                param_list.append(param_name.variable)
+
+        if self.current_token.type != token_rb:
+            return None , WrongSyntaxError(self.file  , "Expected a '}' in " + f"{function_name.value} function definition.")
+        
+        self.next()
+        if self.current_token.type != token_colon:
+
+            return None , WrongSyntaxError(self.file , "Expected a ':' in " +f"{function_name.value} function definition")
+        
+        self.next()
+        print(param_list)
+        function_body , error = self.expression()
+        if error:
+            return None , WrongSyntaxError(self.file , "Something went wrong in function body.")
+        
+        return FunctionNode(function_name , param_list , function_body) , None
+
+    def for_statement(self):
+
+        self.next()
+
+        if self.current_token.type != token_variable:
+            return None , WrongSyntaxError(self.file , "Expected  a iterator variable name after for keyword.")
+        
+        iterator_variable_name = self.current_token
+        self.next()
+
+        if self.current_token.type != token_lb:
+
+            return None , WrongSyntaxError(self.file , "Expected a '{' after the interator variable.")
+        
+        self.next()
+        start_range , error = self.expression()
+        end_range = None
+
+        if self.current_token.type == token_comma:
+
+            end_range , error = self.expression()
+
+        elif self.current_token.type != token_rb:
+
+            return None , WrongSyntaxError(self.file , "Expected a '}' after the range in for loop.")
+        self.next()
+
+        if self.current_token.type != token_colon:
+
+            return None , WrongSyntaxError(self.file , "Expected a ':' after the for loop range")
+        
+        self.next()
+
+        loop_body , error = self.expression()
+        if error:
+
+            return None , WrongSyntaxError(self.file , "Something went wrong in for loop body.")
+        
+
+        return ForNode(iterator_variable_name , start_range , end_range , None , loop_body , None) , None
+                
     def if_statement(self):
 
         cases = []

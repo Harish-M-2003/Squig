@@ -24,7 +24,7 @@ def isFloat(num):
 
 class String:
 
-    def __init__(self,string):
+    def __init__(self , string):
 
         self.string = string
         self.file = "change to file name later info for harish"
@@ -744,6 +744,6 @@ class BuiltinFunction(BaseFunction):
     execute_reverse.params = ["value"]
                               
 
-    def no_function(self,symbol_table):
+    def no_function(self , symbol_table):
 
         return None , "undefined function"

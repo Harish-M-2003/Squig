@@ -96,7 +96,7 @@ class Lexer:
 
     def tokenize_string(self):
 
-        #Checks wether the given token is a string and return the token.
+        # Checks wether the given token is a string and return the token.
 
         string = ""
         self.next()
@@ -115,7 +115,7 @@ class Lexer:
 
     def tokenize_variable(self):
 
-        #checks wether the given token is a variable and return token.
+        # checks wether the given token is a variable and return token.
 
         variable = ""
 
@@ -153,7 +153,7 @@ class Lexer:
 
     def tokenize_input_message(self):
 
-        #Checks wether the given input is a input message and returns the token
+        # Checks wether the given input is a input message and returns the token
         message = ""
         self.next()
 

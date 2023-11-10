@@ -1,1 +1,1 @@
-show "welcome to squig world"
+greet function { name } : name
