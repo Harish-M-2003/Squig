@@ -41,14 +41,15 @@ token_eof = "eof"
 
 keywords = ("if" , "else" ,"not", "elif", "function" , "end",
             "for","return", "break" ,"continue","show" , "let",
-            "delete" , "types" , "use")
+            "delete" , "type" , "use")
 
 class Token:
 
-    def __init__(self,token_type , token_value = None):
+    def __init__(self,token_type , token_value = None , token_position = None):
 
         self.type = token_type
         self.value = token_value
+        self.position = token_position
 
     def __repr__(self):
 

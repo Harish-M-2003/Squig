@@ -31,7 +31,7 @@ class String:
 
     def __repr__(self):
 
-        return f'"{self.string}"'
+        return f'{self.string}'
     
     def div(self , number):
         if isinstance(number , Number):

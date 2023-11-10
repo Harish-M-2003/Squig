@@ -1,1 +1,1 @@
-greet function { name } : name
+greet function { name } : "welcome  " + name

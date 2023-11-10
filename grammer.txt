@@ -1,3 +1,5 @@
+statements : newline* express (newline+ express)* newline*
+
 expression : let variable assign expression
            : relational-expression ((and|or) relational-expression)*
 
@@ -28,6 +30,8 @@ atom : int|float|string|variable|input-string
 variable : variable (lsquare expression rsquare)*
          | variable
 collection-statement : lb (expression ( comma expression )*)? rb
+
+if-statement : if lb expression rb colon expression ((elif lb expression rb colon expression)* (else expression)?)?
 
 for-loop-statement : for variable lb (expression (comma expression )? ) rb colon expression
                   | (newline statement)

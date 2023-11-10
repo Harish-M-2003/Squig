@@ -181,16 +181,13 @@ class TypesNode:
 
 class UseNode:
 
-    def __init__(self,name,alias = None):
+    def __init__(self,name):
 
         self.name = name
-        self.alias = alias
 
     def __repr__(self):
 
-        if self.alias == None:
-            return f"{self.name}"
-        return f"({self.name} , {self.alias})"
+        return f"{self.name}"
 
 
 class DotOperatorNode:
@@ -224,24 +221,50 @@ class Parser:
 
     def parse(self):
 
-        result , error = self.expression()
+        result , error = self.statements()
         
         if error:
             return None , error
         return result , None
+    
+    def statements(self):
+
+        statements = []
+        while self.current_token.type == token_newline:
+            self.next()
+        
+        if self.current_token.type == token_eof:
+            return CollectionNode(elements=statements) , None
+        
+        statement,  error = self.expression()
+        if error:
+            return None , error
+        
+        statements.append(statement)
+
+        while self.current_token.type != token_eof:
+            while self.current_token.type == token_newline:
+                self.next()
+            if self.current_token.type == token_eof:
+                break
+            statement , error = self.expression()
+            if error:
+                return None , error
+            statements.append(statement)
+        
+        return CollectionNode(elements=statements) , None
         
     def expression(self):
-
         if self.current_token.type == token_keyword and self.current_token.value == "let":
             self.next()
             if self.current_token.type != token_variable:
-                return None , WrongSyntaxError(self.file , "Expected a variable after the 'let' keyword.")
+                return None , WrongSyntaxError(self.file , "Expected a variable after the 'let' keyword.", position = self.current_token.position.copy_position() )
             
             variable = self.current_token
             self.next()
 
             if self.current_token.type != token_colon:
-                return None , WrongSyntaxError(self.file , f"Expected a ':' after variable '{variable.value}'.")
+                return None , WrongSyntaxError(self.file , f"Expected a ':' after variable '{variable.value}'.",position = self.current_token.position.copy_position())
 
             self.next()
 
@@ -290,7 +313,7 @@ class Parser:
             if self.current_token.type in (token_lt , token_gt ,
                                           token_lte , token_gte ,
                                           token_ne , token_eql):
-                return None , InvalidOperationError(self.file , f"Invalid operator used in relational statement.")
+                return None , InvalidOperationError(self.file , f"Invalid operator used in relational statement.", position = self.current_token.position.copy_position() )
             right , error = self.arithmatic_expression()
 
             if error:
@@ -364,7 +387,7 @@ class Parser:
 
     def call(self , variable):
         if self.current_token.type != token_lb:
-            return None , WrongSyntaxError(self.file ,"Expected '{'" + f" after {variable.value} function call.")
+            return None , WrongSyntaxError(self.file ,"Expected '{'" + f" after {variable.value} function call.", position = self.current_token.position.copy_position() )
         
         self.next()
 
@@ -387,7 +410,7 @@ class Parser:
 
             
         if self.current_token.type != token_rb:
-            return None , WrongSyntaxError(self.file , "Expected '}'" +f" in '{variable.value}' function call.")
+            return None , WrongSyntaxError(self.file , "Expected '}'" +f" in '{variable.value}' function call.", position = self.current_token.position.copy_position() )
         self.next()
 
         return FunctionCallNode(variable , params) , None
@@ -400,7 +423,7 @@ class Parser:
             return NumberNode(token) , None
         
         
-        elif self.current_token.type  == token_keyword and self.current_token.value == "types":
+        elif self.current_token.type  == token_keyword and self.current_token.value == "type":
             self.next()
             types , error = self.expression()
             if error:
@@ -420,7 +443,7 @@ class Parser:
                         return None , error
                     
                     if self.current_token.type != token_rs:
-                        return None , WrongSyntaxError(self.file , "Expected a '[' in staring indexing statement.")
+                        return None , WrongSyntaxError(self.file , "Expected a '[' in staring indexing statement.", position = self.current_token.position.copy_position() )
                     self.next()
                     indexs.append(index)
                 return StringAccessNode(Token(token_type=token_string  , token_value=string.value) , indexs) , None
@@ -475,7 +498,7 @@ class Parser:
                         return None , error
                         
                     if self.current_token.type != token_rs:
-                        return None , WrongSyntaxError(self.file , f"Expected a ']' in variable '{variable}'.")
+                        return None , WrongSyntaxError(self.file , f"Expected a ']' in variable '{variable}'.", position = self.current_token.position.copy_position() )
                     self.next()
                     indexs.append(index)
 
@@ -497,7 +520,7 @@ class Parser:
             if error:
                 return None , error
             if self.current_token.type != token_rparen:
-                return None , WrongSyntaxError(self.file , f"Expected a ')' after expression.")
+                return None , WrongSyntaxError(self.file , f"Expected a ')' after expression.", position = self.current_token.position.copy_position() )
             self.next()
 
             return expression , None
@@ -536,14 +559,14 @@ class Parser:
             self.next()
             variables = []
             if self.current_token.type != token_variable:
-                return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.")
+                return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.", position = self.current_token.position.copy_position() )
             variables.append(self.current_token)
             self.next()
 
             while self.current_token.type == token_comma:
                 self.next()
                 if self.current_token.type != token_variable:
-                    return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.")
+                    return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.", position = self.current_token.position.copy_position() )
                 variables.append(self.current_token)
                 self.next()
             
@@ -562,36 +585,35 @@ class Parser:
         self.next()
 
         if self.current_token.type != token_lb:
-            return None, WrongSyntaxError(self.file , "Expected a '{' after the 'function' keyword in " + function_name.value)
+            return None, WrongSyntaxError(self.file , "Expected a '{' after the 'function' keyword in " + function_name.value, position = self.current_token.position.copy_position() )
         
         self.next()
         param_list = []
         if self.current_token.type == token_variable:
             param_name , error = self.expression()
             if error:
-                return None , WrongSyntaxError(self.file , "Something went wrong in function definition.")
+                return None , WrongSyntaxError(self.file , "Something went wrong in function definition.", position = self.current_token.position.copy_position() )
             param_list.append(param_name.variable)
 
             while self.current_token.type == token_comma:
                 self.next()
                 param_name , error = self.expression()
                 if error:
-                    return None , WrongSyntaxError(self.file , 'something went worng in function deefinition.')
+                    return None , WrongSyntaxError(self.file , 'something went worng in function deefinition.', position = self.current_token.position.copy_position() )
                 param_list.append(param_name.variable)
 
         if self.current_token.type != token_rb:
-            return None , WrongSyntaxError(self.file  , "Expected a '}' in " + f"{function_name.value} function definition.")
+            return None , WrongSyntaxError(self.file  , "Expected a '}' in " + f"{function_name.value} function definition.", position = self.current_token.position.copy_position() )
         
         self.next()
         if self.current_token.type != token_colon:
 
-            return None , WrongSyntaxError(self.file , "Expected a ':' in " +f"{function_name.value} function definition")
+            return None , WrongSyntaxError(self.file , "Expected a ':' in " +f"{function_name.value} function definition", position = self.current_token.position.copy_position() )
         
         self.next()
-        print(param_list)
         function_body , error = self.expression()
         if error:
-            return None , WrongSyntaxError(self.file , "Something went wrong in function body.")
+            return None , WrongSyntaxError(self.file , "Something went wrong in function body.", position = self.current_token.position.copy_position() )
         
         return FunctionNode(function_name , param_list , function_body) , None
 
@@ -600,14 +622,14 @@ class Parser:
         self.next()
 
         if self.current_token.type != token_variable:
-            return None , WrongSyntaxError(self.file , "Expected  a iterator variable name after for keyword.")
+            return None , WrongSyntaxError(self.file , "Expected  a iterator variable name after for keyword.", position = self.current_token.position.copy_position() )
         
         iterator_variable_name = self.current_token
         self.next()
 
         if self.current_token.type != token_lb:
 
-            return None , WrongSyntaxError(self.file , "Expected a '{' after the interator variable.")
+            return None , WrongSyntaxError(self.file , "Expected a '{' after the interator variable.", position = self.current_token.position.copy_position() )
         
         self.next()
         start_range , error = self.expression()
@@ -619,19 +641,19 @@ class Parser:
 
         elif self.current_token.type != token_rb:
 
-            return None , WrongSyntaxError(self.file , "Expected a '}' after the range in for loop.")
+            return None , WrongSyntaxError(self.file , "Expected a '}' after the range in for loop.", position = self.current_token.position.copy_position() )
         self.next()
 
         if self.current_token.type != token_colon:
 
-            return None , WrongSyntaxError(self.file , "Expected a ':' after the for loop range")
+            return None , WrongSyntaxError(self.file , "Expected a ':' after the for loop range", position = self.current_token.position.copy_position() )
         
         self.next()
 
         loop_body , error = self.expression()
         if error:
 
-            return None , WrongSyntaxError(self.file , "Something went wrong in for loop body.")
+            return None , WrongSyntaxError(self.file , "Something went wrong in for loop body.", position = self.current_token.position.copy_position() )
         
 
         return ForNode(iterator_variable_name , start_range , end_range , None , loop_body , None) , None
@@ -643,11 +665,11 @@ class Parser:
 
         if not (self.current_token.type == token_keyword and self.current_token.value == "if"):
 
-            return None , WrongSyntaxError(self.file , "Expected 'if' keyword.")
+            return None , WrongSyntaxError(self.file , "Expected 'if' keyword.", position = self.current_token.position.copy_position() )
         self.next()
 
         if self.current_token.type != token_lb:
-            return None ,  WrongSyntaxError(self.file , "Expected a '{' after the 'if' keyword.")
+            return None ,  WrongSyntaxError(self.file , "Expected a '{' after the 'if' keyword.", position = self.current_token.position.copy_position() )
 
         self.next()
         condition ,  error = self.expression()
@@ -655,11 +677,11 @@ class Parser:
             return None , error
         
         if self.current_token.type != token_rb:
-            return None , WrongSyntaxError(self.file , "Expected a '}' before ':' in 'if statement'.")
+            return None , WrongSyntaxError(self.file , "Expected a '}' before ':' in 'if statement'.", position = self.current_token.position.copy_position() )
         self.next()
 
         if self.current_token.type != token_colon:
-            return None , WrongSyntaxError(self.file , "Expected a ':' after '}' in 'if statement'.")
+            return None , WrongSyntaxError(self.file , "Expected a ':' after '}' in 'if statement'.", position = self.current_token.position.copy_position() )
 
         self.next()
         case1 , error = self.expression()
@@ -671,7 +693,7 @@ class Parser:
 
             self.next()
             if self.current_token.type != token_lb:
-                return None , WrongSyntaxError(self.file , "Expected '{' after 'elif' keyword.")
+                return None , WrongSyntaxError(self.file , "Expected '{' after 'elif' keyword.", position = self.current_token.position.copy_position() )
             
             self.next()
             condition , error = self.expression()
@@ -679,11 +701,11 @@ class Parser:
                 return None , error
             
             if self.current_token.type != token_rb:
-                return None , WrongSyntaxError(self.file , "Expected a '}' before ':' in 'elif statement'.")
+                return None , WrongSyntaxError(self.file , "Expected a '}' before ':' in 'elif statement'.", position = self.current_token.position.copy_position() )
             self.next()
 
             if self.current_token.type != token_colon:
-                return None , WrongSyntaxError(self.file , "Expected a ':' after '}' in 'elif statement'.")
+                return None , WrongSyntaxError(self.file , "Expected a ':' after '}' in 'elif statement'.", position = self.current_token.position.copy_position() )
 
             self.next()
 
@@ -697,7 +719,7 @@ class Parser:
 
             self.next()
             if self.current_token.type != token_colon:
-                return None , WrongSyntaxError(self.file , "Expected a ':' after the 'else' keyword.")
+                return None , WrongSyntaxError(self.file , "Expected a ':' after the 'else' keyword.", position = self.current_token.position.copy_position() )
             self.next()
             block , error = self.expression()
             if error:
@@ -715,7 +737,7 @@ class Parser:
         same_type = True
 
         if self.current_token.type != token_lb:
-            return None , WrongSyntaxError(self.file , "Expected a '{' in collection statement.")
+            return None , WrongSyntaxError(self.file , "Expected a '{' in collection statement.", position = self.current_token.position.copy_position() )
         self.next()
 
         if self.current_token.type == token_rb:
@@ -746,7 +768,7 @@ class Parser:
             elements = np.array(elements)
 
         if self.current_token.type != token_rb:
-            return None , WrongSyntaxError(self.file , "Expected a '}' in 'collection statement'.")
+            return None , WrongSyntaxError(self.file , "Expected a '}' in 'collection statement'.", position = self.current_token.position.copy_position() )
         self.next()
         return CollectionNode(elements) , None
     

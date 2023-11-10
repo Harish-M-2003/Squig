@@ -122,7 +122,7 @@ class Interpretor:
         variable = node.variable.value
 
         if variable in self.global_symbol_table:
-            return self.global_symbol_table[variable].string , None
+            return self.global_symbol_table[variable] , None
         else:
             return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
 
@@ -534,10 +534,12 @@ if __name__ == "__main__":
 
     
     count_ctrl_c = 0
+    
     while True:
 
         try:
-            code = input("Squig > ")
+            code = open("testing_final.squig").read()
+            # code = input("squig >")
 
         except KeyboardInterrupt:
             count_ctrl_c += 1
@@ -565,10 +567,12 @@ if __name__ == "__main__":
             print(error.print())
             continue
         interpretor = Interpretor(file , symbol_table)
+        # print("type of ast : ", type(ast))
         result , error = interpretor.process(ast)
         if error:
             print(error.print())
             continue
         if result:
-            print(result)
+            for output in result.elements:
+                print(output)
         

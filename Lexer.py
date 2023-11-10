@@ -1,5 +1,6 @@
 from Token import *
 from Error import *
+from Position import *
 
 ## Developements issues note section
 ## No isusse currently.
@@ -13,16 +14,16 @@ class Lexer:
     def __init__(self,file , source_code):
 
         self.code = source_code
-        self.index = -1
+        self.position = Position(line_number=-1 , column_number=-1 , index=-1 , file_name=file)
         self.current_char = None
         self.file = file
         self.next()
 
     def next(self):
 
-        self.index += 1
-        if self.index < len(self.code):
-            self.current_char = self.code[self.index]
+        self.position.next(self.current_char)
+        if self.position.index < len(self.code):
+            self.current_char = self.code[self.position.index]
         else:
             self.current_char = None
 
@@ -33,8 +34,8 @@ class Lexer:
 
         if self.current_char == "=":
             self.next()
-            return Token(token_lte) , None
-        return Token(token_lt) , None
+            return Token(token_lte , token_position=self.position.copy_position()) , None
+        return Token(token_lt , token_position=self.position.copy_position()) , None
 
     
     def tokenize_greater_or_greaterThanEqual(self):
@@ -44,8 +45,8 @@ class Lexer:
 
         if self.current_char == "=":
             self.next()
-            return Token(token_gte) , None
-        return Token(token_gt) , None
+            return Token(token_gte,token_position=self.position.copy_position()) , None
+        return Token(token_gt,token_position=self.position.copy_position()) , None
 
     def tokenize_not_or_notEqual(self):
 
@@ -55,8 +56,8 @@ class Lexer:
 
         if self.current_char == "=":
             self.next()
-            return Token(token_ne) , None
-        return Token(token_not) , None
+            return Token(token_ne,token_position=self.position.copy_position()) , None
+        return Token(token_not,token_position=self.position.copy_position()) , None
 
     def tokenize_mul_or_power(self):
 
@@ -65,8 +66,8 @@ class Lexer:
 
         if self.current_char == "*":
             self.next()
-            return Token(token_power) , None
-        return Token(token_mul) , None
+            return Token(token_power,token_position=self.position.copy_position()) , None
+        return Token(token_mul,token_position=self.position.copy_position()) , None
     
     def tokenize_assignment(self):
 
@@ -75,24 +76,24 @@ class Lexer:
 
         if self.current_char == "+":
             self.next()
-            return Token(token_colon_plus) , None
+            return Token(token_colon_plus,token_position=self.position.copy_position()) , None
         elif self.current_char == "*":
             self.next()
             if self.current_char == "*":
                 self.next()
-                return Token(token_colon_power) , None
+                return Token(token_colon_power,token_position=self.position.copy_position()) , None
         
-            return Token(token_colon_mul) , None
+            return Token(token_colon_mul,token_position=self.position.copy_position()) , None
         
         elif self.current_char == "-":
             self.next()
-            return Token(token_colon_minus) , None
+            return Token(token_colon_minus,token_position=self.position.copy_position()) , None
         elif self.current_char == "/":
             self.next()
-            return Token(token_colon_divide)  , None
+            return Token(token_colon_divide,token_position=self.position.copy_position())  , None
         
 
-        return Token(token_colon) , None
+        return Token(token_colon,token_position=self.position.copy_position()) , None
 
     def tokenize_string(self):
 
@@ -110,7 +111,7 @@ class Lexer:
             
         self.next()
 
-        return Token(token_string , string) , None
+        return Token(token_string , string,token_position=self.position.copy_position()) , None
 
 
     def tokenize_variable(self):
@@ -124,9 +125,9 @@ class Lexer:
             self.next()
 
         if variable in keywords:
-            return Token(token_keyword , variable)  , None
+            return Token(token_keyword , variable,token_position=self.position.copy_position())  , None
 
-        return Token(token_variable , variable) , None
+        return Token(token_variable , variable,token_position=self.position.copy_position()) , None
 
     def tokenize_digit(self):
         
@@ -135,7 +136,7 @@ class Lexer:
         number = ""
         if self.current_char == ".":
             self.next()
-            return Token(token_dot) , None
+            return Token(token_dot,token_position=self.position.copy_position()) , None
         point_count = 0
 
         while self.current_char != None and self.current_char in token_digit + '.':
@@ -148,8 +149,8 @@ class Lexer:
             self.next()
 
         if point_count == 0:
-            return Token(token_int , int(number)) , None
-        return Token(token_float , float(number)) , None
+            return Token(token_int , int(number),token_position=self.position.copy_position()) , None
+        return Token(token_float , float(number),token_position=self.position.copy_position()) , None
 
     def tokenize_input_message(self):
 
@@ -167,7 +168,7 @@ class Lexer:
             
         self.next()
 
-        return Token(token_input , message) , None
+        return Token(token_input , message,token_position=self.position.copy_position()) , None
             
 
 
@@ -179,7 +180,12 @@ class Lexer:
 
         while self.current_char != None:
 
+
             if self.current_char in ' \t':
+                self.next()
+
+            elif self.current_char in ';\n':
+                tokens.append(Token(token_type=token_newline , token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == '"':
@@ -193,6 +199,12 @@ class Lexer:
                 if error:
                     return None , error
                 tokens.append(digit)
+            
+            elif self.current_char == "#":
+                self.next()
+                while self.current_char not in ';\n':
+                    self.next()
+                
 
             elif self.current_char == "'":
                 input_string , error = self.tokenize_input_message()
@@ -201,43 +213,43 @@ class Lexer:
                 tokens.append(input_string)
 
             elif self.current_char == "(":
-                tokens.append(Token(token_lparen))
+                tokens.append(Token(token_lparen,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == ")":
-                tokens.append(Token(token_rparen))
+                tokens.append(Token(token_rparen,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == "{":
-                tokens.append(Token(token_lb))
+                tokens.append(Token(token_lb,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == "}":
-                tokens.append(Token(token_rb))
+                tokens.append(Token(token_rb,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == "[":
-                tokens.append(Token(token_ls))
+                tokens.append(Token(token_ls,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == "]":
-                tokens.append(Token(token_rs))
+                tokens.append(Token(token_rs,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == '+':
-                tokens.append(Token(token_plus))
+                tokens.append(Token(token_plus,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == "%":
-                tokens.append(Token(token_modulo))
+                tokens.append(Token(token_modulo,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == ',':
-                tokens.append(Token(token_comma))
+                tokens.append(Token(token_comma,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == '-':
-                tokens.append(Token(token_minus))
+                tokens.append(Token(token_minus,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == '*':
@@ -247,7 +259,7 @@ class Lexer:
                 tokens.append(operator)
 
             elif self.current_char == '/':
-                tokens.append(Token(token_divide))
+                tokens.append(Token(token_divide,token_position=self.position.copy_position()))
                 self.next()
 
             elif self.current_char == '<':
@@ -281,17 +293,18 @@ class Lexer:
                 tokens.append(operator)
                 
             elif self.current_char == "&":
-                tokens.append(Token(token_and , self.current_char))
+                tokens.append(Token(token_and , self.current_char,token_position=self.position.copy_position()))
                 self.next()
             elif self.current_char == "|":
-                tokens.append(Token(token_or , self.current_char))
+                tokens.append(Token(token_or , self.current_char,token_position=self.position.copy_position()))
                 self.next()
             elif self.current_char == '=':
-                tokens.append(Token(token_eql))
+                tokens.append(Token(token_eql,token_position=self.position.copy_position()))
                 self.next()
             else:
-                return None , InvalidLiteral(self.file,f"Unexpected Literal '{self.current_char}'.")
-
+                return None , InvalidLiteral(self.file,f"Unexpected Literal '{self.current_char}'.", position = self.position.copy_position() )
+        
+        tokens.append(Token(token_eof , token_position=self.position.copy_position()))
         return tokens , None
 
 
@@ -299,4 +312,7 @@ if __name__ == "__main__":
 
     while True:
         lexer = Lexer("<Core>",input("Enter a expression : "))
-        print(lexer.tokenize())
+        tokens = lexer.tokenize()
+        print(tokens)
+            
+
