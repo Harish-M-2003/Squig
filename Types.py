@@ -24,10 +24,10 @@ def isFloat(num):
 
 class String:
 
-    def __init__(self , string):
+    def __init__(self ,filename, string):
 
         self.string = string
-        self.file = "change to file name later info for harish"
+        self.file = filename
 
     def __repr__(self):
 
@@ -59,13 +59,13 @@ class String:
             return String(self.string + str(string.number)) , None
         else:
             return None , RunTimeError(self.file ,
-                                 f"Unexpected operation for '{type(self.string).__name__ , type(string).__name__}'.")
+                                 f"Unexpected operation between '{type(self.string).__name__ , type(string).__name__}'.")
             
     def mul(self , number):
         if isinstance(number , Number):
             return String(self.string * number.number) , None
         else:
-            return None , RunTimeError(self.file ,f"Unexpected operation for '{type(self.string).__name__ , type(number).__name__}'.")
+            return None , RunTimeError(self.file ,f"Unexpected operation between '{type(self.string).__name__ , type(number).__name__}'.")
         
     def index(self,index):
 
@@ -121,10 +121,10 @@ class InputString:
 
 class Collection:
 
-    def __init__(self,elements):
+    def __init__(self,filename , elements):
 
         self.elements = elements
-        self.file = "change to file name later info for harish"
+        self.file = filename
 
     def __repr__(self):
 
@@ -143,7 +143,7 @@ class Collection:
         if isinstance(number , Number):
             return Collection(self.elements*number.number) , None
         else:
-            return None ,  RunTimeError(self.file , f"Unsupported operation '*' for types ('Collection' , {type(number).__name}).")
+            return None ,  RunTimeError(self.file , f"Unsupported operation '*' between types ('Collection' , {type(number).__name}).")
 
     def add(self , collection):
 

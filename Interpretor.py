@@ -14,7 +14,7 @@ class Interpretor:
     def StringNode(self , node):
 
         string = node.string.value
-        return Types.String(string) , None
+        return Types.String(string=string,filename=self.file) , None
 
     def NumberNode(self , node):
 
@@ -70,7 +70,7 @@ class Interpretor:
                 return None , error
             processed_elements += (element , )
 
-        return Types.Collection(processed_elements) , None
+        return Types.Collection(filename=self.file,elements=processed_elements) , None
 
     def CollectionAccessNode(self , node):
 
@@ -131,10 +131,16 @@ class Interpretor:
         string = node.string.value
 
         data = Types.InputString()
-        result , error = data.value(input(string).strip())
+        try:
+            result , error = data.value(input(string).strip())
+            
+        except:
+            result , error = data.value("")
+
         if error:
-            return None , error
+                return None , error
         return result , None
+            
     
     def AssignmentOperatorNode(self , node):
 
@@ -274,7 +280,7 @@ class Interpretor:
 
         types = "Type : '" + type(node).__name__.replace("Node" , '') +"'"
 
-        return Types.String(types) , None
+        return Types.String(string=types , filename=self.file) , None
 
 
     def IfNode(self , node):
@@ -381,7 +387,7 @@ class Interpretor:
                 elements.append(body)
         
 
-        return Types.Collection(elements) , None
+        return Types.Collection(filename=self.file,elements=elements) , None
     
     def DeleteNode(self , node):
 
@@ -472,7 +478,10 @@ class Interpretor:
         if error:
             return None , error
         
+        local_symbol_table = {}
+        
         interpretor = Interpretor(file , self.global_symbol_table)
+        # interpretor = Interpretor(file , local_symbol_table)
         output , error = interpretor.process(ast)
         if error:
             return None , error
@@ -531,22 +540,15 @@ if __name__ == "__main__":
         "charAt" : Types.BuiltinFunction(file , "charat"),
         "reverse" : Types.BuiltinFunction(file , "reverse"),
     }
-
-    
-    count_ctrl_c = 0
     
     while True:
 
         try:
             code = open("testing_final.squig").read()
             # code = input("squig >")
-
         except KeyboardInterrupt:
-            count_ctrl_c += 1
-            if count_ctrl_c == 3:
-                break
             print("Type 'exit' to close the console.")
-            continue
+            break
         if code == 'exit':
             break
         elif code == 'clear':
@@ -556,13 +558,15 @@ if __name__ == "__main__":
             continue
         lexer = Lexer(file , code)
         tokens , error = lexer.tokenize()
+    
         if error:
             print(error.print())
             continue
         
         parser = Parser(tokens , file)
         ast , error = parser.parse()
-        
+        if not ast.elements:
+            break
         if error:
             print(error.print())
             continue
@@ -571,8 +575,20 @@ if __name__ == "__main__":
         result , error = interpretor.process(ast)
         if error:
             print(error.print())
-            continue
+            break
+        
         if result:
+            # print(result)
             for output in result.elements:
-                print(output)
+                # print("output" , type(output).__name__)
+
+                if output:
+                    if type(output).__name__ == "Collection" and output.elements[0] == None and len(output.elements) == 1:#and type(output).__name__ != 'Collection':
+                        continue
+                    elif type(output).__name__ == "Collection" and output.elements[0] == None and len(output.elements) != 1:
+                        print(output.elements[-1].elements)
+                    else:
+                        print(output)
+        break
+        
         

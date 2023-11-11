@@ -202,7 +202,7 @@ class Lexer:
             
             elif self.current_char == "#":
                 self.next()
-                while self.current_char not in ';\n':
+                while self.current_char != '\n' and self.position.index < len(self.code):
                     self.next()
                 
 

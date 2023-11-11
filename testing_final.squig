@@ -1,6 +1,5 @@
+# Testing phase 1
 
-# testing comments
+greet function {name} : "Welcome , " + name ; 
 
-#use "harish"
-
-greet{"harish"}
+show "Example : " + greet{ for x{10} : "harish" } 

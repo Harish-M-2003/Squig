@@ -232,7 +232,6 @@ class Parser:
         statements = []
         while self.current_token.type == token_newline:
             self.next()
-        
         if self.current_token.type == token_eof:
             return CollectionNode(elements=statements) , None
         
@@ -611,10 +610,17 @@ class Parser:
             return None , WrongSyntaxError(self.file , "Expected a ':' in " +f"{function_name.value} function definition", position = self.current_token.position.copy_position() )
         
         self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
+        # print("before in function statement in parser")
         function_body , error = self.expression()
+        # print("after in function statement in parser")
         if error:
             return None , WrongSyntaxError(self.file , "Something went wrong in function body.", position = self.current_token.position.copy_position() )
-        
+        # if self.current_token.type != token_keyword and self.current_token.value == "end":
+        #     return None , WrongSyntaxError(self.file , f"expected an 'end' in {function_name} definition.")
+        # # self.next()
+
         return FunctionNode(function_name , param_list , function_body) , None
 
     def for_statement(self):
@@ -780,13 +786,14 @@ if __name__ == "__main__":
     while True:
         lexer = Lexer("",input("Enter a expression :"))
         tokens , error = lexer.tokenize()
+    
         if error:
             print(error.print())
             continue
         
         parser = Parser(tokens , "<ProgramFile>")
         result , error = parser.parse()
-    
+        
         if error:
             print(error.print())
             continue

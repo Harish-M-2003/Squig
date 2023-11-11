@@ -37,4 +37,4 @@ for-loop-statement : for variable lb (expression (comma expression )? ) rb colon
                   | (newline statement)
 
 function-statement : variable fun lb ((variable ( comma variable)*)? rb colon expression
-                    |(newline statement)
+                    |(newline statement end)
