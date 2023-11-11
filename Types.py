@@ -24,7 +24,7 @@ def isFloat(num):
 
 class String:
 
-    def __init__(self ,filename, string):
+    def __init__(self , string ,filename=None):
 
         self.string = string
         self.file = filename
@@ -111,12 +111,12 @@ class InputString:
     def value(self , input):
 
         if input.isalpha():
-            return String(input) , None
+            return String(string=input) , None
         
         elif input.isdigit():
             return Number(int(input)) , None
         
-        return String(input) , None
+        return String(string=input, filename=None) , None
         
 
 class Collection:

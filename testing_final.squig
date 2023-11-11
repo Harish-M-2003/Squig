@@ -2,4 +2,4 @@
 
 greet function {name} : "Welcome , " + name ; 
 
-show "Example : " + greet{ for x{10} : "harish" } 
+show "Example : " + greet{ "hairsh" } 
