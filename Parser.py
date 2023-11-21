@@ -200,6 +200,16 @@ class DotOperatorNode:
     def __repr__(self) -> str:
         
         return f"DotOperator({self.variable , self.properties})"
+    
+class ShowNode:
+
+    def __init__(self , statement):
+
+        self.statement = statement
+    
+    def __repr__(self):
+
+        return f"ShowNode({self.statment})"
 
 class Parser:
 
@@ -531,7 +541,9 @@ class Parser:
 
             if error:
                 return None , error
-            return expression , None
+            # return expression , None
+
+            return ShowNode(expression)  , None
 
         elif self.current_token.type == token_keyword and self.current_token.value == "if":
 

@@ -41,7 +41,7 @@ token_eof = "eof"
 
 keywords = ("if" , "else" ,"not", "elif", "function" , "end",
             "for","return", "break" ,"continue","show" , "let",
-            "delete" , "type" , "use")
+            "delete" , "type" , "use" , "show")
 
 class Token:
 

@@ -1,5 +1,6 @@
 # Testing phase 1
 
-greet function {name} : "Welcome , " + name ; 
-
-show "Example : " + greet{ "hairsh" } 
+# show "Testing"
+# for i{3} : show "Waiting"
+# name  :'Enter your name : '
+# show name

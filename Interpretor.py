@@ -11,6 +11,15 @@ class Interpretor:
         method = getattr(self , f"{type(node).__name__}" , self.no_process)
         return method(node)
     
+    def ShowNode(self , node):
+
+        statement , error = self.process(node.statement)
+        if error:
+            return None , error
+        
+        print(statement)
+        return None , None
+    
     def StringNode(self , node):
 
         string = node.string.value
