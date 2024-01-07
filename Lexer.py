@@ -31,6 +31,16 @@ class Lexer:
 
         # Checks wether the given token is < or <= and return the Token.
         self.next()
+        if self.current_char == "<":
+            
+            self.next()
+            if self.current_char == "<":
+                self.next() 
+                return Token(token_writetofile , token_position=self.position.copy_position()) , None
+           
+            else:
+                return None , InvalidLiteral(file=self.file , details="Invalid operator" , position=None)
+            
 
         if self.current_char == "=":
             self.next()
@@ -179,7 +189,6 @@ class Lexer:
         tokens = []
 
         while self.current_char != None:
-
 
             if self.current_char in ' \t':
                 self.next()

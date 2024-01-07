@@ -1,6 +1,7 @@
-import Interpretor
 from Error import *
 from os import *
+import Interpreter
+
 
 def isFloat(num):
 
@@ -22,10 +23,18 @@ def isFloat(num):
     
     return True
 
-class String:
+class BaseType:
+
+    def __init__(self , name, value):
+
+        self.name = name
+        self.value = value
+
+class String(BaseType):
 
     def __init__(self , string ,filename=None):
 
+        super().__init__("String" , string)
         self.string = string
         self.file = filename
 
@@ -105,10 +114,16 @@ class String:
     def _or_(self , string):
         if isinstance(string, String):
             return Boolean(self.string or string.string) , None
+
     
 class InputString:
 
+
     def value(self , input):
+
+        if isFloat(input):
+
+            return Number(float(input)) , None
 
         if input.isalpha():
             return String(string=input) , None
@@ -118,11 +133,13 @@ class InputString:
         
         return String(string=input, filename=None) , None
         
+        
 
-class Collection:
+class Collection(BaseType):
 
     def __init__(self,filename , elements):
 
+        super().__init__("Collection" , elements)
         self.elements = elements
         self.file = filename
 
@@ -149,24 +166,45 @@ class Collection:
 
         if isinstance(collection , Collection):
 
-            return Collection(self.elements + collection.elements) , None
+            return Collection(filename=self.file,elements=self.elements + collection.elements) , None
         else:
-            return Collection(self.elements + (collection,))  , None
+            return Collection(filename=self.file,elements=self.elements + (collection,))  , None
 
 class Boolean:
 
     def __init__(self,value):
 
-        self.value = value
+
+
+        self.value = str(value).lower() if type(value).__name__ == "bool" else value
+        
+        # In the above line if the value is of type bool it is converted to a lower case string and stored in the
+        # self.value propertie . need to implement it in a better way.
 
     def __repr__(self):
 
         return f"{self.value}"
+    
+    def _and_(self , right):
 
-class Number:
+        if isinstance(right , Boolean):
+            return Boolean(self.value and right.value) , None
+    
+    def _or_(self , right):
+
+        if isinstance(right , Boolean):
+            return Boolean(self.value or right.value) , None
+    
+    def _not_(self):
+        return Boolean("true" if self.value != "true" else "false")
+    
+
+
+class Number(BaseType):
 
     def __init__(self,number):
 
+        super().__init__("Number" , number)
         self.number = number
         self.file = "change to file name later info for harish"
 
@@ -268,8 +306,13 @@ class Number:
     def _or_(self , number):
         if isinstance(number , Number):
             return Boolean(self.number or number.number) , None
-        
-class BaseFunction:
+    
+    def modulo(self , number):
+
+        if isinstance(number , Number):
+            return Number(self.number % number.number) , None
+
+class BaseFunction(BaseType):
 
     def __init__(self , file , variable , params , body):
 
@@ -308,16 +351,18 @@ class UserDefinedFunction(BaseFunction):
 
         super().__init__(file , variable , params , body)
     
-    def execute(self , args):
+    def execute(self , args , global_symbol_table = None):
 
         local_symbol_table = {}
-        function_processor = Interpretor.Interpretor(self.file , local_symbol_table)
+        local_symbol_table.update(global_symbol_table)
+        function_processor = Interpreter.Interpreter(self.file , local_symbol_table)
         
         status , error = self.check_param_and_arg_length(self.params , args)
         if error:
             return None , error
         
         self.update_local_symnol_table(self.params , args , local_symbol_table)
+        # print("executing")
         
         function_expression , error = function_processor.process(self.body)
 
@@ -333,15 +378,37 @@ class BuiltinFunction(BaseFunction):
         self.file = file
         self.variable = variable
 
-    def execute(self , args):
-
+    def execute(self , args  , global_symbol_table = None):
+        
         local_symbol_table = {}
-
         method = getattr(self , f"execute_{self.variable}" , self.no_function)
         
-        self.update_local_symnol_table(method.params , args , local_symbol_table)
+        self.update_local_symnol_table(method.params , args , local_symbol_table )
 
         return method(local_symbol_table)
+    
+    def execute_int(self , symbol_table):
+
+        value = symbol_table["value"]
+        if isinstance(value , Number):
+            return Number(int(value.value)) , None
+    execute_int.params = ["value"]
+    
+    def execute_title(self , symbol_table):
+
+        value = symbol_table["value"]
+        if isinstance(value , String):
+            return String(value.string.title()) , None
+    execute_title.params = ["value"]
+
+    def execute_split(self , symbol_table):
+
+        value = symbol_table["value"]
+        pattern = symbol_table["pattern"]
+        if isinstance(value , String):
+            return Collection(filename=self.file , elements=list(map(String , value.string.split(pattern.string)))) , None
+        
+    execute_split.params = ["value" , "pattern"]
     
     def execute_is_string(self,symbol_table):
         value = symbol_table["value"]
@@ -481,6 +548,9 @@ class BuiltinFunction(BaseFunction):
         if isinstance(value , Collection):
             return Number(len(value.elements)) , None
         
+        if isinstance(value , HashMap):
+            return Number(len(value.key_values)) , None
+         
         return None , WrongTypeError(self.file , f"Cannot convert {value} to Number type.")
     execute_length.params = ["value"]
 
@@ -696,7 +766,7 @@ class BuiltinFunction(BaseFunction):
         
         if isinstance(value , String):
             if isinstance(target,String):
-                return Boolean(value.string.startswith(target.number)) , None
+                return Boolean(value.string.startswith(target.string)) , None
             elif isinstance(target , Number):
                 return Boolean(value.string.startswith(str(target.number))) , None
         elif isinstance(value , Number):
@@ -747,3 +817,46 @@ class BuiltinFunction(BaseFunction):
     def no_function(self , symbol_table):
 
         return None , "undefined function"
+    
+class File:
+
+    def __init__(self , file , file_name):
+
+        self.file = file
+        self.file_name = file_name
+
+    def __repr__(self):
+
+        return f"File( {self.file_name} )"
+
+    def content(self):
+
+        return String(self.file.read())
+    
+    def write(self , content):
+
+        self.file.write(content)
+        # return self
+    
+    def close(self):
+
+        self.file.close()
+
+class HashMap:
+
+    def __init__(self , key_values , index_values):
+
+        self.key_values = key_values
+        self.index_values = index_values
+
+    def __repr__(self):
+
+        formatted = "{ "
+
+        for key , value in self.key_values.items():
+            formatted += str(key) + " : " +  str(value) + " , "
+        
+
+        formatted = formatted[:-2].strip() +  " }"
+        
+        return formatted

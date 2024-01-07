@@ -80,7 +80,11 @@ class UnaryOperatorNode:
 
     def __repr__(self):
 
-        return f"{'-' if self.operator.type == token_minus else None}{self.factor.factor.value}"
+        if self.operator.type == token_minus:
+            return '-' + f"{self.factor.factor.value}"
+        elif self.operator.type == token_not:
+            return "! " + f"{self.factor}"
+        # return f"{'-' if self.operator.type == token_minus else 'not'}{self.factor.factor.value}"
 
 class IfNode:
 
@@ -189,17 +193,25 @@ class UseNode:
 
         return f"{self.name}"
 
+class BooleanNode:
 
-class DotOperatorNode:
+    def __init__(self , value):
 
-    def __init__(self,variable , properties = []):
+        self.bool = value
 
-        self.variable = variable
-        self.properties = properties
-
-    def __repr__(self) -> str:
+    def __repr__(self):
         
-        return f"DotOperator({self.variable , self.properties})"
+        return f"BooleanNode({self.bool})"
+        
+        
+class ReturnNode:
+
+    def __init__(self , return_value):
+        self.value = return_value
+    
+    def __repr__(self):
+
+        return f"ReturnNode({self.value})"
     
 class ShowNode:
 
@@ -209,11 +221,78 @@ class ShowNode:
     
     def __repr__(self):
 
-        return f"ShowNode({self.statment})"
+        return f"ShowNode({self.statement})"
+    
+class LetNode:
+
+    def __init__(self , variable , expression):
+        
+        self.variable = variable
+        self.factor = expression
+    
+    def __repr__(self):
+
+        return f"LetNode({self.variable})"
+
+class FileNode:
+
+    def __init__(self , filename , mode):
+
+        self.filename = filename
+        self.mode = mode
+    
+    def __repr__(self):
+        
+        return f"FileNode({self.filename} , {self.mode})"
+    
+class CloseNode:
+
+    def __init__(self , file):
+
+        self.filename = file
+    
+    def __repr__(self) -> str:
+        
+        return f"close( {self.filename } )"
+    
+class FileWriteNode:
+
+    def __init__(self , variable , content):
+
+        self.variable = variable
+        self.content = content
+
+    def __repr__(self):
+
+        return f"FileWriteNode ( {self.variable } , {self.content} )"
+    
+class SwitchNode:
+
+    def __init__(self , condition , default_body , cases = {} , ):
+
+        self.condition = condition
+        self.cases = cases
+        self.default = default_body
+
+    def __repr__(self):
+
+        return f"SwitchNode({self.condition} , {self.cases})"
+
+class HashMapNode:
+
+    def __init__(self):
+
+        self.key_value = {}
+        self.index_key = {}
+
+    def __repr__(self):
+
+        return f"{self.key_value}".replace(')','}').replace('(','{')
+
 
 class Parser:
 
-    def __init__(self,tokens , file):
+    def __init__(self,tokens , file ):
 
         self.tokens = tokens
         self.index = -1
@@ -230,20 +309,23 @@ class Parser:
             self.current_token = Token("eof")
 
     def parse(self):
-
-        result , error = self.statements()
-        
-        if error:
-            return None , error
-        return result , None
+        try:
+            result , error = self.statements()
+            # print(result)
+            if error:
+                return None , error
+            return result , None
+        except:
+            return None , Error(self.file , "Check in parse function in parser" , "Somthing went worng in the programm" )
     
     def statements(self):
 
-        statements = []
         while self.current_token.type == token_newline:
             self.next()
         if self.current_token.type == token_eof:
             return CollectionNode(elements=statements) , None
+        
+        statements = []
         
         statement,  error = self.expression()
         if error:
@@ -256,17 +338,24 @@ class Parser:
                 self.next()
             if self.current_token.type == token_eof:
                 break
+            
+            if self.current_token.type == token_rb:
+                self.next()
+                break
+
             statement , error = self.expression()
             if error:
                 return None , error
             statements.append(statement)
         
+        # print("working for for loop in statement" , statements)
         return CollectionNode(elements=statements) , None
         
     def expression(self):
         if self.current_token.type == token_keyword and self.current_token.value == "let":
             self.next()
             if self.current_token.type != token_variable:
+                # print(self.current_token)
                 return None , WrongSyntaxError(self.file , "Expected a variable after the 'let' keyword.", position = self.current_token.position.copy_position() )
             
             variable = self.current_token
@@ -278,12 +367,15 @@ class Parser:
             self.next()
 
             expression , error = self.expression()
+
             if error:
                 return None , error
 
-            return VariableNode(variable , expression) , None
+            # return VariableNode(variable , expression) , None
+            return LetNode(variable , expression) , None
 
         left , error = self.relational_expression()
+        
         if error:
             return None , error
 
@@ -296,18 +388,18 @@ class Parser:
                 return None , error
             left = BinaryOperatorNode(left , operator , right)
 
+        # print(left , "expression method")
         return left , None
     
     def relational_expression(self):
 
-        # fix not statemenets
-
-        if self.current_token.type == token_keyword and self.current_token.value == "not":
+        if self.current_token.type == token_not:
             self.next()
-            relation , error = self.relational_expression()
+            relaion , error = self.relational_expression()
             if error:
                 return None , error
-            return UnaryOperatorNode(token_not , relation) , None
+            
+            return UnaryOperatorNode(Token(token_type=token_not , token_position=None) , relaion) , None
 
         left , error = self.arithmatic_expression()
         
@@ -353,7 +445,7 @@ class Parser:
         if error:
             return None , error
 
-        while self.current_token.type in (token_mul , token_divide):
+        while self.current_token.type in (token_mul , token_divide , token_modulo):
             operator = self.current_token
             self.next()
             right , error = self.factor()
@@ -440,6 +532,12 @@ class Parser:
 
             return TypesNode(types) , None
         
+        elif self.current_token.type == token_keyword and self.current_token.value in ("true" , "false"):
+
+            boolean_node  = BooleanNode(self.current_token.value)
+            self.next()
+            return boolean_node , None
+        
         elif self.current_token.type == token_string:
             string = self.current_token
             self.next()
@@ -470,6 +568,13 @@ class Parser:
                 if error:
                     return None , error
                 return VariableNode(variable , expression) , None
+            
+            if self.current_token.type == token_writetofile:
+                self.next()
+                expression , error = self.expression()
+                if error:
+                    return None , error
+                return FileWriteNode(variable=variable , content=expression) , None
 
             if self.current_token.type == token_lb:
 
@@ -534,7 +639,7 @@ class Parser:
 
             return expression , None
 
-        elif self.current_token.type == token_keyword and self.current_token.value == "show":
+        elif self.current_token.type == token_keyword and self.current_token.value == "log":
 
             self.next()
             expression , error = self.expression()
@@ -544,6 +649,33 @@ class Parser:
             # return expression , None
 
             return ShowNode(expression)  , None
+        
+        elif self.current_token.type == token_keyword and self.current_token.value == "file":
+            
+            self.next()
+
+            # filename , error = self.expression()
+            # if error:
+            #     return None , error
+            
+            # return FileNode(filename , "r") , None # need to get input from squig for the file mode.
+            
+            file , error = self.file_statement()
+            # print(type(file.mode.string))
+            if error:
+                return None , error
+            
+            return file , error
+        
+        elif self.current_token.type == token_keyword and self.current_token.value == "close":
+
+            self.next()
+            filename , error = self.expression()
+            # print(filename)
+            if error:
+                return None , error
+            
+            return CloseNode(filename) , None
 
         elif self.current_token.type == token_keyword and self.current_token.value == "if":
 
@@ -586,9 +718,136 @@ class Parser:
         elif self.current_token.type == token_keyword and self.current_token.value == "use":
             self.next()
             module_name, error = self.expression()
+
             if error:
                 return None , error
             return UseNode(module_name) , None
+        
+        elif self.current_token.type == token_keyword and self.current_token.value == "switch":
+
+            self.next()
+            switchNode , error = self.switch_statement()
+            if error:
+                return None , error
+            
+            return switchNode , None
+
+    
+    def switch_statement(self):
+
+        if self.current_token.type != token_lb:
+            return None , WrongSyntaxError(file=self.file , details="Expected a '{' in switch statement.",position=None)
+        
+        self.next()
+
+        condition , error = self.expression()
+        if error:
+            return None , error
+        
+        if self.current_token.type != token_rb:
+            return None , WrongSyntaxError(file=self.file , details="Expected a '}' in switch statement.",position=None)
+        
+        self.next()
+        if self.current_token.type != token_colon:
+            return None ,  WrongSyntaxError(file=self.file , details="Expected a ':' in switch statement." , position=None)
+        
+        self.next()
+
+        case_conditions = {}
+
+        while self.current_token.type == token_newline:
+                self.next()
+
+        while self.current_token.type == token_keyword and self.current_token.value == "case":
+            # print("checking")
+            self.next()
+            while self.current_token.type == token_newline:
+                self.next()
+            case_condition = str(self.current_token.value)
+            # if error:
+            #     return None , error
+            
+            self.next()
+            if self.current_token.type != token_colon:
+                return  None , WrongSyntaxError(file=self.file , details="Expected a ':' in switch statement.",position=None)
+            
+            self.next()
+            # print("in parser" , self.current_token )
+            error , case_body = None , None
+
+            if self.current_token.type != token_lb:
+                case_body , error = self.expression()
+            else:
+                self.next()
+                case_body , error = self.statements()
+                
+            if error:
+                return None , error
+            
+            while self.current_token.type == token_newline:
+                self.next()
+
+            
+            
+            case_conditions[case_condition] = case_body
+
+        while self.current_token.type == token_newline:
+            self.next()
+
+        if self.current_token.type != token_keyword and self.current_token.value != "default":
+            
+            return None ,  WrongSyntaxError(file=self.file , details="Expected a 'default' in switch statement.",position=None)
+        
+        self.next()
+        if self.current_token.type != token_colon:
+            return None ,  WrongSyntaxError(file=self.file , details="Expected a ':' in switch statement.",position=None)
+        
+        self.next()
+        default_body , error = None , None
+       
+        if self.current_token.type != token_lb:
+            default_body , error = self.expression()
+        else:
+            self.next()
+            default_body , error = self.statements()
+
+        if error:
+            return None , error
+
+        return SwitchNode(condition=condition , cases=case_conditions , default_body= default_body) , None
+
+
+    
+    def file_statement(self):
+        
+        mode = "r"
+        
+        if self.current_token.type == token_lt:
+            self.next()
+
+            if self.current_token.type == token_string:
+                mode = self.current_token.value
+            
+            if self.current_token.type != token_string:
+                mode = "undefined variable " + "'" +  self.current_token.value + "'"
+                return None , WrongSyntaxError(file=self.file , details=f"Expected arguments (a , r, w, r+ ,w+ ,a+) , but got {mode}." ,position=None)
+            
+            self.next()
+
+            if self.current_token.type != token_gt:
+                
+                return None , WrongSyntaxError(file=self.file , details=f"Expected a closing '>' , but got {self.current_token}" ,position=None)
+            
+            self.next()
+            
+        file_name , error = self.expression()
+        
+        if error:
+            return None , error
+        
+        mode = StringNode(Token(token_type=token_string , token_value=mode , token_position=None))
+        
+        return FileNode(filename=file_name , mode=mode) , None
         
     
     def function_statement(self , function_name):
@@ -622,10 +881,20 @@ class Parser:
             return None , WrongSyntaxError(self.file , "Expected a ':' in " +f"{function_name.value} function definition", position = self.current_token.position.copy_position() )
         
         self.next()
-        # while self.current_token.type == token_newline:
-        #     self.next()
-        # print("before in function statement in parser")
+
+        if self.current_token.type == token_lb:
+            self.next()
+            while self.current_token.type == token_newline:
+                self.next()
+            statement , error = self.statements()
+
+            if error:
+                return None , error
+            
+            return FunctionNode(function_name , param_list , statement) , None
+
         function_body , error = self.expression()
+
         # print("after in function statement in parser")
         if error:
             return None , WrongSyntaxError(self.file , "Something went wrong in function body.", position = self.current_token.position.copy_position() )
@@ -668,6 +937,26 @@ class Parser:
         
         self.next()
 
+        # start of newline feature
+
+        if self.current_token.type == token_lb:
+            self.next()
+            while self.current_token.type == token_newline:
+                self.next()
+            statement , error = self.statements()
+            # print("it's  a newline statement" , self.current_token)
+            if error:
+                return None , error
+            
+            # while self.current_token.type == token_newline:
+            #     self.next()
+            
+            # if self.current_token.type != token_rb:
+            #     return None , WrongSyntaxError(self.file , "Expected a closing '{' in for loop." , position = None) 
+            
+            return ForNode(iterator_variable_name , start_range , end_range , None , statement , None) , None
+
+
         loop_body , error = self.expression()
         if error:
 
@@ -700,12 +989,22 @@ class Parser:
 
         if self.current_token.type != token_colon:
             return None , WrongSyntaxError(self.file , "Expected a ':' after '}' in 'if statement'.", position = self.current_token.position.copy_position() )
-
+        
         self.next()
-        case1 , error = self.expression()
+        cases1 , error = None , None
+        if self.current_token.type == token_lb:
+            self.next()
+            case1 , error = self.statements()
+        else:
+            case1 , error = self.expression()
+
         if error:
-            return None , error
+                return None , error
+        
         cases.append((condition , case1))
+
+        while self.current_token.type == token_newline:
+            self.next()
 
         while self.current_token.type == token_keyword and self.current_token.value == "elif":
 
@@ -727,24 +1026,42 @@ class Parser:
 
             self.next()
 
-            block , error = self.expression()
+            block , error = None , None
+            if self.current_token.type == token_lb:
+                self.next()
+                block , error = self.statements()
+            else:
+                block , error = self.expression()
+            
             if error:
                 return None , error
 
             cases.append((condition , block))
 
+            while self.current_token.type == token_newline:
+                self.next()
+
         if self.current_token.type == token_keyword and self.current_token.value == "else":
 
             self.next()
+    
             if self.current_token.type != token_colon:
                 return None , WrongSyntaxError(self.file , "Expected a ':' after the 'else' keyword.", position = self.current_token.position.copy_position() )
             self.next()
-            block , error = self.expression()
+
+            block , error = None , None
+            if self.current_token.type == token_lb:
+                self.next()
+                block , error = self.statements()
+            else:
+                block , error = self.expression()
+
             if error:
                 return None , error
 
             else_case = block
 
+        # print("it's ifNode in parser")
         return IfNode(cases , else_case) , None
 
 
@@ -758,6 +1075,9 @@ class Parser:
             return None , WrongSyntaxError(self.file , "Expected a '{' in collection statement.", position = self.current_token.position.copy_position() )
         self.next()
 
+        while self.current_token.type == token_newline:
+            self.next()
+
         if self.current_token.type == token_rb:
             return CollectionNode(elements) , None
 
@@ -767,8 +1087,61 @@ class Parser:
         
         first_element_type = type(element)
 
-        elements += (element ,)
+        if self.current_token.type == token_colon:
+            
+            hashmap = HashMapNode()
 
+            self.next()
+            value , error = self.expression()
+            if error:
+                return None , error
+                        
+            hashmap.key_value[element.string.value] = value
+            hashmap.index_key[len(hashmap.key_value) - 1] = element
+
+            while self.current_token.type == token_comma:
+
+                self.next()
+                 
+                # print("it working" , self.current_token.type)
+                while self.current_token.type == token_newline:
+                    self.next()
+
+                if self.current_token.type == token_rb:
+                    break
+
+                while self.current_token.type == token_newline:
+                    self.next()
+                key , error = self.expression()
+
+                if error:
+                    return None , error
+                
+                if self.current_token.type != token_colon:
+                    return None , WrongSyntaxError(self.file , "Expected a ':' in hashmap declaration.")
+                
+                self.next()
+                value , error = self.expression()
+                if error:
+                    return None , error
+                
+                hashmap.key_value[key.string.value] = value
+                hashmap.index_key[len(hashmap.key_value) - 1] = key
+
+                # print(self.current_token.type)
+
+
+            while self.current_token.type == token_newline:
+                self.next()
+
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a '}' in hashmap declaration.")
+            self.next()
+
+            return hashmap , None
+            
+        elements += (element ,)
+            
         while self.current_token.type == token_comma:
             self.next()
             element , error = self.expression()
@@ -805,10 +1178,9 @@ if __name__ == "__main__":
         
         parser = Parser(tokens , "<ProgramFile>")
         result , error = parser.parse()
-        
+        print(result)
         if error:
             print(error.print())
             continue
-        print(result)
-        del lexer , parser
         
+        del lexer , parser

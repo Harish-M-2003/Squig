@@ -1,3 +1,5 @@
-greet function { name } : "welcome  " + name
 
-# jjfor x{10} : "harish"
+
+sum function { n1 , n2 } : n1 + n2 ; 
+
+# let sum { n1 , n2 } => n1 + n2

@@ -13,6 +13,12 @@ class Error:
         error_message += f"\t{self.name} : {self.details}\n"
         return error_message
 
+class RedeclarationError(Error):
+
+    def __init__(self , file , details, position):
+
+        super().__init__(file , "RedeclarationError" , details , position=position)
+
 class WrongSyntaxError(Error):
 
     def __init__(self,file , details,position):
@@ -57,3 +63,13 @@ class WrongImportError(Error):
 
     def __init__(self,file,details):
         super().__init__(file , "UseError" , details)
+
+class WrongFileError(Error):
+
+    def __init__(self, file, name, details, position=None):
+        super().__init__(file, name, details, position)
+
+class WrongFileOperationError(Error):
+    
+    def __init__(self, file, name, details, position=None):
+        super().__init__(file, name, details, position)

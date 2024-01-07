@@ -1,4 +1,4 @@
-statements : newline* express (newline+ express)* newline*
+statements : newline* expression (newline+ expression)* newline*
 
 expression : let variable assign expression
            : relational-expression ((and|or) relational-expression)*
@@ -8,33 +8,41 @@ relational-expression : not relational-expression
 
 arithmatic-expression : term ((plus|minus) term)*
 
-term : factor ((mul|div) factor)*
+term : factor ((mul|div|modulo) factor)*
 
 factor : (plus|minus) factor
        : power
 
 power : call ( power factor)*
 
-call : atom lb ((expression (comma expression)*)? rb
+call : atom (lb (expression (comma expression)*)? rb)?
 
 atom : int|float|string|variable|input-string
      : lp expression rp
-     : show expression
+     : show  expression
      : if-statement
      : collection-statement
      : for-loop-statement
      : function-statement
      : delete variable (comma variable)*
      : use string
+     : file-statement
+     : switch-statement
 
 variable : variable (lsquare expression rsquare)*
          | variable
 collection-statement : lb (expression ( comma expression )*)? rb
+                     | lb (expression colon expression (comma expression)*)? rb
 
 if-statement : if lb expression rb colon expression ((elif lb expression rb colon expression)* (else expression)?)?
+             : if lb expression rb colon lb statement rb ((elif lb expression rb colon lb statement rb)* (else colon lb statement rb)?)?
 
 for-loop-statement : for variable lb (expression (comma expression )? ) rb colon expression
-                  | (newline statement)
+                    : for variable lb (expression (comma expression) ? ) rb colon lb statement rb
 
 function-statement : variable fun lb ((variable ( comma variable)*)? rb colon expression
-                    |(newline statement end)
+                   | variable fun lb ((variable (comma variable)*)? rb colon lb statement rb
+
+file-statement : file (lt (w|a|r|w+|r+|a+) gt)? variable colon expression
+
+switch-statement : switch (expression) lb newline* (( case expression colon statement )* (default colon statement)) newline+ rb

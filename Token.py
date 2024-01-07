@@ -38,10 +38,13 @@ token_colon_mul = "colonMul"
 token_colon_power = "colonPower"
 token_newline = "newline"
 token_eof = "eof"
+token_writetofile = "writetofile"
 
-keywords = ("if" , "else" ,"not", "elif", "function" , "end",
-            "for","return", "break" ,"continue","show" , "let",
-            "delete" , "type" , "use" , "show")
+keywords = ("if" , "else" , "elif", "function" ,
+            "for","return", "break" ,"continue" , "let",
+            "delete" , "type" , "use" , "log" , "file" , "close",
+            "default" , "case" , "switch", "true" , "false"
+            )
 
 class Token:
 

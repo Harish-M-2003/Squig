@@ -1,6 +1,29 @@
-# Testing phase 1
+let google : { 
+  "name" : "harish" ,
+  "age" : "sh" ,
+  "10" : "goggle",
+  "cartoon" : "Doreamon"
+} ;
 
-# show "Testing"
-# for i{3} : show "Waiting"
-# name  :'Enter your name : '
-# show name
+
+linearSearch function { map , target } : {
+
+    for index{length{map}} : {
+        pair : map[index] 
+        if {pair[0] = target } : {
+            log "found , and the value is  : "  + pair[1] + "length : " + length{pair[1]}
+        }
+    }
+
+}
+
+linearSearch{google , "10"}
+
+log google[0]
+
+
+
+# Array
+# List
+# Map
+# Stack and Queue

@@ -20,10 +20,17 @@
 		"body": "show $message",
 		"description": "print statement"
 	},
+	"use statement" : {
+		"prefix" : "use",
+		"body" : [
+			"use \"$1\" ;"
+		]
+	},
+
 	"function statement" : {
 		"prefix": "function",
 		"body": [
-		"$1function_name function { $2param_name } : $body"
+		"$1function_name function { $2param_name } : $body ;"
 		],
 		"description": "create a function."
 	},
@@ -42,13 +49,18 @@
 
 	"if statment" : {
 		"prefix": "if",
-		"body": "if {{ $condition }} : $body",
+		"body": "if { $condition } : $body",
 		"description": "if statement"
 	},
 
 	"if else statment" : {
 		"prefix": "ie",
-		"body" : "if {{ $condition }} : $true_body else : $false_body",
+		"body" : "if { $condition } : $true_body else : $false_body",
 		"description": "create a if else statement",
+	},
+
+	"if elif else statement" : {
+		"prefix" : "iee",
+		"body" : "if { $condition1 } : $true_body elif { $condition2 } : $elif_body else : $false_body"
 	}
 }
