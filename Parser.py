@@ -289,6 +289,27 @@ class HashMapNode:
 
         return f"{self.key_value}".replace(')','}').replace('(','{')
 
+class MutableStringNode:
+
+    def __init__(self , string):
+        self.string = string
+    
+    def __repr__(self):
+
+        return f"MutableString({self.string})"
+    
+
+class VariableManipulationNode:
+
+    def __init__(self , variable , index , value):
+        
+        self.variable = variable
+        self.index = index
+        self.value = value
+
+    def __repr__(self):
+
+        return f"VariableManipulationNode({self.variable , self.index , self.value})"
 
 class Parser:
 
@@ -555,7 +576,14 @@ class Parser:
                     indexs.append(index)
                 return StringAccessNode(Token(token_type=token_string  , token_value=string.value) , indexs) , None
 
-            return StringNode(Token(token_type=token_string , token_value=string.value)) , None
+            # return StringNode(Token(token_type=token_string , token_value=string.value)) , None
+            return StringNode(string) , None
+        
+        elif self.current_token.type == token_mutstring:
+            mutstring = self.current_token
+            self.next()
+            
+            return MutableStringNode(mutstring) , None
 
         elif self.current_token.type == token_variable:
             variable = self.current_token
@@ -604,10 +632,13 @@ class Parser:
             
 
             if self.current_token.type == token_ls:
-
+                isHashmap = False
                 while self.current_token.type == token_ls:
                     self.next()
                     index , error = self.expression()
+                    if type(index) == StringNode:
+                        # print("yeah")
+                        isHashmap = True
                     if error:
                         return None , error
                         
@@ -616,10 +647,32 @@ class Parser:
                     self.next()
                     indexs.append(index)
 
+                if self.current_token.type == token_colon:
+                    self.next()
+                    # value = self.current_token
+
+                    value , error = self.expression()
+                    # print("koay" , type(value) , value)
+                    if error:
+                        return None , error
+                    # print(value , variable)
+                    # print(type(value))
+
+                    if isHashmap:
+                        return VariableManipulationNode(variable , indexs , value) , None
+                    
+                    if type(value) == MutableStringNode:
+                        # return VariableManipulationNode(variable , indexs , MutableStringNode(value)) , None
+                        return VariableManipulationNode(variable , indexs , value) , None
+                    else:
+                        return None , RunTimeError(self.file , "Trying to Manipulate Unsupported types")
+                        # return VariableManipulationNode(variable , indexs , StringNode(value)) , None
+                        # return VariableManipulationNode(variable , indexs , value) , None
+                # print(self.current_token)
+                # return StringAccessNode(Token(token_type=token_string  , token_value=string.value) , indexs) , None
                 return CollectionAccessNode(variable , indexs) , None
             
-            
-            return VariableAccessNode(variable) , None
+            return VariableAccessNode(variable) , None 
         
         
         elif self.current_token.type == token_input:

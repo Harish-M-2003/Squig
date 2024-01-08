@@ -39,6 +39,7 @@ token_colon_power = "colonPower"
 token_newline = "newline"
 token_eof = "eof"
 token_writetofile = "writetofile"
+token_mutstring = "mutstring"
 
 keywords = ("if" , "else" , "elif", "function" ,
             "for","return", "break" ,"continue" , "let",

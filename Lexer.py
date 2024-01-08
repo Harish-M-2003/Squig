@@ -110,18 +110,24 @@ class Lexer:
         # Checks wether the given token is a string and return the token.
 
         string = ""
+        isMutString = False
         self.next()
 
-        while self.current_char != None and self.current_char != '"':
+        while self.current_char != None and (self.current_char != '"' and self.current_char != '`'):
             string += self.current_char
             self.next()
-        
-        if self.current_char != '"':
+
+        if self.current_char not in '"`':
             return None , StringError(self.file , f"Expected a '\"' after the string '{string}'.")
+        
+        if self.current_char == '`':
+            isMutString = True
             
         self.next()
-
-        return Token(token_string , string,token_position=self.position.copy_position()) , None
+        if not isMutString:
+            return Token(token_string , string,token_position=self.position.copy_position()) , None
+        else:
+            return Token(token_mutstring , string , token_position=self.position.copy_position()) , None
 
 
     def tokenize_variable(self):
@@ -310,6 +316,12 @@ class Lexer:
             elif self.current_char == '=':
                 tokens.append(Token(token_eql,token_position=self.position.copy_position()))
                 self.next()
+            elif self.current_char == '`':
+                
+                string , error = self.tokenize_string()
+                if error:
+                    return None , error
+                tokens.append(string)
             else:
                 return None , InvalidLiteral(self.file,f"Unexpected Literal '{self.current_char}'.", position = self.position.copy_position() )
         

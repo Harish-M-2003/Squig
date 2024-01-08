@@ -17,7 +17,7 @@ power : call ( power factor)*
 
 call : atom (lb (expression (comma expression)*)? rb)?
 
-atom : int|float|string|variable|input-string
+atom : int|float|string|variable|input-string|Mutstring
      : lp expression rp
      : show  expression
      : if-statement

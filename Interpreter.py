@@ -14,7 +14,8 @@ class Interpreter:
         return method(node)
     
     def ShowNode(self , node):
-
+        # print(self.process(node.statement))
+        # print(type(node.statement))
         statement , error = self.process(node.statement)
         # print(self.process(node.statement))
         
@@ -114,13 +115,11 @@ class Interpreter:
 
     def CollectionAccessNode(self , node):
 
-
         variable = node.variable.value
         value = None    
 
         if not variable in self.global_symbol_table :
             return None , RunTimeError(self.file , f"Collection '{variable}' is undefind.")
-        
         indexs = []
         for idx in node.index:
             index , error = self.process(idx)
@@ -130,8 +129,7 @@ class Interpreter:
                 return None , error
             indexs.append(index)
 
-
-        if isinstance(self.global_symbol_table[variable],Types.Collection):
+        if isinstance(self.global_symbol_table[variable],Types.Collection) or isinstance(self.global_symbol_table[variable] , Types.String):
 
             value = self.global_symbol_table[variable].index(indexs[0].number)
 
@@ -161,12 +159,20 @@ class Interpreter:
             
             elif isinstance(indexs[0] , Types.String):
                 key = indexs[0].string
+                # print("it's string")
                 return self.global_symbol_table[variable].key_values.get(key , None ) , None
+        # elif isinstance(self.global_symbol_table[variable] , Types.String):{
+        #     if 
+        # }
+        
+        
 
     def VariableNode(self , node):
 
         variable = node.variable.value
+        
         value , error = self.process(node.factor)
+
         
         if error:
             return None , error
@@ -185,7 +191,6 @@ class Interpreter:
         value , error = self.process(node.factor)
         if error:
             return None , error
-        
         self.global_symbol_table[variable] = value
 
         return "" , None
@@ -625,6 +630,58 @@ class Interpreter:
     def BooleanNode(self , node):
         
         return Types.Boolean(node.bool) , None
+    
+    def MutableStringNode(self , node):
+        string  = node.string.value
+        
+        return Types.MutableString(string) , None
+    
+    def VariableManipulationNode(self , node):
+        # print("yeah" , type(node.value) , node.index)
+        target_value , error = self.process(node.value)
+        if error:
+            return None , error
+
+        variable = node.variable.value
+        if variable not in self.global_symbol_table:
+            return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
+        
+        variable_value = self.global_symbol_table[variable]
+        if type(variable_value).__name__ == "String":
+            return None , RunTimeError(self.file , f"Cannot Manipulate Immutable string '{variable_value}' stored in variable '{variable}'.")
+    
+        if len(node.index) > 1:
+            return None , RunTimeError(self.file , "Mutabel String cannot be accessed via '[][]'.")
+        index  , error = self.process(node.index[0])
+        # print(index.number)
+        if error:
+            return None , error
+
+        # if not variable_value.isType(target_value):
+        #     return None , RunTimeError(self.file , "Cannot Manipulate a Mutable String with Another type.")
+
+        if type(variable_value).__name__ == "MutableString":
+            # print("right")
+            value , error = variable_value.include(index.number , target_value.string)
+            if error:
+                return None , error
+            if not value:
+                return None , RunTimeError(self.file , f"Manipulation Index out of range for MutableString '{variable_value.string}' stored in variable '{variable}'")
+        
+        elif type(variable_value) == Types.HashMap:
+            # self.global_symbol_table[variable]
+            variable_value.key_values[index.string] = target_value
+            # print(target_value , variable_value.key_values[index.string] , type(index))
+
+        # elif type(variable_value).__name__ == "Collection":
+            
+        #     if error:
+        #         return None , error
+                
+        #     if not value:
+        #         return None , RunTimeError(self.file , f"Manipulation Index out of range for Collection '{variable_value.string}' stored in variable '{variable}'")
+            
+        return None , None
     
     def SwitchNode(self , node):
 

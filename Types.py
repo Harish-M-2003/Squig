@@ -25,10 +25,18 @@ def isFloat(num):
 
 class BaseType:
 
-    def __init__(self , name, value):
+    def __init__(self , name, value , file=None):
 
         self.name = name
         self.value = value
+        self.file = file
+    
+    
+    def isType(self , value):
+
+        if type(value) == type(self):
+            return True
+        return False
 
 class String(BaseType):
 
@@ -550,6 +558,9 @@ class BuiltinFunction(BaseFunction):
         
         if isinstance(value , HashMap):
             return Number(len(value.key_values)) , None
+        
+        if isinstance(value , MutableString):
+            return Number(len(value.string)) , None
          
         return None , WrongTypeError(self.file , f"Cannot convert {value} to Number type.")
     execute_length.params = ["value"]
@@ -842,6 +853,7 @@ class File:
 
         self.file.close()
 
+
 class HashMap:
 
     def __init__(self , key_values , index_values):
@@ -860,3 +872,30 @@ class HashMap:
         formatted = formatted[:-2].strip() +  " }"
         
         return formatted
+    
+class MutableString(BaseType):
+
+    def __init__(self , string):
+
+        self.string = string
+        self.mut_string = [char for char in string]
+    
+    def __repr__(self):
+
+        return f"{self.string}"
+
+    def include(self , index , char):
+        if  index < len(self.mut_string) and index >= 0:
+            self.mut_string[index] = char
+            # print(type(self.mut_string) , self.mut_string)
+            self.string = "".join(self.mut_string)
+        else:
+            return None , None  # Need to handle this
+        
+        return self , None
+    
+
+    def remove(self , index):
+        pass
+    
+    

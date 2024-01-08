@@ -1,27 +1,28 @@
-let google : { 
-  "name" : "harish" ,
-  "age" : "sh" ,
-  "10" : "goggle",
-  "cartoon" : "Doreamon"
-} ;
 
-
-linearSearch function { map , target } : {
-
-    for index{length{map}} : {
-        pair : map[index] 
-        if {pair[0] = target } : {
-            log "found , and the value is  : "  + pair[1] + "length : " + length{pair[1]}
-        }
-    }
-
+let google : {
+    "name" : "harisrh",
+    "Age" : 20
 }
+# linearSearch{google , "10"}
 
-linearSearch{google , "10"}
+#log google[0]
 
-log google[0]
+#log "end of file" + "asdasd"
+#let array : {1,2,3,4,5,6} # Since the array values cannot be changed at runtime , need to redesign it's logic
 
+#array[0] : 100
 
+let example : `g0mer`
+
+example[1] : `a`
+# example[2] : "1234567890"
+
+#let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
+#array[2] : 200
+#log array
+log example
+
+log length{example}
 
 # Array
 # List
