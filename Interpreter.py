@@ -590,47 +590,47 @@ class Interpreter:
         del self.global_symbol_table[file]
         return None , None
     
-    def PopNode(self , node):
+    # def PopNode(self , node):
 
-        print("Need to complete pop interpertor node")
+    #     print("Need to complete pop interpertor node")
 
-        variable = node.variable.value
-        local_symbol_table = self.global_symbol_table[variable].key_values
+    #     variable = node.variable.value
+    #     local_symbol_table = self.global_symbol_table[variable].key_values
 
-        if variable not in self.global_symbol_table:
-            return None , RuntimeError(self.file , f"variable '{variable}' is undefined.")
+    #     if variable not in self.global_symbol_table:
+    #         return None , RuntimeError(self.file , f"variable '{variable}' is undefined.")
         
-        index , error = self.process(node.index)
-        if error:
-            return None , error
+    #     index , error = self.process(node.index)
+    #     if error:
+    #         return None , error
         
-        if type(index) == Types.Number:
-            # if index.number >= len(local_symbol_table) or index.number < 0:
-            #     return None , RunTimeError(self.file , f"Access index out of range")
+    #     if type(index) == Types.Number:
+    #         # if index.number >= len(local_symbol_table) or index.number < 0:
+    #         #     return None , RunTimeError(self.file , f"Access index out of range")
             
-            # print(index.number)
-            print(self.global_symbol_table[variable].index_values)
-            status = local_symbol_table.pop(str(index.number) , -1)
+    #         # print(index.number)
+    #         print(self.global_symbol_table[variable].index_values)
+    #         status = local_symbol_table.pop(str(index.number) , -1)
             
-            self.global_symbol_table[variable].index_values.pop(index.number , -1)
-            # print(self.global_symbol_table[variable].index_values)
-            if status != -1:
-                return status , None
-            return Types.Boolean("false") , None
+    #         self.global_symbol_table[variable].index_values.pop(index.number , -1)
+    #         # print(self.global_symbol_table[variable].index_values)
+    #         if status != -1:
+    #             return status , None
+    #         return Types.Boolean("false") , None
             
             
-        elif type(index) == Types.String:
-            # print("index is a string")
-            status = local_symbol_table.pop(str(index.string) , -1)
-            if status == -1:
-                return Types.Boolean("false") , None
+    #     elif type(index) == Types.String:
+    #         # print("index is a string")
+    #         status = local_symbol_table.pop(str(index.string) , -1)
+    #         if status == -1:
+    #             return Types.Boolean("false") , None
             
-            return status , None
+    #         return status , None
 
         
-        # print(type(variable))
+    #     # print(type(variable))
 
-        return None , None
+    #     return None , None
     
     def UseNode(self , node):
         module_name = node.name.string.value
