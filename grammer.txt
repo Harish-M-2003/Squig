@@ -26,13 +26,14 @@ atom : int|float|string|variable|input-string|Mutstring
      : function-statement
      : delete variable (comma variable)*
      : use string
+     : pop variable (ls key rs) ?
      : file-statement
      : switch-statement
 
 variable : variable (lsquare expression rsquare)*
          | variable
 collection-statement : lb (expression ( comma expression )*)? rb
-                     | lb (expression colon expression (comma expression)*)? rb
+                     | lb (expression colon expression (comma expression)*)? rb -> commented this implementations
 
 if-statement : if lb expression rb colon expression ((elif lb expression rb colon expression)* (else expression)?)?
              : if lb expression rb colon lb statement rb ((elif lb expression rb colon lb statement rb)* (else colon lb statement rb)?)?

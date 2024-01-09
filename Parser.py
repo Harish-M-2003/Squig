@@ -278,16 +278,16 @@ class SwitchNode:
 
         return f"SwitchNode({self.condition} , {self.cases})"
 
-class HashMapNode:
+# class HashMapNode:
 
-    def __init__(self):
+#     def __init__(self):
 
-        self.key_value = {}
-        self.index_key = {}
+#         self.key_value = {}
+#         self.index_key = {}
 
-    def __repr__(self):
+#     def __repr__(self):
 
-        return f"{self.key_value}".replace(')','}').replace('(','{')
+#         return f"{self.key_value}".replace(')','}').replace('(','{')
 
 class MutableStringNode:
 
@@ -310,6 +310,13 @@ class VariableManipulationNode:
     def __repr__(self):
 
         return f"VariableManipulationNode({self.variable , self.index , self.value})"
+    
+class PopNode:
+
+    def __init__(self , variable , index = None):
+
+        self.variable = variable
+        self.index = index
 
 class Parser:
 
@@ -632,13 +639,13 @@ class Parser:
             
 
             if self.current_token.type == token_ls:
-                isHashmap = False
+                # isHashmap = False
                 while self.current_token.type == token_ls:
                     self.next()
                     index , error = self.expression()
-                    if type(index) == StringNode:
+                    # if type(index) == StringNode:
                         # print("yeah")
-                        isHashmap = True
+                        # isHashmap = True
                     if error:
                         return None , error
                         
@@ -658,8 +665,8 @@ class Parser:
                     # print(value , variable)
                     # print(type(value))
 
-                    if isHashmap:
-                        return VariableManipulationNode(variable , indexs , value) , None
+                    # if isHashmap:
+                    #     return VariableManipulationNode(variable , indexs , value) , None
                     
                     if type(value) == MutableStringNode:
                         # return VariableManipulationNode(variable , indexs , MutableStringNode(value)) , None
@@ -668,8 +675,7 @@ class Parser:
                         return None , RunTimeError(self.file , "Trying to Manipulate Unsupported types")
                         # return VariableManipulationNode(variable , indexs , StringNode(value)) , None
                         # return VariableManipulationNode(variable , indexs , value) , None
-                # print(self.current_token)
-                # return StringAccessNode(Token(token_type=token_string  , token_value=string.value) , indexs) , None
+                    
                 return CollectionAccessNode(variable , indexs) , None
             
             return VariableAccessNode(variable) , None 
@@ -756,6 +762,7 @@ class Parser:
             variables = []
             if self.current_token.type != token_variable:
                 return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.", position = self.current_token.position.copy_position() )
+            
             variables.append(self.current_token)
             self.next()
 
@@ -784,7 +791,30 @@ class Parser:
                 return None , error
             
             return switchNode , None
+        
+        elif self.current_token.type == token_keyword and self.current_token.value == "pop":
+            self.next()
+            if self.current_token.type != token_variable:
+                return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.", position = self.current_token.position.copy_position() )
+            variable = self.current_token
+            self.next()
+            if self.current_token.type == token_ls:
+                self.next()
+                if self.current_token.type != token_int and  self.current_token.type != token_string:
+                    return None , RunTimeError(self.file , "Expected a 'index' or 'string' as key but got unexpected key type.")
+                index  , error = self.expression()
+                # print("index" , index)
+                if error:
+                    return None , error
+                
+                if self.current_token.type != token_rs:
+                    return None , WrongSyntaxError(self.file , "Expected a ']' in pop statement.", position = self.current_token.position.copy_position() )
+                
+                self.next()
 
+                return PopNode(variable=variable , index = index ) , None
+            
+            return PopNode(variable=variable) , None
     
     def switch_statement(self):
 
@@ -1140,58 +1170,58 @@ class Parser:
         
         first_element_type = type(element)
 
-        if self.current_token.type == token_colon:
+        # if self.current_token.type == token_colon:
             
-            hashmap = HashMapNode()
+        #     hashmap = HashMapNode()
 
-            self.next()
-            value , error = self.expression()
-            if error:
-                return None , error
+        #     self.next()
+        #     value , error = self.expression()
+        #     if error:
+        #         return None , error
                         
-            hashmap.key_value[element.string.value] = value
-            hashmap.index_key[len(hashmap.key_value) - 1] = element
+        #     hashmap.key_value[element.string.value] = value
+        #     hashmap.index_key[len(hashmap.key_value) - 1] = element
 
-            while self.current_token.type == token_comma:
+        #     while self.current_token.type == token_comma:
 
-                self.next()
+        #         self.next()
                  
-                # print("it working" , self.current_token.type)
-                while self.current_token.type == token_newline:
-                    self.next()
+        #         # print("it working" , self.current_token.type)
+        #         while self.current_token.type == token_newline:
+        #             self.next()
 
-                if self.current_token.type == token_rb:
-                    break
+        #         if self.current_token.type == token_rb:
+        #             break
 
-                while self.current_token.type == token_newline:
-                    self.next()
-                key , error = self.expression()
+        #         while self.current_token.type == token_newline:
+        #             self.next()
+        #         key , error = self.expression()
 
-                if error:
-                    return None , error
+        #         if error:
+        #             return None , error
                 
-                if self.current_token.type != token_colon:
-                    return None , WrongSyntaxError(self.file , "Expected a ':' in hashmap declaration.")
+        #         if self.current_token.type != token_colon:
+        #             return None , WrongSyntaxError(self.file , "Expected a ':' in hashmap declaration.")
                 
-                self.next()
-                value , error = self.expression()
-                if error:
-                    return None , error
+        #         self.next()
+        #         value , error = self.expression()
+        #         if error:
+        #             return None , error
                 
-                hashmap.key_value[key.string.value] = value
-                hashmap.index_key[len(hashmap.key_value) - 1] = key
+        #         hashmap.key_value[key.string.value] = value
+        #         hashmap.index_key[len(hashmap.key_value) - 1] = key
 
-                # print(self.current_token.type)
+        #         # print(self.current_token.type)
 
 
-            while self.current_token.type == token_newline:
-                self.next()
+        #     while self.current_token.type == token_newline:
+        #         self.next()
 
-            if self.current_token.type != token_rb:
-                return None , WrongSyntaxError(self.file , "Expected a '}' in hashmap declaration.")
-            self.next()
+        #     if self.current_token.type != token_rb:
+        #         return None , WrongSyntaxError(self.file , "Expected a '}' in hashmap declaration.")
+        #     self.next()
 
-            return hashmap , None
+        #     return hashmap , None
             
         elements += (element ,)
             

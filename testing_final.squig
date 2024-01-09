@@ -1,10 +1,18 @@
+let google : {0}
 
-let google : {
-    "name" : "harisrh",
-    "Age" : 20
-}
+log type google[0] 
+
+let string : `tosting`
+
+string[1] : `e`
+
+log string
+
+#log length{google}
+#log length{google}
+
+# log google
 # linearSearch{google , "10"}
-
 #log google[0]
 
 #log "end of file" + "asdasd"
@@ -12,18 +20,11 @@ let google : {
 
 #array[0] : 100
 
-let example : `g0mer`
-
-example[1] : `a`
 # example[2] : "1234567890"
 
 #let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
 #array[2] : 200
 #log array
-log example
-
-log length{example}
-
 # Array
 # List
 # Map

@@ -89,29 +89,29 @@ class Interpreter:
 
         return Types.Collection(filename=self.file,elements=processed_elements) , None
     
-    def HashMapNode(self , node):
+    # def HashMapNode(self , node):
 
-        key_values = node.key_value
-        index_key = node.index_key
+    #     key_values = node.key_value
+    #     index_key = node.index_key
 
-        # print(key_values)
+    #     # print(key_values)
 
-        processed_key_value = {}
-        processed_index_key = {}
+    #     processed_key_value = {}
+    #     processed_index_key = {}
 
-        index = 0
-        for key , value in key_values.items():
-            processed_key , error = self.process(key_values[key])
-            processed_index , error = self.process(index_key[index])
-            if error:
-                return None , error
+    #     index = 0
+    #     for key , value in key_values.items():
+    #         processed_key , error = self.process(key_values[key])
+    #         processed_index , error = self.process(index_key[index])
+    #         if error:
+    #             return None , error
             
-            processed_key_value[key] = processed_key
-            processed_index_key[index] = processed_index
-            index += 1
+    #         processed_key_value[key] = processed_key
+    #         processed_index_key[index] = processed_index
+    #         index += 1
             
-        # print(type(processed_index_key[0]))
-        return Types.HashMap(processed_key_value , processed_index_key) , None
+    #     # print(type(processed_index_key[0]))
+    #     return Types.HashMap(processed_key_value , processed_index_key) , None
 
     def CollectionAccessNode(self , node):
 
@@ -144,23 +144,23 @@ class Interpreter:
 
             return value , None
         
-        elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
+        # elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
             
-            if len(indexs) > 1:
-                return None , RunTimeError(self.file , "squig dose'nt support nested accessing of hashmap currently")
+        #     if len(indexs) > 1:
+        #         return None , RunTimeError(self.file , "squig dose'nt support nested accessing of hashmap currently")
             
-            if isinstance(indexs[0] , Types.Number):
+        #     if isinstance(indexs[0] , Types.Number):
 
-                key = self.global_symbol_table[variable].index_values.get(indexs[0].value , -1)
-                if key == -1:
-                    return None , RunTimeError(self.file , "Index out of range , while trying to accessing Map data.")
+        #         key = self.global_symbol_table[variable].index_values.get(indexs[0].value , -1)
+        #         if key == -1:
+        #             return None , RunTimeError(self.file , "Index out of range , while trying to accessing Map data.")
                
-                return  Types.Collection(filename=self.file , elements=[key , self.global_symbol_table[variable].key_values.get(key.value , None )]), None
+        #         return  Types.Collection(filename=self.file , elements=[key , self.global_symbol_table[variable].key_values.get(key.value , None )]), None
             
-            elif isinstance(indexs[0] , Types.String):
-                key = indexs[0].string
-                # print("it's string")
-                return self.global_symbol_table[variable].key_values.get(key , None ) , None
+        #     elif isinstance(indexs[0] , Types.String):
+        #         key = indexs[0].string
+        #         # print("it's string")
+        #         return self.global_symbol_table[variable].key_values.get(key , None ) , None
         # elif isinstance(self.global_symbol_table[variable] , Types.String):{
         #     if 
         # }
@@ -229,8 +229,8 @@ class Interpreter:
                     return file.content() , None
                 except:
                     return None , WrongFileOperationError(file=self.file , name="IOFileOperationError" , details=f"Performing unsupported operation for file '{self.global_symbol_table[variable].file_name}'.")
-            elif isinstance(self.global_symbol_table[variable] , Types.HashMap):
-                return self.global_symbol_table[variable] , None
+            # elif isinstance(self.global_symbol_table[variable] , Types.HashMap):
+            #     return self.global_symbol_table[variable] , None
             return self.global_symbol_table[variable] , None
         else:
             return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
@@ -590,6 +590,48 @@ class Interpreter:
         del self.global_symbol_table[file]
         return None , None
     
+    def PopNode(self , node):
+
+        print("Need to complete pop interpertor node")
+
+        variable = node.variable.value
+        local_symbol_table = self.global_symbol_table[variable].key_values
+
+        if variable not in self.global_symbol_table:
+            return None , RuntimeError(self.file , f"variable '{variable}' is undefined.")
+        
+        index , error = self.process(node.index)
+        if error:
+            return None , error
+        
+        if type(index) == Types.Number:
+            # if index.number >= len(local_symbol_table) or index.number < 0:
+            #     return None , RunTimeError(self.file , f"Access index out of range")
+            
+            # print(index.number)
+            print(self.global_symbol_table[variable].index_values)
+            status = local_symbol_table.pop(str(index.number) , -1)
+            
+            self.global_symbol_table[variable].index_values.pop(index.number , -1)
+            # print(self.global_symbol_table[variable].index_values)
+            if status != -1:
+                return status , None
+            return Types.Boolean("false") , None
+            
+            
+        elif type(index) == Types.String:
+            # print("index is a string")
+            status = local_symbol_table.pop(str(index.string) , -1)
+            if status == -1:
+                return Types.Boolean("false") , None
+            
+            return status , None
+
+        
+        # print(type(variable))
+
+        return None , None
+    
     def UseNode(self , node):
         module_name = node.name.string.value
         code = ""
@@ -643,15 +685,17 @@ class Interpreter:
             return None , error
 
         variable = node.variable.value
-        if variable not in self.global_symbol_table:
-            return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
-        
         variable_value = self.global_symbol_table[variable]
+
+        if len(node.index) > 1:
+            return None , RunTimeError(self.file , "Mutabel String cannot be accessed via '[][]'.")
+        
+        # if variable not in self.global_symbol_table and type(variable_value) == Types.HashMap:
+        #     return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
+        
         if type(variable_value).__name__ == "String":
             return None , RunTimeError(self.file , f"Cannot Manipulate Immutable string '{variable_value}' stored in variable '{variable}'.")
     
-        if len(node.index) > 1:
-            return None , RunTimeError(self.file , "Mutabel String cannot be accessed via '[][]'.")
         index  , error = self.process(node.index[0])
         # print(index.number)
         if error:
@@ -668,9 +712,12 @@ class Interpreter:
             if not value:
                 return None , RunTimeError(self.file , f"Manipulation Index out of range for MutableString '{variable_value.string}' stored in variable '{variable}'")
         
-        elif type(variable_value) == Types.HashMap:
-            # self.global_symbol_table[variable]
-            variable_value.key_values[index.string] = target_value
+        # elif type(variable_value) == Types.HashMap:
+        #     # self.global_symbol_table[variable]
+        #     length = variable_value.length
+        #     variable_value.index_values[length] = index.string
+        #     # print(variable_value.index_values)
+        #     variable_value.key_values[index.string] = target_value
             # print(target_value , variable_value.key_values[index.string] , type(index))
 
         # elif type(variable_value).__name__ == "Collection":

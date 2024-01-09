@@ -178,7 +178,7 @@ class Collection(BaseType):
         else:
             return Collection(filename=self.file,elements=self.elements + (collection,))  , None
 
-class Boolean:
+class  Boolean:
 
     def __init__(self,value):
 
@@ -556,8 +556,8 @@ class BuiltinFunction(BaseFunction):
         if isinstance(value , Collection):
             return Number(len(value.elements)) , None
         
-        if isinstance(value , HashMap):
-            return Number(len(value.key_values)) , None
+        # if isinstance(value , HashMap):
+        #     return Number(len(value.key_values)) , None
         
         if isinstance(value , MutableString):
             return Number(len(value.string)) , None
@@ -854,24 +854,26 @@ class File:
         self.file.close()
 
 
-class HashMap:
+# class HashMap:
 
-    def __init__(self , key_values , index_values):
+#     def __init__(self , key_values , index_values):
 
-        self.key_values = key_values
-        self.index_values = index_values
+#         self.key_values = key_values
+#         self.index_values = index_values
+#         self.length = len(self.key_values)
 
-    def __repr__(self):
+#     def __repr__(self):
 
-        formatted = "{ "
 
-        for key , value in self.key_values.items():
-            formatted += str(key) + " : " +  str(value) + " , "
+#         formatted = "{ "
+
+#         for key , value in self.key_values.items():
+#             formatted += str(key) + " : " +  str(value) + " , "
         
-
-        formatted = formatted[:-2].strip() +  " }"
+#         formatted = formatted[:-2].strip() +  " }"
         
-        return formatted
+#         return formatted if self.key_values else ''
+    
     
 class MutableString(BaseType):
 

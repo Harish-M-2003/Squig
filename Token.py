@@ -44,7 +44,7 @@ token_mutstring = "mutstring"
 keywords = ("if" , "else" , "elif", "function" ,
             "for","return", "break" ,"continue" , "let",
             "delete" , "type" , "use" , "log" , "file" , "close",
-            "default" , "case" , "switch", "true" , "false"
+            "default" , "case" , "switch", "true" , "false" , "pop",
             )
 
 class Token:
