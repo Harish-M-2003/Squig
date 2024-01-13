@@ -854,25 +854,26 @@ class File:
         self.file.close()
 
 
-# class HashMap:
+class HashMap:
 
-#     def __init__(self , key_values , index_values):
+    def __init__(self , key_values , index_values):
 
-#         self.key_values = key_values
-#         self.index_values = index_values
-#         self.length = len(self.key_values)
+        self.key_values = key_values
+        self.index_values = index_values
+        self.length = len(self.key_values)
 
-#     def __repr__(self):
+    def __repr__(self):
 
+        return f"{self.key_values}"
 
-#         formatted = "{ "
+        # formatted = "{ "
 
-#         for key , value in self.key_values.items():
-#             formatted += str(key) + " : " +  str(value) + " , "
+        # for key , value in self.key_values.items():
+        #     formatted += str(key) + " : " +  str(value) + " , "
         
-#         formatted = formatted[:-2].strip() +  " }"
+        # formatted = formatted[:-2].strip() +  " }"
         
-#         return formatted if self.key_values else ''
+        # return formatted if self.key_values else ''
     
     
 class MutableString(BaseType):

@@ -80,7 +80,7 @@ class Parser:
             self.next()
 
             expression , error = self.expression()
-
+            # print(expression , "in expression function")
             if error:
                 return None , error
 
@@ -324,13 +324,14 @@ class Parser:
             
 
             if self.current_token.type == token_ls:
-                # isHashmap = False
+                isHashmap = False
                 while self.current_token.type == token_ls:
                     self.next()
+                    if self.current_token.type == token_rs:
+                        return None , WrongSyntaxError(self.file , f"Expected a 'key' before ']' in variable '{variable}'.", position = self.current_token.position.copy_position() )
                     index , error = self.expression()
-                    # if type(index) == StringNode:
-                        # print("yeah")
-                        # isHashmap = True
+                    if type(index) == StringNode:
+                        isHashmap = True
                     if error:
                         return None , error
                         
@@ -350,8 +351,8 @@ class Parser:
                     # print(value , variable)
                     # print(type(value))
 
-                    # if isHashmap:
-                    #     return VariableManipulationNode(variable , indexs , value) , None
+                    if isHashmap:
+                        return VariableManipulationNode(variable , indexs , value) , None
                     
                     if type(value) == MutableStringNode:
                         # return VariableManipulationNode(variable , indexs , MutableStringNode(value)) , None
@@ -834,7 +835,7 @@ class Parser:
 
 
     def collection_statement(self):
-
+        # print("working")
         elements = ()
         first_element_type = None
         same_type = True
@@ -855,58 +856,62 @@ class Parser:
         
         first_element_type = type(element)
 
-        # if self.current_token.type == token_colon:
+        #Map Feature
+        if self.current_token.type == token_colon:
             
-        #     hashmap = HashMapNode()
+            hashmap = HashMapNode()
 
-        #     self.next()
-        #     value , error = self.expression()
-        #     if error:
-        #         return None , error
+            self.next()
+            value , error = self.expression()
+            if error:
+                return None , error
                         
-        #     hashmap.key_value[element.string.value] = value
-        #     hashmap.index_key[len(hashmap.key_value) - 1] = element
+            hashmap.key_value[element.string.value] = value
+            hashmap.index_key.append(element.string.value)
+            while self.current_token.type == token_comma:
 
-        #     while self.current_token.type == token_comma:
-
-        #         self.next()
+                self.next()
                  
         #         # print("it working" , self.current_token.type)
-        #         while self.current_token.type == token_newline:
-        #             self.next()
+                while self.current_token.type == token_newline:
+                    self.next()
 
-        #         if self.current_token.type == token_rb:
-        #             break
+                if self.current_token.type == token_rb:
+                    break
 
-        #         while self.current_token.type == token_newline:
-        #             self.next()
-        #         key , error = self.expression()
+                while self.current_token.type == token_newline:
+                    self.next()
+                key , error = self.expression()
 
-        #         if error:
-        #             return None , error
+                if error:
+                    return None , error
                 
-        #         if self.current_token.type != token_colon:
-        #             return None , WrongSyntaxError(self.file , "Expected a ':' in hashmap declaration.")
+                if self.current_token.type != token_colon:
+                    return None , WrongSyntaxError(self.file , "Expected a ':' in hashmap declaration.")
                 
-        #         self.next()
-        #         value , error = self.expression()
-        #         if error:
-        #             return None , error
+                self.next()
+
+                value , error = self.expression()
+                if error:
+                    return None , error
                 
-        #         hashmap.key_value[key.string.value] = value
-        #         hashmap.index_key[len(hashmap.key_value) - 1] = key
+                # print("workigng" , value.string.value)
+                # print(hashmap.index_key , hashmap.key_value , type(value) , type(key))
 
-        #         # print(self.current_token.type)
+                hashmap.key_value[key.string.value] = value
+                hashmap.index_key.append(key.string.value)
+                # print(hashmap.index_key)
 
 
-        #     while self.current_token.type == token_newline:
-        #         self.next()
 
-        #     if self.current_token.type != token_rb:
-        #         return None , WrongSyntaxError(self.file , "Expected a '}' in hashmap declaration.")
-        #     self.next()
+            while self.current_token.type == token_newline:
+                self.next()
 
-        #     return hashmap , None
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a '}' in hashmap declaration.")
+            self.next()
+
+            return hashmap , None
             
         elements += (element ,)
             

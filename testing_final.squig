@@ -1,12 +1,14 @@
-let google : {0}
+let google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
 
-log type google[0] 
+log google[0]
 
-let string : `tosting`
+#log type google[0] 
 
-string[1] : `e`
+#let string : `tosting`
 
-log string
+#string[1] : `e`
+
+#log string
 
 #log length{google}
 #log length{google}

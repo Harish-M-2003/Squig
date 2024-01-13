@@ -276,16 +276,16 @@ class SwitchNode:
 
         return f"SwitchNode({self.condition} , {self.cases})"
 
-# class HashMapNode:
+class HashMapNode:
 
-#     def __init__(self):
+    def __init__(self):
 
-#         self.key_value = {}
-#         self.index_key = {}
+        self.key_value = {}
+        self.index_key = []
 
-#     def __repr__(self):
+    def __repr__(self):
 
-#         return f"{self.key_value}".replace(')','}').replace('(','{')
+        return f"{self.key_value}".replace(')','}').replace('(','{')
 
 class MutableStringNode:
 
