@@ -309,9 +309,9 @@ class VariableManipulationNode:
 
         return f"VariableManipulationNode({self.variable , self.index , self.value})"
     
-# class PopNode:
+class PopNode:
 
-#     def __init__(self , variable , index = None):
+    def __init__(self , variable , index = None):
 
-#         self.variable = variable
-#         self.index = index
+        self.variable = variable
+        self.index = index

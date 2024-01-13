@@ -1,6 +1,22 @@
-let google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
+google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
 
-log google[0]
+#log google[1]
+#let v :  pop google["test"]
+#log v + "test"
+#log google
+
+#google[2] : "example"
+#log google
+#google["test"] : "asdkjnasd"
+#log google
+google["c"] : "harish"
+log length{google}
+#log google["c"]
+#log google["a"]
+#google["example1"] : "sdasdasdads"
+#log google
+
+
 
 #log type google[0] 
 

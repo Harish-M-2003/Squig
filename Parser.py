@@ -324,14 +324,14 @@ class Parser:
             
 
             if self.current_token.type == token_ls:
-                isHashmap = False
+                # isHashmap = False
                 while self.current_token.type == token_ls:
                     self.next()
                     if self.current_token.type == token_rs:
                         return None , WrongSyntaxError(self.file , f"Expected a 'key' before ']' in variable '{variable}'.", position = self.current_token.position.copy_position() )
                     index , error = self.expression()
-                    if type(index) == StringNode:
-                        isHashmap = True
+                    # if type(index) == StringNode:
+                    #     isHashmap = True
                     if error:
                         return None , error
                         
@@ -339,6 +339,8 @@ class Parser:
                         return None , WrongSyntaxError(self.file , f"Expected a ']' in variable '{variable}'.", position = self.current_token.position.copy_position() )
                     self.next()
                     indexs.append(index)
+                    # print(isHashmap)cls
+
 
                 if self.current_token.type == token_colon:
                     self.next()
@@ -351,14 +353,15 @@ class Parser:
                     # print(value , variable)
                     # print(type(value))
 
-                    if isHashmap:
-                        return VariableManipulationNode(variable , indexs , value) , None
+                    # if isHashmap:
+                    # print("working")
+                    return VariableManipulationNode(variable , indexs , value) , None
                     
-                    if type(value) == MutableStringNode:
+                    # if type(value) == MutableStringNode:
                         # return VariableManipulationNode(variable , indexs , MutableStringNode(value)) , None
-                        return VariableManipulationNode(variable , indexs , value) , None
-                    else:
-                        return None , RunTimeError(self.file , "Trying to Manipulate Unsupported types")
+                        # return VariableManipulationNode(variable , indexs , value) , None
+                    # else:
+                        # return None , RunTimeError(self.file , "Trying to Manipulate Unsupported types")
                         # return VariableManipulationNode(variable , indexs , StringNode(value)) , None
                         # return VariableManipulationNode(variable , indexs , value) , None
                     
@@ -478,27 +481,34 @@ class Parser:
             
             return switchNode , None
         
-        # elif self.current_token.type == token_keyword and self.current_token.value == "pop":
-        #     self.next()
-        #     if self.current_token.type != token_variable:
-        #         return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.", position = self.current_token.position.copy_position() )
-        #     variable = self.current_token
-        #     self.next()
-        #     if self.current_token.type == token_ls:
+        elif self.current_token.type == token_keyword and self.current_token.value == "pop":
+            self.next()
+            if self.current_token.type != token_variable:
+                return None , WrongSyntaxError(self.file , "Expected a variable but got an expression.", position = self.current_token.position.copy_position() )
+            
+            variable = self.current_token
+            acessNode , error = self.expression()
+            if error:
+                return None , error
+            
+            return PopNode(variable=variable , index =acessNode )  , None
+            # variable = self.current_token
+            # self.next()
+            # if self.current_token.type == token_ls:
         #         self.next()
-        #         if self.current_token.type != token_int and  self.current_token.type != token_string:
-        #             return None , RunTimeError(self.file , "Expected a 'index' or 'string' as key but got unexpected key type.")
-        #         index  , error = self.expression()
+                # if self.current_token.type != token_int and  self.current_token.type != token_string:
+                #     return None , RunTimeError(self.file , "Expected a 'index' or 'string' as key but got unexpected key type.")
+                # index  , error = self.expression()
         #         # print("index" , index)
-        #         if error:
-        #             return None , error
+                # if error:
+                #     return None , error
                 
-        #         if self.current_token.type != token_rs:
-        #             return None , WrongSyntaxError(self.file , "Expected a ']' in pop statement.", position = self.current_token.position.copy_position() )
+                # if self.current_token.type != token_rs:
+                #     return None , WrongSyntaxError(self.file , "Expected a ']' in pop statement.", position = self.current_token.position.copy_position() )
                 
-        #         self.next()
+                # self.next()
 
-        #         return PopNode(variable=variable , index = index ) , None
+                # return PopNode(variable=variable , index = index ) , None
             
         #     return PopNode(variable=variable) , None
     

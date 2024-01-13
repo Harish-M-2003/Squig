@@ -602,19 +602,37 @@ class Interpreter:
         del self.global_symbol_table[file]
         return None , None
     
-    # def PopNode(self , node):
+    def PopNode(self , node):
 
-    #     print("Need to complete pop interpertor node")
+        # print("Need to complete pop interpertor node")
 
-    #     variable = node.variable.value
-    #     local_symbol_table = self.global_symbol_table[variable].key_values
+        variable = node.variable.value
+        # local_symbol_table = self.global_symbol_table[variable].key_values
 
-    #     if variable not in self.global_symbol_table:
-    #         return None , RuntimeError(self.file , f"variable '{variable}' is undefined.")
+        if variable not in self.global_symbol_table:
+            return None , RuntimeError(self.file , f"variable '{variable}' is undefined.")
         
-    #     index , error = self.process(node.index)
-    #     if error:
-    #         return None , error
+        # print(self.global_symbol_table[variable] , node.index.index , "in Pop Node")
+        # print(type(node.index.index[0]) , node.index.index)
+        index , error = self.process(node.index.index[0])
+        if error:
+            return None , error
+        
+        hashmap = self.global_symbol_table[variable]
+        if type(index) == Types.String:
+            hashmap.index_values.remove(index.string)
+            return hashmap.key_values.pop(index.string) , None
+        
+        elif type(index) == Types.Number:
+            key = hashmap.index_values[index.number]
+            del hashmap.index_values[index.number]
+            # print(hashmap.key_values , hashmap.index_values)
+            # print(type(key))
+            return hashmap.key_values.pop(key) , None
+            
+            
+        
+        # print(type(index) , "in pop")
         
     #     if type(index) == Types.Number:
     #         # if index.number >= len(local_symbol_table) or index.number < 0:
@@ -693,11 +711,14 @@ class Interpreter:
     def VariableManipulationNode(self , node):
         # print("yeah" , type(node.value) , node.index)
         target_value , error = self.process(node.value)
+        # print(type(target_value))
         if error:
             return None , error
 
         variable = node.variable.value
         variable_value = self.global_symbol_table[variable]
+
+        # print(variable_value , variable)
 
         if len(node.index) > 1:
             return None , RunTimeError(self.file , "Mutabel String cannot be accessed via '[][]'.")
@@ -707,7 +728,8 @@ class Interpreter:
         
         if type(variable_value).__name__ == "String":
             return None , RunTimeError(self.file , f"Cannot Manipulate Immutable string '{variable_value}' stored in variable '{variable}'.")
-    
+        
+        # print(node.index , "node.index")
         index  , error = self.process(node.index[0])
         # print(index.number)
         if error:
@@ -724,13 +746,28 @@ class Interpreter:
             if not value:
                 return None , RunTimeError(self.file , f"Manipulation Index out of range for MutableString '{variable_value.string}' stored in variable '{variable}'")
         
-        # elif type(variable_value) == Types.HashMap:
-        
-        #     # self.global_symbol_table[variable]
-        #     length = variable_value.length
-        #     variable_value.index_values[length] = index.string
+        elif type(variable_value) == Types.HashMap:
+            # self.global_symbol_table[variable]
+            # length = variable_value.length
+            # variable_value.index_values[length] = index.string
+            
+            if type(index) == Types.Number:
+                if index.number > len(variable_value.key_values):
+                    return None , RunTimeError(self.file , "Index out of range in 'Map' datatype.")
+                # if index.number < 0:
+                #     return None , RunTimeError(self.file , "Negative indexing is not supported in 'Map' datatype.")
+                key = variable_value.index_values[index.number]
+                variable_value.key_values[key] = target_value
+
+            elif type(index) == Types.String:
+                # print(index.string , "inex")
+                variable_value.key_values[index.string] = target_value
+                if index.string not in variable_value.index_values:
+                    variable_value.index_values.append(index.string)
+                # print(variable_value.index_values , variable_value.key_values)
+                    return None , None
         #     # print(variable_value.index_values)
-        #     variable_value.key_values[index.string] = target_value
+            # variable_value.key_values[index.string] = target_value
             # print(target_value , variable_value.key_values[index.string] , type(index))
 
         # elif type(variable_value).__name__ == "Collection":

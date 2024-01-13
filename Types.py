@@ -556,8 +556,8 @@ class BuiltinFunction(BaseFunction):
         if isinstance(value , Collection):
             return Number(len(value.elements)) , None
         
-        # if isinstance(value , HashMap):
-        #     return Number(len(value.key_values)) , None
+        if isinstance(value , HashMap):
+            return Number(len(value.key_values)) , None
         
         if isinstance(value , MutableString):
             return Number(len(value.string)) , None
