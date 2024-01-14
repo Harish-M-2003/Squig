@@ -394,9 +394,17 @@ class Parser:
 
             if error:
                 return None , error
-            # return expression , None
 
-            return ShowNode(expression)  , None
+            expressions = [expression]
+            
+            while self.current_token.type == token_comma:
+                self.next()
+                line , error = self.expression()
+                if error:
+                    return None , error
+                expressions.append(line)
+                
+            return ShowNode(expressions)  , None
         
         elif self.current_token.type == token_keyword and self.current_token.value == "file":
             
@@ -409,7 +417,6 @@ class Parser:
             # return FileNode(filename , "r") , None # need to get input from squig for the file mode.
             
             file , error = self.file_statement()
-            # print(type(file.mode.string))
             if error:
                 return None , error
             

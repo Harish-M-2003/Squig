@@ -16,13 +16,24 @@ class Interpreter:
     def ShowNode(self , node):
         # print(self.process(node.statement))
         # print(type(node.statement))
-        statement , error = self.process(node.statement)
+        # statement , error = self.process(node.statement)
+        # print("working")
+        # print("in interpretor" , node.statement)
+        # print(node.statement)
+        lines = []
+        for statement in node.statement:
+            line ,error = self.process(statement)
+            if error:
+                return None , error
+            lines.append(line)
+        # print(lines)
+        # print(*lines)
         # print(self.process(node.statement))
         
-        if error:
-            return None , error
+        # if error:
+        #     return None , error
         
-        print(statement)
+        print(*lines)
         return None , None
     
     def StringNode(self , node):

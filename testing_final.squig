@@ -1,5 +1,5 @@
 google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
-
+name : "harish"
 #log google[1]
 #let v :  pop google["test"]
 #log v + "test"
@@ -10,7 +10,11 @@ google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
 #google["test"] : "asdkjnasd"
 #log google
 google["c"] : "harish"
-log length{google}
+log length{google} , google , google 
+log name
+
+log "Welcome back" , type name
+
 #log google["c"]
 #log google["a"]
 #google["example1"] : "sdasdasdads"
