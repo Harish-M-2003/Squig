@@ -1,19 +1,32 @@
-google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
-name : "harish"
+let google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
+
+#name : "harish"
+values : {"harish" , "shinchan" , 1 , 5}
+
 #log google[1]
+
+google : "harish"
+
 #let v :  pop google["test"]
+
 #log v + "test"
+
 #log google
 
 #google[2] : "example"
+
 #log google
 #google["test"] : "asdkjnasd"
 #log google
-google["c"] : "harish"
-log length{google} , google , google 
-log name
 
-log "Welcome back" , type name
+let name : "harish"
+
+#values[-1] : 10
+#log values
+#log pop values[1]
+#log values
+
+#log "Welcome back" , type name
 
 #log google["c"]
 #log google["a"]

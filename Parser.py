@@ -355,6 +355,7 @@ class Parser:
 
                     # if isHashmap:
                     # print("working")
+
                     return VariableManipulationNode(variable , indexs , value) , None
                     
                     # if type(value) == MutableStringNode:
@@ -930,7 +931,7 @@ class Parser:
 
             return hashmap , None
             
-        elements += (element ,)
+        elements += (element,)
             
         while self.current_token.type == token_comma:
             self.next()
@@ -951,6 +952,7 @@ class Parser:
         if self.current_token.type != token_rb:
             return None , WrongSyntaxError(self.file , "Expected a '}' in 'collection statement'.", position = self.current_token.position.copy_position() )
         self.next()
+        # print(type(elements))
         return CollectionNode(elements) , None
     
 

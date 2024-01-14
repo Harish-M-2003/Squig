@@ -90,13 +90,13 @@ class Interpreter:
 
         elements = node.elements
         
-        processed_elements = ()
+        processed_elements = []
 
         for every_element in elements:
             element , error = self.process(every_element)
             if error:
                 return None , error
-            processed_elements += (element , )
+            processed_elements.append(element)
 
         return Types.Collection(filename=self.file,elements=processed_elements) , None
     
@@ -629,17 +629,30 @@ class Interpreter:
         if error:
             return None , error
         
-        hashmap = self.global_symbol_table[variable]
-        if type(index) == Types.String:
-            hashmap.index_values.remove(index.string)
-            return hashmap.key_values.pop(index.string) , None
+        datastructure = self.global_symbol_table[variable]
+
+        if type(datastructure) == Types.HashMap and type(index) == Types.String:
+            datastructure.index_values.remove(index.string)
+            return datastructure.key_values.pop(index.string) , None
         
-        elif type(index) == Types.Number:
-            key = hashmap.index_values[index.number]
-            del hashmap.index_values[index.number]
+        elif type(datastructure) == Types.HashMap and  type(index) == Types.Number:
+
+            key = datastructure.index_values[index.number]
+            del datastructure.index_values[index.number]
             # print(hashmap.key_values , hashmap.index_values)
             # print(type(key))
-            return hashmap.key_values.pop(key) , None
+            return datastructure.key_values.pop(key) , None
+        
+        elif type(datastructure) == Types.Collection and type(index) == Types.Number:
+
+            if index.number >= len(datastructure.elements):
+                return None, RunTimeError(self.file , "Index out of range , in pop statemtent.")
+            
+            value = datastructure.elements[index.number]
+            del datastructure.elements[index.number]
+            
+            return value , None
+        
             
             
         
@@ -781,8 +794,12 @@ class Interpreter:
             # variable_value.key_values[index.string] = target_value
             # print(target_value , variable_value.key_values[index.string] , type(index))
 
-        # elif type(variable_value).__name__ == "Collection":
-            
+        elif type(variable_value) == Types.Collection:
+            # print(type(variable_value.elements) , variable_value)
+            # if type(variable_value.elements).__name__ == 'tuple':
+            #     print("it's array")
+            # else: 
+            variable_value.elements[index.number] = target_value
         #     if error:
         #         return None , error
                 
