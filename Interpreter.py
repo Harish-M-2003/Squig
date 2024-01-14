@@ -14,18 +14,21 @@ class Interpreter:
         return method(node)
     
     def ShowNode(self , node):
+
         # print(self.process(node.statement))
         # print(type(node.statement))
         # statement , error = self.process(node.statement)
         # print("working")
         # print("in interpretor" , node.statement)
         # print(node.statement)
+
         lines = []
         for statement in node.statement:
             line ,error = self.process(statement)
             if error:
                 return None , error
             lines.append(line)
+        
         # print(lines)
         # print(*lines)
         # print(self.process(node.statement))
@@ -653,9 +656,15 @@ class Interpreter:
             
             return value , None
         
+        elif type(datastructure) == Types.MutableString and type(index) == Types.Number:
+
+            if index.number >= len(datastructure.mut_string):
+                
+                return None, RunTimeError(self.file , "Index out of range , in pop statemtent.")
             
-            
-        
+            value =  datastructure.remove(index.number)
+            return value , None
+
         # print(type(index) , "in pop")
         
     #     if type(index) == Types.Number:

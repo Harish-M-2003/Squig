@@ -3,24 +3,30 @@ findLetter function {string , target , index} : {
     # This is a muti-line statement function
     # This is a function which checks does the given string containes the target character in it or not.
 
-    if {index >= length{string}}:{ # This is a if statement
+    if {index >= length{string}} : { # This is a if statement
         log "not found";
     } 
+
     elif {string[index] = target } : { # This is a elif statement
-        log "found";
+        log "found"
     } 
+    
     else : {
         findLetter{string , target ,  index + 1};
     }
 
 }
 
-let string : `it a mutable string.`
 
-string[0] : `I`
-string[2] : `!!!`
-log string
-log pop string[1]
+
+#let string : `it a mutable string.`
+#string[0] : `I`
+#string[2] : `!!!`
+#log string , length{string}
+
+#log type pop string[0]
+#log string , length{string}
+
 findLetter{"Squig" , "q" , 0}
 
 #let v :  pop google["test"]

@@ -854,13 +854,24 @@ class File:
         self.file.close()
 
 
-class HashMap:
+class HashMap(BaseType):
+
+    """
+        The 'HashMap' or 'Map' is a ordered datatype which stores key , value paris. 
+        In "HashMap" or "Map" we can create , update and delete (key , value) pairs either by key or index.
+        since the "Map" is a ordered pair , their values can be accessed either by key or index.
+
+        feature idea : Mohan Dass.
+    """
+
+    
 
     def __init__(self , key_values , index_values):
 
         self.key_values = key_values
         self.index_values = index_values
         self.length = len(self.key_values)
+        super().__init__("Map" , self.key_values)
 
     def __repr__(self):
 
@@ -878,20 +889,42 @@ class HashMap:
     
 class MutableString(BaseType):
 
+    # Use self.mut_string property for any processing in MutableString
+    # Need to Change the implementation from list to linkedlist
+    # since self.mut_string is list , it takes O(n) time complexity to remove the first item.
+    # because of the shifting of elements in the list when new letter is added or on existing letter is poped.
+    # to overcome this , we can use linkedlist which would be a better choice.
+
+    """
+        The 'Mutable string' is a string datatype in which we can create , update and 
+        remove letters or words from a Mutable string. 
+        
+        In otherwords , it's a mutable string datatype (i.e) it values can be changed at runtime.
+
+        feature idea : Mohan Dass
+    """
+
     def __init__(self , string):
 
         self.string = string
         self.mut_string = [char for char in string]
+
     
     def __repr__(self):
 
         return f"{self.string}"
 
     def include(self , index , char):
+
+        """
+            The 'include' method is used to add a letter in the mutable string ,
+            it takes the index and letter as parameter for processing the mutable string.
+
+        """
+
         if  index < len(self.mut_string) and index >= 0:
             self.mut_string[index] = char
-            # print(type(self.mut_string) , self.mut_string)
-            self.string = "".join(self.mut_string)
+            self.string = MutableString("".join(self.mut_string))
         else:
             return None , None  # Need to handle this
         
@@ -899,6 +932,21 @@ class MutableString(BaseType):
     
 
     def remove(self , index):
-        pass
+        
+        """
+            The 'remove' pop the specified letter at the index in the mutable string.
+            Once the letter is pop from the self.mut_string property , the string property get
+            updated to reflect the changes in the language.
+        """
+
+        value = self.mut_string[index]
+
+        del self.mut_string[index]
+        self.string = MutableString("".join(self.mut_string))
+        return value
+    
+    def __len__(self):
+
+        return len(self.mut_string)
     
     
