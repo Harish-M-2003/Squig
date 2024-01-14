@@ -153,7 +153,7 @@ class Collection(BaseType):
 
     def __repr__(self):
 
-        return f"{self.elements}".replace('(','{').replace(')','}')
+        return f"{self.elements}".replace('[','{ ').replace(']',' }')
 
 
     def index(self,index):

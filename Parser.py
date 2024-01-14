@@ -932,14 +932,26 @@ class Parser:
             return hashmap , None
             
         elements += (element,)
-            
-        while self.current_token.type == token_comma:
+        
+        while self.current_token.type == token_newline:
             self.next()
+
+        while self.current_token.type == token_comma:
+
+            if self.current_token.type == token_comma :
+                # print(self.current_token , elements)
+                self.next()
+            while self.current_token.type == token_newline:
+                self.next()
+
+
             element , error = self.expression()
             if error:
                 return None , error
             
             elements += (element , )
+            while self.current_token.type == token_newline:
+                self.next()
 
         for element in elements[1:]:
             if type(element) != first_element_type:
@@ -948,6 +960,9 @@ class Parser:
 
         if same_type:
             elements = np.array(elements)
+
+        while self.current_token.type == token_newline:
+            self.next()
 
         if self.current_token.type != token_rb:
             return None , WrongSyntaxError(self.file , "Expected a '}' in 'collection statement'.", position = self.current_token.position.copy_position() )

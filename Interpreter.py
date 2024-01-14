@@ -859,7 +859,7 @@ class Interpreter:
 if __name__ == "__main__":
 
     file = "<Core>"
-    import os
+    import os , sys
 
 
     symbol_table = {
@@ -912,6 +912,12 @@ if __name__ == "__main__":
     while True:
 
         try:
+            # file = sys.argv[-1]
+
+            # if not file.endswith(".squig"):
+            #      print(f"File : '{file[:file.find('.')]}' is not a squig file.")
+            #      break
+            # code = open(file).read()
             code = open("testing_final.squig").read()
             # code = input("squig >") 
             code = code.strip()

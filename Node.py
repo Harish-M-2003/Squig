@@ -103,7 +103,7 @@ class CollectionNode:
 
     def __repr__(self):
 
-        return f"{self.elements}".replace(')','}').replace('(','{')
+        return f"{self.elements}".replace(']','}').replace('(','[')
 
 
 

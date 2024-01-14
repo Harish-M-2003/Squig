@@ -1,11 +1,27 @@
-let google : {"a" : 1 , "b" : 2 , "test" : "harishsisf"}
+findLetter function {string , target , index} : {
 
-#name : "harish"
-values : {"harish" , "shinchan" , 1 , 5}
+    # This is a muti-line statement function
+    # This is a function which checks does the given string containes the target character in it or not.
 
-#log google[1]
+    if {index >= length{string}}:{ # This is a if statement
+        log "not found";
+    } 
+    elif {string[index] = target } : { # This is a elif statement
+        log "found";
+    } 
+    else : {
+        findLetter{string , target ,  index + 1};
+    }
 
-google : "harish"
+}
+
+let string : `it a mutable string.`
+
+string[0] : `I`
+string[2] : `!!!`
+log string
+log pop string[1]
+findLetter{"Squig" , "q" , 0}
 
 #let v :  pop google["test"]
 
@@ -19,7 +35,7 @@ google : "harish"
 #google["test"] : "asdkjnasd"
 #log google
 
-let name : "harish"
+# let name : "harish"
 
 #values[-1] : 10
 #log values
