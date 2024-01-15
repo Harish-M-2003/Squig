@@ -944,7 +944,7 @@ if __name__ == "__main__":
             continue
         lexer = Lexer(file , code)
         tokens , error = lexer.tokenize()
-    
+
         if error:
             print(error.print())
             break

@@ -32,13 +32,15 @@ class Parser:
             return None , Error(self.file , "Check in parse function in parser" , "Somthing went worng in the programm" )
     
     def statements(self):
+        statements = []
+        
 
         while self.current_token.type == token_newline:
             self.next()
+
         if self.current_token.type == token_eof:
             return CollectionNode(elements=statements) , None
         
-        statements = []
         
         statement,  error = self.expression()
         if error:
