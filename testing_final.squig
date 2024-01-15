@@ -1,21 +1,21 @@
-findLetter function {string , target , index} : {
+#findLetter function {string , target , index} : {
 
     # This is a muti-line statement function
     # This is a function which checks does the given string containes the target character in it or not.
 
-    if {index >= length{string}} : { # This is a if statement
-        log "not found";
-    } 
+    #if {index >= length{string}} : { # This is a if statement
+    #    log "not found";
+    #} 
 
-    elif {string[index] = target } : { # This is a elif statement
-        log "found"
-    } 
+    #elif {string[index] = target } : { # This is a elif statement
+    #    log "found"
+    #} 
     
-    else : {
-        findLetter{string , target ,  index + 1};
-    }
+    #else : {
+    #    findLetter{string , target ,  index + 1};
+    #}
 
-}
+#}
 
 
 
@@ -27,7 +27,7 @@ findLetter function {string , target , index} : {
 #log type pop string[0]
 #log string , length{string}
 
-findLetter{"Squig" , "q" , 0}
+#findLetter{"Squig" , "q" , 0}
 
 #let v :  pop google["test"]
 
