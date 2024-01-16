@@ -55,39 +55,95 @@ class Interpreter:
         left , error = self.process(node.left)
         if error:
             return None , error
+        
         operator = node.operator.type
+
         right , error = self.process(node.right)
+        error_message = f"operation cannot be performed between Types {type(left).__name__} and  {type(right).__name__}."
+
         if error:
             return None , error
 
         if operator == token_plus:
-            return left.add(right)
+            try:
+                return left.add(right)
+            except :
+                return None , RunTimeError(self.file , f"Addition {error_message}")
+        
         elif operator == token_minus:
-            return left.sub(right)
+            try:
+                return left.sub(right)
+            except :
+                return None , RunTimeError(self.file , f"Subtraction {error_message}")
+            
         elif operator == token_mul:
-            return left.mul(right)
+            try:
+                return left.mul(right)
+            except :
+                return None , RunTimeError(self.file , f"Multiplication {error_message}")
+            
         elif operator == token_modulo:
-            return left.modulo(right)
+            try:
+                return left.modulo(right)
+            except :
+                return None , RunTimeError(self.file , f"Modulo {error_message}")
         elif operator == token_divide:
-            return left.div(right)
+            try:
+                return left.div(right)
+            except :
+                return None , RunTimeError(self.file , f"Division {error_message}")
+        
         elif operator == token_power:
-            return left.pow(right)
+            try:
+                return left.pow(right)
+            except :
+                return None , RunTimeError(self.file , f"Exponentiation {error_message}")
         elif operator == token_lt:
-            return left.lt(right)
+            try:
+                return left.lt(right)
+            except :
+                return None , RunTimeError(self.file , f"'<' {error_message}")
         elif operator == token_gt:
-            return left.gt(right)
+
+            try:
+                return left.gt(right)
+            except :
+                return None , RunTimeError(self.file , f"'>' {error_message}")
         elif operator == token_lte:
-            return left.lte(right)
+            try:
+                return left.lte(right)
+            except :
+                return None , RunTimeError(self.file , f"'<=' {error_message}")
         elif operator == token_gte:
-            return left.gte(right)
+            try:
+                return left.gte(right)
+            except :
+                return None , RunTimeError(self.file , f" '>=' {error_message}")
+        
         elif operator == token_eql:
-            return left.eql(right)
+            try:
+                return left.eql(right)
+            except :
+                return None , RunTimeError(self.file , f"'=' {error_message}")
+        
         elif operator == token_ne:
-            return left.ne(right)
+            try:
+                return left.ne(right)
+            except :
+                return None , RunTimeError(self.file , f"'!=' {error_message}")
+        
         elif operator == token_and:
-            return left._and_(right)
+            try:
+                return left._and_(right)
+            except :
+                return None , RunTimeError(self.file , f"'&' {error_message}")
+        
         elif operator == token_or:
-            return left._or_(right)
+            try:
+                return left._or_(right)
+            except :
+                return None , RunTimeError(self.file , f"'|' {error_message}")
+        
 
     def CollectionNode(self , node):
 
@@ -760,7 +816,7 @@ class Interpreter:
         #     return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
         
         if type(variable_value).__name__ == "String":
-            return None , RunTimeError(self.file , f"Cannot Manipulate Immutable string '{variable_value}' stored in variable '{variable}'.")
+            return None , RunTimeError(self.file , f"'{variable}' is a immutable string which cannot be modified.")
         
         # print(node.index , "node.index")
         index  , error = self.process(node.index[0])

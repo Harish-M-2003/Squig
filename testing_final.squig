@@ -1,3 +1,23 @@
+
+#let a : 10
+#let b : 90
+
+let name : "Shinchan"
+
+let name[0] : 10
+
+#log "basic operation"
+
+#log 1 + 2
+#log 1/2
+#log 1/1
+#log 22%2
+
+#log 4 - 9.5
+
+#log "l" + 5
+#log 5 % "l"
+#log  "google" - "shinchan"
 #findLetter function {string , target , index} : {
 
     # This is a muti-line statement function

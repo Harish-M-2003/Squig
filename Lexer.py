@@ -276,6 +276,9 @@ class Lexer:
             elif self.current_char == '/':
                 tokens.append(Token(token_divide,token_position=self.position.copy_position()))
                 self.next()
+                if self.current_char == '/':
+                    return None , InvalidLiteral(self.file,f"Unexpected Literal '//'.", position = self.position.copy_position() )
+
 
             elif self.current_char == '<':
                 operator , error = self.tokenize_lesser_or_lesserThanEqual()
