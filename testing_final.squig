@@ -23,8 +23,23 @@ n2 : 5;
 #s1 : ""
 #s2 : "string"
 
-s1 : `string`
-s2 : `string`
+#s1 : `string`
+#s2 : `string`
+
+s1 : {1,2,4}
+s2 : {2,4}
+
+if {"harish" = "harish"} : {
+    log "lo"
+} else : {
+    log "working"
+}
+
+greet function {name} : {
+    log "welcome" , name
+}
+
+greet{"harish"}
 
 
 log s1 > s2
@@ -43,35 +58,34 @@ log n1 * n2
 log n1 ** n2
 log n1 % s2
 
-#log n1 + s1 works
-#log n1 - s1 works
-#log n1 * s1 works
-#log n1 / s1 works
-#log n1 ** s1 works
+# log n1 + s1 works
+# log n1 - s1 works
+# log n1 * s1 works
+# log n1 / s1 works
+# log n1 ** s1 works
 
-
-#log s1 + n1 
-#log s1 - n2
-#log s1 * n2
-#log s1 / n2
-#log s1 ** n2 
+# log s1 + n1 
+# log s1 - n2
+# log s1 * n2
+# log s1 / n2
+# log s1 ** n2 
 # everything works
 
-#greet{"shinchan" , 5};
+# greet{"shinchan" , 5};
 
-#log "basic operation"
+# log "basic operation"
 
-#log 1 + 2
-#log 1/2
-#log 1/1
-#log 22%2
+# log 1 + 2
+# log 1/2
+# log 1/1
+# log 22%2
 
-#log 4 - 9.5
+# log 4 - 9.5
 
-#log "l" + 5
-#log 5 % "l"
-#log  "google" - "shinchan"
-#findLetter function {string , target , index} : {
+# log "l" + 5
+# log 5 % "l"
+# log  "google" - "shinchan"
+# findLetter function {string , target , index} : {
 
     # This is a muti-line statement function
     # This is a function which checks does the given string containes the target character in it or not.

@@ -198,12 +198,12 @@ class Lexer:
 
         while self.current_char != None:
 
-            if self.current_char in ' \t':
+            if self.current_char in ' \t\n;':
                 self.next()
 
-            elif self.current_char in ';\n':
-                tokens.append(Token(token_type=token_newline , token_position=self.position.copy_position()))
-                self.next()
+            # elif self.current_char in ';\n':
+                # tokens.append(Token(token_type=token_newline , token_position=self.position.copy_position()))
+                # self.next()
 
             elif self.current_char == '"':
                 string , error = self.tokenize_string()

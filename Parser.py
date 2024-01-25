@@ -35,8 +35,8 @@ class Parser:
         statements = []
         
 
-        while self.current_token.type == token_newline:
-            self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
 
         if self.current_token.type == token_eof:
             return CollectionNode(elements=statements) , None
@@ -49,8 +49,8 @@ class Parser:
         statements.append(statement)
 
         while self.current_token.type != token_eof:
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
             if self.current_token.type == token_eof:
                 break
             
@@ -544,14 +544,14 @@ class Parser:
 
         case_conditions = {}
 
-        while self.current_token.type == token_newline:
-                self.next()
+        # while self.current_token.type == token_newline:
+        #         self.next()
 
         while self.current_token.type == token_keyword and self.current_token.value == "case":
             # print("checking")
             self.next()
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
             case_condition = str(self.current_token.value)
             # if error:
             #     return None , error
@@ -573,15 +573,15 @@ class Parser:
             if error:
                 return None , error
             
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
 
             
             
             case_conditions[case_condition] = case_body
 
-        while self.current_token.type == token_newline:
-            self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
 
         if self.current_token.type != token_keyword and self.current_token.value != "default":
             
@@ -674,8 +674,8 @@ class Parser:
 
         if self.current_token.type == token_lb:
             self.next()
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
             statement , error = self.statements()
 
             if error:
@@ -731,8 +731,8 @@ class Parser:
 
         if self.current_token.type == token_lb:
             self.next()
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
             statement , error = self.statements()
             # print("it's  a newline statement" , self.current_token)
             if error:
@@ -769,7 +769,13 @@ class Parser:
             return None ,  WrongSyntaxError(self.file , "Expected a '{' after the 'if' keyword.", position = self.current_token.position.copy_position() )
 
         self.next()
+        
+        # while self.current_token.type == token_newline:
+        #     self.next()
         condition ,  error = self.expression()
+        
+        # while self.current_token.type == token_newline:
+        #     self.next()
         if error:
             return None , error
         
@@ -781,11 +787,20 @@ class Parser:
             return None , WrongSyntaxError(self.file , "Expected a ':' after '}' in 'if statement'.", position = self.current_token.position.copy_position() )
         
         self.next()
-        cases1 , error = None , None
+        cases1 , error = None , None # Check this line
         if self.current_token.type == token_lb:
             self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
+            if self.current_token.type == token_rb:
+                return None , RunTimeError(self.file , "blocks cannot be empty. check if statement at line {linenumber}")
             case1 , error = self.statements()
         else:
+            
+            # while self.current_token.type == token_newline:
+            #     self.next()
+            if self.current_token.type == token_rb:
+                return None , RunTimeError(self.file , "blocks cannot be empty. check if statement at line {linenumber}")
             case1 , error = self.expression()
 
         if error:
@@ -793,8 +808,8 @@ class Parser:
         
         cases.append((condition , case1))
 
-        while self.current_token.type == token_newline:
-            self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
 
         while self.current_token.type == token_keyword and self.current_token.value == "elif":
 
@@ -803,7 +818,12 @@ class Parser:
                 return None , WrongSyntaxError(self.file , "Expected '{' after 'elif' keyword.", position = self.current_token.position.copy_position() )
             
             self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
             condition , error = self.expression()
+            
+            # while self.current_token.type == token_newline:
+            #     self.next()
             if error:
                 return None , error
             
@@ -828,8 +848,8 @@ class Parser:
 
             cases.append((condition , block))
 
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
 
         if self.current_token.type == token_keyword and self.current_token.value == "else":
 
@@ -851,7 +871,6 @@ class Parser:
 
             else_case = block
 
-        # print("it's ifNode in parser")
         return IfNode(cases , else_case) , None
 
 
@@ -865,8 +884,8 @@ class Parser:
             return None , WrongSyntaxError(self.file , "Expected a '{' in collection statement.", position = self.current_token.position.copy_position() )
         self.next()
 
-        while self.current_token.type == token_newline:
-            self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
 
         if self.current_token.type == token_rb:
             return CollectionNode(elements) , None
@@ -894,14 +913,14 @@ class Parser:
                 self.next()
                  
         #         # print("it working" , self.current_token.type)
-                while self.current_token.type == token_newline:
-                    self.next()
+                # while self.current_token.type == token_newline:
+                #     self.next()
 
                 if self.current_token.type == token_rb:
                     break
 
-                while self.current_token.type == token_newline:
-                    self.next()
+                # while self.current_token.type == token_newline:
+                #     self.next()
                 key , error = self.expression()
 
                 if error:
@@ -925,8 +944,8 @@ class Parser:
 
 
 
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
 
             if self.current_token.type != token_rb:
                 return None , WrongSyntaxError(self.file , "Expected a '}' in hashmap declaration.")
@@ -936,16 +955,16 @@ class Parser:
             
         elements += (element,)
         
-        while self.current_token.type == token_newline:
-            self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
 
         while self.current_token.type == token_comma:
 
             if self.current_token.type == token_comma :
                 # print(self.current_token , elements)
                 self.next()
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
 
 
             element , error = self.expression()
@@ -953,8 +972,8 @@ class Parser:
                 return None , error
             
             elements += (element , )
-            while self.current_token.type == token_newline:
-                self.next()
+            # while self.current_token.type == token_newline:
+            #     self.next()
 
         for element in elements[1:]:
             if type(element) != first_element_type:
@@ -964,8 +983,8 @@ class Parser:
         if same_type:
             elements = np.array(elements)
 
-        while self.current_token.type == token_newline:
-            self.next()
+        # while self.current_token.type == token_newline:
+        #     self.next()
 
         if self.current_token.type != token_rb:
             return None , WrongSyntaxError(self.file , "Expected a '}' in 'collection statement'.", position = self.current_token.position.copy_position() )
