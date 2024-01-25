@@ -649,6 +649,7 @@ class Parser:
         self.next()
         param_list = []
         if self.current_token.type == token_variable:
+            # print("it's a function call")
             param_name , error = self.expression()
             if error:
                 return None , WrongSyntaxError(self.file , "Something went wrong in function definition.", position = self.current_token.position.copy_position() )

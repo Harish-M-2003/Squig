@@ -164,6 +164,8 @@ class Lexer:
             number += self.current_char
             self.next()
 
+        if len(number) > 1 and number.startswith("0"):
+            return None , InvalidLiteral(self.file , "Number cannot have leading zeros." , self.position.copy_position())
         if point_count == 0:
             return Token(token_int , int(number),token_position=self.position.copy_position()) , None
         return Token(token_float , float(number),token_position=self.position.copy_position()) , None

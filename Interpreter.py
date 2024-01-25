@@ -829,6 +829,8 @@ class Interpreter:
 
         if type(variable_value).__name__ == "MutableString":
             # print("right")
+            if type(target_value) != Types.MutableString:
+                return None , RunTimeError(self.file , f"'{type(target_value).__name__}' cannot be combined with 'MutableString.'")
             value , error = variable_value.include(index.number , target_value.string)
             if error:
                 return None , error
@@ -930,7 +932,7 @@ if __name__ == "__main__":
     symbol_table = {
 
         "String" : Types.BuiltinFunction(file , "String"),
-
+        "MutableString" : Types.BuiltinFunction(file , "MutableString"),
         "Number" : Types.BuiltinFunction(file , "Number"), #has some issue
         "Bool" : Types.BuiltinFunction(file , "Bool"), #has some issue
         "int" : Types.BuiltinFunction(file , "int") ,

@@ -423,6 +423,17 @@ class BuiltinFunction(BaseFunction):
         if isinstance(value , Number):
             return Number(int(value.value)) , None
     execute_int.params = ["value"]
+
+    def execute_MutableString(self , symbol_table):
+        # print("yes")
+        value = symbol_table["value"]
+        if isinstance(value , String) :
+            return MutableString(value.string) , None
+        if isinstance(value , MutableString):
+            return MutableString(value.string) , None
+        return None , WrongTypeError(self.file , f"Cannot convert {type(value).__name__} to MutableString.")
+    
+    execute_MutableString.params = ["value"]
     
     def execute_title(self , symbol_table):
 

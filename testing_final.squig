@@ -1,10 +1,13 @@
-
 #let a : 10
 #let b : 90
 
-let name : "Shinchan"
+#let name : MutableString("harish");
 
-let name[0] : 10
+
+
+
+
+
 
 #log "basic operation"
 
