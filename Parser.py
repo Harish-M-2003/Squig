@@ -29,10 +29,12 @@ class Parser:
                 return None , error
             return result , None
         except:
-            return None , Error(self.file , "Check in parse function in parser" , "Somthing went worng in the programm" )
+            return None , WrongSyntaxError(self.file , "Error occured due to inconsistent placing of brackets. check in parse function , if you get this is error kindly report this to us by raising an github issue in the repo https:/github.com/Harish-M-2003/Squig" )
     
     def statements(self):
         statements = []
+
+        
         
 
         # while self.current_token.type == token_newline:
@@ -74,12 +76,14 @@ class Parser:
                 return None , WrongSyntaxError(self.file , "Expected a variable after the 'let' keyword.", position = self.current_token.position.copy_position() )
             
             variable = self.current_token
+            
             self.next()
 
             if self.current_token.type != token_colon:
                 return None , WrongSyntaxError(self.file , f"Expected a ':' after variable '{variable.value}'.",position = self.current_token.position.copy_position())
 
             self.next()
+
 
             expression , error = self.expression()
             # print(expression , "in expression function")
@@ -286,7 +290,9 @@ class Parser:
 
             if self.current_token.type == token_colon:
                 self.next()
+
                 expression , error = self.expression()
+                
                 if error:
                     return None , error
                 return VariableNode(variable , expression) , None
@@ -733,6 +739,8 @@ class Parser:
             self.next()
             # while self.current_token.type == token_newline:
             #     self.next()
+            if self.current_token.type == token_rb:
+                return None , RunTimeError(self.file , "blocks cannot be empty , check 'for clause' at line {linenumber}.")
             statement , error = self.statements()
             # print("it's  a newline statement" , self.current_token)
             if error:
@@ -793,14 +801,14 @@ class Parser:
             # while self.current_token.type == token_newline:
             #     self.next()
             if self.current_token.type == token_rb:
-                return None , RunTimeError(self.file , "blocks cannot be empty. check if statement at line {linenumber}")
+                return None , RunTimeError(self.file , "blocks cannot be empty. check 'if clause' at line {linenumber}")
             case1 , error = self.statements()
         else:
             
             # while self.current_token.type == token_newline:
             #     self.next()
             if self.current_token.type == token_rb:
-                return None , RunTimeError(self.file , "blocks cannot be empty. check if statement at line {linenumber}")
+                return None , RunTimeError(self.file , "blocks cannot be empty. check 'if clause' at line {linenumber}")
             case1 , error = self.expression()
 
         if error:
@@ -810,7 +818,6 @@ class Parser:
 
         # while self.current_token.type == token_newline:
         #     self.next()
-
         while self.current_token.type == token_keyword and self.current_token.value == "elif":
 
             self.next()

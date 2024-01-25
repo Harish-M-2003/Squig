@@ -26,21 +26,30 @@ n2 : 5;
 #s1 : `string`
 #s2 : `string`
 
-s1 : {1,2,4}
-s2 : {2,4}
+s1 : 1;
+s2 : 2;
 
 if {"harish" = "harish"} : {
     log "lo"
-} else : {
+}
+elif {"shinchan" = "shinchan"} : {
+    log "hi"
+} else  : {
     log "working"
 }
 
-greet function {name} : {
-    log "welcome" , name
+greet function {name , times} : {
+
+    if {times = 0 }: {""}
+    else : {
+        log "welcome" ,  name
+        greet{name , times - 1}
+    }
 }
 
-greet{"harish"}
+# name : age : "j" -> bug
 
+greet{"harish" , 5}
 
 log s1 > s2
 log s1 < s2

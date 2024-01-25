@@ -21,7 +21,7 @@ class RedeclarationError(Error):
 
 class WrongSyntaxError(Error):
 
-    def __init__(self,file , details,position):
+    def __init__(self,file , details,position = None):
 
         super().__init__(file ,"SyntaxError", details , position=position)
 

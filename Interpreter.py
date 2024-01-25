@@ -8,7 +8,7 @@ class Interpreter:
         self.global_symbol_table = global_symbol_table
 
     def process(self , node):
-
+        
         method = getattr(self , f"{type(node).__name__}" , self.no_process)
         
         return method(node)
@@ -21,7 +21,7 @@ class Interpreter:
         # print("working")
         # print("in interpretor" , node.statement)
         # print(node.statement)
-
+        
         lines = []
         for statement in node.statement:
             line ,error = self.process(statement)
@@ -336,9 +336,10 @@ class Interpreter:
         data = Types.InputString()
         try:
             result , error = data.value(input(string).strip())
-            
-        except:
-            result , error = data.value("")
+        except KeyboardInterrupt:
+            # result , error = data.value("")
+            sys.exit(0)
+            # return None , None
 
         if error:
                 return None , error
@@ -1018,32 +1019,35 @@ if __name__ == "__main__":
         if error:
             print(error.print())
             break
-        
-        parser = Parser(tokens , file)
-        ast , error = parser.parse()
-        
-        if error:
-            print(error.print())
-            break
-        
-        if not ast.elements:
-            break
+        try:
+            
+            parser = Parser(tokens , file)
+            ast , error = parser.parse()
+            
+            if error:
+                print(error.print())
+                break
+            
+            if not ast.elements:
+                break
 
-        interpreter = Interpreter(file , symbol_table)
-        result , error = interpreter.process(ast)
+            interpreter = Interpreter(file , symbol_table)
+            result , error = interpreter.process(ast)
 
-        if error:
-            print(error.print())
-            break
-        
-        if result:
-            for output in result.elements:
-                
-                if type(output).__name__ == "Collection" and output and output.elements and output.elements[0] == None:
+            if error:
+                print(error.print())
+                break
+            
+            if result:
+                for output in result.elements:
+                    
+                    if type(output).__name__ == "Collection" and output and output.elements and output.elements[0] == None:
 
-                    if len(output.elements) == 1:#and type(output).__name__ != 'Collection':
-                        continue
-                    elif len(output.elements) != 1:
-                        if output.elements[-1]:
-                            print(output.elements[-1].elements)            
-            break
+                        if len(output.elements) == 1:#and type(output).__name__ != 'Collection':
+                            continue
+                        elif len(output.elements) != 1:
+                            if output.elements[-1]:
+                                print(output.elements[-1].elements)
+        except KeyboardInterrupt: break
+
+        break
