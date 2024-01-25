@@ -86,15 +86,23 @@ class Interpreter:
             try:
                 return left.modulo(right)
             except :
-                if right.number != 0:
-                    return None , RunTimeError(self.file , f"Modulo {error_message}")
+                try:
+                    if right.number != 0:
+                        return None , RunTimeError(self.file , f"Modulo {error_message}")
+                except:
+                    
+                    return None , WrongTypeError(self.file  ,f"'%' cannot be used between {type(left).__name__} and {type(right).__name__}")
+
                 return None , RunTimeError(self.file , f"0 is an invalid modulo operand.")
         elif operator == token_divide:
             try:
                 return left.div(right)
             except :
-                if right.number != 0:
-                    return None , RunTimeError(self.file , f"Division {error_message}")
+                try:
+                    if right.number != 0:
+                        return None , RunTimeError(self.file , f"Division {error_message}")
+                except :
+                    return None , WrongTypeError(self.file  ,f"'/' cannot be used between {type(left).__name__} and {type(right).__name__}")
                 return None , RunTimeError(self.file , f"{left.number} cannot be divided by zero.")
         
         elif operator == token_power:
@@ -929,7 +937,7 @@ class Interpreter:
 
 if __name__ == "__main__":
 
-    file = "<Core>"
+    file = "<core>"
     import os , sys
 
 

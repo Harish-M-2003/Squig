@@ -41,7 +41,7 @@ class WrongTypeError(Error):
 
     def __init__(self , file , details):
 
-        super().__init__(file , "IndexTypeError" , details)
+        super().__init__(file , "WrongTypeError" , details)
 
 class StringError(Error):
 

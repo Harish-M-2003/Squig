@@ -3,12 +3,10 @@
 # Logical operations are working properly -> > , < , <= , >= , = , !=
 # input statement working properly
 
+# let a : 10
+# let b : 90
 
-
-#let a : 10
-#let b : 90
-
-#greet function {name , time}: String {
+# greet function {name , time}: String {
 
 #    if {time = 0} : {
 #        return "";
@@ -17,13 +15,16 @@
 #        greet{name , time - 1};
 #        log "welcome" , name , time;
 #    }
-#}
+# }
 
 n1 : 5;
 n2 : 5;
 
-s1 : ""
-s2 : "string"
+#s1 : ""
+#s2 : "string"
+
+s1 : `string`
+s2 : `string`
 
 
 log s1 > s2
@@ -32,9 +33,15 @@ log s1 >= s2
 log s1 <= s2
 log s1 != s2
 log s1 = s2
-
 log s1 & s2
 log s1 | s2
+
+log s1 + s2
+log n1 - n2
+log n1 / n2
+log n1 * n2
+log n1 ** n2
+log n1 % s2
 
 #log n1 + s1 works
 #log n1 - s1 works

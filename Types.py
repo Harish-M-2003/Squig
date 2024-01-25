@@ -1064,28 +1064,28 @@ class MutableString(BaseType):
         # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     
 
-    # def _and_(self , operand):
+    def _and_(self , operand):
         
-    #     if isinstance(operand , MutableString) :
+        if isinstance(operand , MutableString) :
 
-    #         return Boolean(self.string and operand.string) , None
+            return Boolean(self.string and operand.string) , None
         
-    #     if isinstance(operand , String):
-    #         return Boolean(self.string and operand.string) , None
+        if isinstance(operand , String):
+            return Boolean(self.string and operand.string) , None
         
-    #     return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     
 
-    # def _or_(self , operand):
+    def _or_(self , operand):
         
-    #     if isinstance(operand , MutableString) :
+        if isinstance(operand , MutableString) :
 
-    #         return Boolean(self.string or operand.string) , None
+            return Boolean(self.string or operand.string) , None
         
-    #     if isinstance(operand , String):
-    #         return Boolean(self.string or operand.string) , None
+        if isinstance(operand , String):
+            return Boolean(self.string or operand.string) , None
         
-    #     return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     
     
     def eql(self , operand):
@@ -1096,6 +1096,12 @@ class MutableString(BaseType):
         
         if isinstance(operand , String):
             return Boolean(self.string == operand.string) , None
+        raise Error()
+    
+    def add(self , operand):
+
+        if isinstance(operand , MutableString):
+            return MutableString(self.string + operand.string) , None
         raise Error()
         # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     

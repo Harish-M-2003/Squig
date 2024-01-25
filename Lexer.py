@@ -337,7 +337,7 @@ class Lexer:
 if __name__ == "__main__":
 
     while True:
-        lexer = Lexer("<Core>",input("Enter a expression : "))
+        lexer = Lexer("<core>",input("Enter a expression : "))
         tokens = lexer.tokenize()
         print(tokens)
             
