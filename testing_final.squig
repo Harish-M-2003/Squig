@@ -1,15 +1,47 @@
+# Arithmetic operations working correctly
+
 #let a : 10
 #let b : 90
 
-s1 : "harish";
-s2 : ``;
+#greet function {name , time}: String {
 
-log s1 >= s2
+#    if {time = 0} : {
+#        return "";
+#    } else : {
+#        log "welcome" , name , time;
+#        greet{name , time - 1};
+#        log "welcome" , name , time;
+#    }
+#}
+
+n1 : 5;
+n2 : 5;
+
+s1 : "string"
 
 
+log n1 + n2
+log n1 - n2
+log n1 * n2
+log n1 / n2
+log n1 ** n2
+log n1 % n2
+
+#log n1 + s1 works
+#log n1 - s1 works
+#log n1 * s1 works
+#log n1 / s1 works
+#log n1 ** s1 works
 
 
+#log s1 + n1 
+#log s1 - n2
+#log s1 * n2
+#log s1 / n2
+#log s1 ** n2 
+# everything works
 
+#greet{"shinchan" , 5};
 
 #log "basic operation"
 

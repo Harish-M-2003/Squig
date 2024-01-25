@@ -86,12 +86,16 @@ class Interpreter:
             try:
                 return left.modulo(right)
             except :
-                return None , RunTimeError(self.file , f"Modulo {error_message}")
+                if right.number != 0:
+                    return None , RunTimeError(self.file , f"Modulo {error_message}")
+                return None , RunTimeError(self.file , f"0 is an invalid modulo operand.")
         elif operator == token_divide:
             try:
                 return left.div(right)
             except :
-                return None , RunTimeError(self.file , f"Division {error_message}")
+                if right.number != 0:
+                    return None , RunTimeError(self.file , f"Division {error_message}")
+                return None , RunTimeError(self.file , f"{left.number} cannot be divided by zero.")
         
         elif operator == token_power:
             try:

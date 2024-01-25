@@ -1005,8 +1005,8 @@ class MutableString(BaseType):
         if isinstance(operand , String):
             return Boolean(self.string >= operand.string) , None
         
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
+        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        raise Error()
 
 
     def lte(self , operand):
@@ -1018,8 +1018,8 @@ class MutableString(BaseType):
         if isinstance(operand , String):
             return Boolean(self.string <= operand.string) , None
         
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
+        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        raise Error()
 
     def ne(self , operand):
         
@@ -1030,8 +1030,8 @@ class MutableString(BaseType):
         if isinstance(operand , String):
             return Boolean(self.string != operand.string) , None
         
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
+        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        raise Error()
 
     def gt(self , operand):
         
@@ -1042,8 +1042,8 @@ class MutableString(BaseType):
         if isinstance(operand , String):
             return Boolean(self.string > operand.string) , None
         
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
+        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        raise Error()
 
     def lt(self , operand):
         
@@ -1053,8 +1053,8 @@ class MutableString(BaseType):
         
         if isinstance(operand , String):
             return Boolean(self.string < operand.string) , None
-        
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        raise Error()
+        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     
 
     # def _and_(self , operand):
@@ -1089,7 +1089,7 @@ class MutableString(BaseType):
         
         if isinstance(operand , String):
             return Boolean(self.string == operand.string) , None
-        
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+        raise Error()
+        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     
     
