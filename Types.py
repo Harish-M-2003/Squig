@@ -517,7 +517,14 @@ class BuiltinFunction(BaseFunction):
             else:
                 return Boolean(False) , None
         
-        return None , WrongTypeError(self.file , f"Cannot convert {value} to Number type.")
+        if isinstance(value , Boolean):
+
+            if value.value:
+                return Boolean(True) , None
+            else:
+                return Boolean(False) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot convert {type(value).__name__} to Bool.")
     execute_Bool.params = ["value"]
 
 

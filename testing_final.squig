@@ -1,4 +1,9 @@
-# Arithmetic operations working correctly
+# Arithmetic operations working correctly -> + , - , * , / , **
+# Boolean Operations are working properly -> & , |
+# Logical operations are working properly -> > , < , <= , >= , = , !=
+# input statement working properly
+
+
 
 #let a : 10
 #let b : 90
@@ -17,15 +22,19 @@
 n1 : 5;
 n2 : 5;
 
-s1 : "string"
+s1 : ""
+s2 : "string"
 
 
-log n1 + n2
-log n1 - n2
-log n1 * n2
-log n1 / n2
-log n1 ** n2
-log n1 % n2
+log s1 > s2
+log s1 < s2
+log s1 >= s2
+log s1 <= s2
+log s1 != s2
+log s1 = s2
+
+log s1 & s2
+log s1 | s2
 
 #log n1 + s1 works
 #log n1 - s1 works
