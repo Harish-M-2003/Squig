@@ -1,8 +1,10 @@
 #let a : 10
 #let b : 90
 
-#let name : MutableString("harish");
+s1 : "harish";
+s2 : ``;
 
+log s1 >= s2
 
 
 

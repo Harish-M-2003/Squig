@@ -96,30 +96,47 @@ class String(BaseType):
     def lt(self , string):
         if isinstance(string, String):
             return Boolean(self.string < string.string) , None
+        
+        if isinstance(string , MutableString):
+            return Boolean(self.string < string.string) , None
         raise Error()
     
     def gt(self , string):
         if isinstance(string, String):
+            return Boolean(self.string > string.string) , None
+        
+        if isinstance(string , MutableString):
             return Boolean(self.string > string.string) , None
         raise Error()
     
     def lte(self , string):
         if isinstance(string, String):
             return Boolean(self.string <= string.string) , None
+        if isinstance(string , MutableString):
+            return Boolean(self.string <= string.string) , None
         raise Error()
         
     def gte(self , string):
         if isinstance(string, String):
+            return Boolean(self.string >= string.string) , None
+        
+        if isinstance(string , MutableString):
             return Boolean(self.string >= string.string) , None
         raise Error()
     
     def eql(self , string):
         if isinstance(string, String):
             return Boolean(self.string == string.string) , None
+        
+        if isinstance(string , MutableString):
+            return Boolean(self.string == string.string) , None
         raise Error()
     
     def ne(self , string):
         if isinstance(string, String):
+            return Boolean(self.string != string.string) , None
+        
+        if isinstance(string , MutableString):
             return Boolean(self.string != string.string) , None
         raise Error()
     
@@ -936,7 +953,6 @@ class MutableString(BaseType):
     """
 
     def __init__(self , string):
-
         self.string = string
         self.mut_string = [char for char in string]
 
@@ -974,10 +990,106 @@ class MutableString(BaseType):
 
         del self.mut_string[index]
         self.string = MutableString("".join(self.mut_string))
-        return value
+        return value , None
     
     def __len__(self):
 
         return len(self.mut_string)
+    
+    def gte(self , operand):
+        
+        if isinstance(operand , MutableString) :
+
+            return Boolean(self.string >= operand.string) , None
+        
+        if isinstance(operand , String):
+            return Boolean(self.string >= operand.string) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+
+
+    def lte(self , operand):
+        
+        if isinstance(operand , MutableString) :
+
+            return Boolean(self.string <= operand.string) , None
+        
+        if isinstance(operand , String):
+            return Boolean(self.string <= operand.string) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+
+    def ne(self , operand):
+        
+        if isinstance(operand , MutableString) :
+
+            return Boolean(self.string != operand.string) , None
+        
+        if isinstance(operand , String):
+            return Boolean(self.string != operand.string) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+
+    def gt(self , operand):
+        
+        if isinstance(operand , MutableString) :
+
+            return Boolean(self.string > operand.string) , None
+        
+        if isinstance(operand , String):
+            return Boolean(self.string > operand.string) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+
+    def lt(self , operand):
+        
+        if isinstance(operand , MutableString) :
+
+            return Boolean(self.string < operand.string) , None
+        
+        if isinstance(operand , String):
+            return Boolean(self.string < operand.string) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+
+    # def _and_(self , operand):
+        
+    #     if isinstance(operand , MutableString) :
+
+    #         return Boolean(self.string and operand.string) , None
+        
+    #     if isinstance(operand , String):
+    #         return Boolean(self.string and operand.string) , None
+        
+    #     return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+
+    # def _or_(self , operand):
+        
+    #     if isinstance(operand , MutableString) :
+
+    #         return Boolean(self.string or operand.string) , None
+        
+    #     if isinstance(operand , String):
+    #         return Boolean(self.string or operand.string) , None
+        
+    #     return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
+    
+    
+    def eql(self , operand):
+        # print("yeah")
+        if isinstance(operand , MutableString) :
+
+            return Boolean(self.string == operand.string) , None
+        
+        if isinstance(operand , String):
+            return Boolean(self.string == operand.string) , None
+        
+        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
     
     
