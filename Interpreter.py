@@ -229,6 +229,15 @@ class Interpreter:
 
             return value , None
         
+        elif isinstance(self.global_symbol_table[variable], Types.MutableString):
+
+
+            value = self.global_symbol_table[variable].string
+            if not value:
+                return None , RunTimeError(self.file , "Cannot slice a empty string")
+
+            return Types.MutableString(value[indexs[0].number]) , None
+        
         elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
             # print("Asdad")
             
