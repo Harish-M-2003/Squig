@@ -1,184 +1,181 @@
-# Arithmetic operations working correctly -> + , - , * , / , **
-# Boolean Operations are working properly -> & , |
-# Logical operations are working properly -> > , < , <= , >= , = , !=
-# input statement working properly
+# # Arithmetic operations working correctly -> + , - , * , / , **
+# # Boolean Operations are working properly -> & , |
+# # Logical operations are working properly -> > , < , <= , >= , = , !=
+# # input statement working properly
 
-# let a : 10
-# let b : 90
+# # let a : 10
+# # let b : 90
 
-# greet function {name , time}: String {
+# # greet function {name , time}: String {
 
-#    if {time = 0} : {
-#        return "";
-#    } else : {
-#        log "welcome" , name , time;
-#        greet{name , time - 1};
-#        log "welcome" , name , time;
-#    }
-# }
+# #    if {time = 0} : {
+# #        return "";
+# #    } else : {
+# #        log "welcome" , name , time;
+# #        greet{name , time - 1};
+# #        log "welcome" , name , time;
+# #    }
+# # }
 
-n1 : 5;
-n2 : 5;
+# n1 : 5;
+# n2 : 5;
 
-#s1 : ""
-#s2 : "string"
+# #s1 : ""
+# #s2 : "string"
 
-#s1 : `string`
-#s2 : `string`
+# #s1 : `string`
+# # s2 : `testing`
 
-s1 : 1;
-s2 : 2;
 
-if {"harish" = "harish"} : {
-    log "lo"
-}
-elif {"shinchan" = "shinchan"} : {
-    log "hi"
-} else  : {
-    log "working"
-}
+# # s1 : 1 ; s2 : 2;
 
-greet function {name , times} : {
+# # greet function  {name , times} : {
 
-    if {times = 0 }: {""}
-    else : {
-        log "welcome" ,  name
-        greet{name , times - 1}
-    }
-}
+# #     if {times = 0 }: {"
+# #     "}
+# #     else : {
+# #         log "welcome" ,  name
+# #         greet{name , times - 1}
+# #     }
+# # }
 
-# name : age : "j" -> bug
+# # name : age : "j" -> bug
 
-greet{"harish" , 5}
+# # greet {"harish" , 5}
 
-log s1 > s2
-log s1 < s2
-log s1 >= s2
-log s1 <= s2
-log s1 != s2
-log s1 = s2
-log s1 & s2
-log s1 | s2
+# # log s1 > s2
+# # log s1 < s2
+# # log s1 >= s2
+# # log s1 <= s2
+# # log s1 != s2
+# # log s1 = s2
+# # log s1 & s2
+# # log s1 | s2
 
-log s1 + s2
-log n1 - n2
-log n1 / n2
-log n1 * n2
-log n1 ** n2
-log n1 % s2
+# # log s1 + s2
+# # log n1 - n2
+# # log n1 / n2
+# # log n1 * n2
+# # log n1 ** n2
+# # log n1 % s2
 
-# log n1 + s1 works
-# log n1 - s1 works
-# log n1 * s1 works
-# log n1 / s1 works
-# log n1 ** s1 works
 
-# log s1 + n1 
-# log s1 - n2
-# log s1 * n2
-# log s1 / n2
-# log s1 ** n2 
-# everything works
+# # points : {"1" : "shinchan"}
+# # log points
 
-# greet{"shinchan" , 5};
 
-# log "basic operation"
+# # log n1 + s1 works
+# # log n1 - s1 works
+# # log n1 * s1 works
+# # log n1 / s1 works
+# # log n1 ** s1 works
 
-# log 1 + 2
-# log 1/2
-# log 1/1
-# log 22%2
+# # log s1 + n1 
+# # log s1 - n2
+# # log s1 * n2
+# # log s1 / n2
+# # log s1 ** n2 
+# # everything works
 
-# log 4 - 9.5
+# # greet{"shinchan" , 5};
 
-# log "l" + 5
-# log 5 % "l"
-# log  "google" - "shinchan"
-# findLetter function {string , target , index} : {
+# # log "basic operation"
 
-    # This is a muti-line statement function
-    # This is a function which checks does the given string containes the target character in it or not.
+# # log 1 + 2
+# # log 1/2
+# # log 1/1
+# # log 22%2
 
-    #if {index >= length{string}} : { # This is a if statement
-    #    log "not found";
-    #} 
+# # log 4 - 9.5
 
-    #elif {string[index] = target } : { # This is a elif statement
-    #    log "found"
-    #} 
+# # log "l" + 5
+# # log 5 % "l"
+# # log  "google" - "shinchan"
+# # findLetter function {string , target , index} : {
+
+#     # This is a muti-line statement function
+#     # This is a function which checks does the given string containes the target character in it or not.
+
+#     #if {index >= length{string}} : { # This is a if statement
+#     #    log "not found";
+#     #} 
+
+#     #elif {string[index] = target } : { # This is a elif statement
+#     #    log "found"
+#     #} 
     
-    #else : {
-    #    findLetter{string , target ,  index + 1};
-    #}
+#     #else : {
+#     #    findLetter{string , target ,  index + 1};
+#     #}
 
-#}
-
-
-
-#let string : `it a mutable string.`
-#string[0] : `I`
-#string[2] : `!!!`
-#log string , length{string}
-
-#log type pop string[0]
-#log string , length{string}
-
-#findLetter{"Squig" , "q" , 0}
-
-#let v :  pop google["test"]
-
-#log v + "test"
-
-#log google
-
-#google[2] : "example"
-
-#log google
-#google["test"] : "asdkjnasd"
-#log google
-
-# let name : "harish"
-
-#values[-1] : 10
-#log values
-#log pop values[1]
-#log values
-
-#log "Welcome back" , type name
-
-#log google["c"]
-#log google["a"]
-#google["example1"] : "sdasdasdads"
-#log google
+# #}
 
 
 
-#log type google[0] 
+# #let string : `it a mutable string.`
+# #string[0] : `I`
+# #string[2] : `!!!`
+# #log string , length{string}
 
-#let string : `tosting`
+# #log type pop string[0]
+# #log string , length{string}
 
-#string[1] : `e`
+# #findLetter{"Squig" , "q" , 0}
 
-#log string
+# #let v :  pop google["test"]
 
-#log length{google}
-#log length{google}
+# #log v + "test"
 
-# log google
-# linearSearch{google , "10"}
-#log google[0]
+# #log google
 
-#log "end of file" + "asdasd"
-#let array : {1,2,3,4,5,6} # Since the array values cannot be changed at runtime , need to redesign it's logic
+# #google[2] : "example"
 
-#array[0] : 100
+# #log google
+# #google["test"] : "asdkjnasd"
+# #log google
 
-# example[2] : "1234567890"
+# # let name : "harish"
 
-#let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
-#array[2] : 200
-#log array
-# Array
-# List
-# Map
-# Stack and Queue
+# #values[-1] : 10
+# #log values
+# #log pop values[1]
+# #log values
+
+# #log "Welcome back" , type name
+
+# #log google["c"]
+# #log google["a"]
+# #google["example1"] : "sdasdasdads"
+# #log google
+
+
+
+# #log type google[0] 
+
+# #let string : `tosting`
+
+# #string[1] : `e`
+
+# #log string
+
+# #log length{google}
+# #log length{google}
+
+# # log google
+# # linearSearch{google , "10"}
+# #log google[0]
+
+# #log "end of file" + "asdasd"
+# #let array : {1,2,3,4,5,6} # Since the array values cannot be changed at runtime , need to redesign it's logic
+
+# #array[0] : 100
+
+# # example[2] : "1234567890"
+
+# # let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
+# # array[2] : 200
+# # log array
+# # Array
+# # List
+# # Map
+# # Stack and Queue

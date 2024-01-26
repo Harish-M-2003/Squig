@@ -29,7 +29,7 @@ class Parser:
                 return None , error
             return result , None
         except:
-            return None , WrongSyntaxError(self.file , "Error occured due to inconsistent placing of brackets. check in parse function , if you get this is error kindly report this to us by raising an github issue in the repo https:/github.com/Harish-M-2003/Squig" )
+            return None , WrongSyntaxError(self.file , "Error occured due to inconsistent placing of brackets. check in parse function , if you get this is error kindly report this to us by raising an github issue in the repo https://github.com/Harish-M-2003/Squig" )
     
     def statements(self):
         statements = []
@@ -846,8 +846,14 @@ class Parser:
             block , error = None , None
             if self.current_token.type == token_lb:
                 self.next()
+                if self.current_token.type == token_rb:
+                    return None , RunTimeError(self.file , "blocks cannot be empty. check 'elif clause' at line {linenumber}")
+            
                 block , error = self.statements()
             else:
+                if self.current_token.type == token_rb:
+                    return None , RunTimeError(self.file , "blocks cannot be empty. check 'elif clause' at line {linenumber}")
+            
                 block , error = self.expression()
             
             if error:
@@ -869,12 +875,23 @@ class Parser:
             block , error = None , None
             if self.current_token.type == token_lb:
                 self.next()
+                if self.current_token.type == token_rb:
+                    return None , RunTimeError(self.file , "blocks cannot be empty. check 'else clause' at line {linenumber}")
+            
                 block , error = self.statements()
-            else:
+            else: 
+                if self.current_token.type == token_rb:
+                    return None , RunTimeError(self.file , "blocks cannot be empty. check 'else clause' at line {linenumber}")
                 block , error = self.expression()
 
             if error:
                 return None , error
+            
+            # print(self.current_token)
+            # if self.current_token.type != token_rb:
+            #     return None , WrongSyntaxError(self.file , "Expected a '}' in the 'else clause'.", position = self.current_token.position.copy_position() )
+            
+            # self.next()
 
             else_case = block
 

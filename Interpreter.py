@@ -687,8 +687,6 @@ class Interpreter:
     
     def PopNode(self , node):
 
-        # print("Need to complete pop interpertor node")
-
         variable = node.variable.value
         # local_symbol_table = self.global_symbol_table[variable].key_values
 
@@ -989,8 +987,12 @@ if __name__ == "__main__":
 
     }
     
-    while True:
+    # print("\n\tNote : If you tend find any bug kindly report it to us in github : https://github.com/Harish-M-2003/Squig")
+    # print()
+    print("\n\tNote : If you tend find any bug kindly report it to us in github : https://github.com/Harish-M-2003/Squig")
+    print()
 
+    while True:
         try:
             # file = sys.argv[-1]
 
