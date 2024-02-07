@@ -973,6 +973,8 @@ if __name__ == "__main__":
         "isAlpha" : Types.BuiltinFunction(file ,"is_alpha"),
         "isAlnum" : Types.BuiltinFunction(file , "is_alnum"),
         "isInt" : Types.BuiltinFunction(file , "is_int"),
+        "isUpper" : Types.BuiltinFunction(file , "isUpper"),
+        "isLower" : Types.BuiltinFunction(file , "isLower"),
 
         "isFloat" : Types.BuiltinFunction(file , "is_float"),#checked
         "isTitle" : Types.BuiltinFunction(file , "is_title"),#checked

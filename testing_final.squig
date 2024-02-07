@@ -96,26 +96,22 @@
 # # log "l" + 5
 # # log 5 % "l"
 # # log  "google" - "shinchan"
-# # findLetter function {string , target , index} : {
+# findLetter function {string , target , index} : {
 
-#     # This is a muti-line statement function
-#     # This is a function which checks does the given string containes the target character in it or not.
+#     This is a muti-line statement function
+#     This is a function which checks does the given string containes the target character in it or not.
 
-#     #if {index >= length{string}} : { # This is a if statement
-#     #    log "not found";
-#     #} 
+#     if {index >= length{string}} : { # This is a if statement
+#        log "not found";
+#     } 
 
-#     #elif {string[index] = target } : { # This is a elif statement
-#     #    log "found"
-#     #} 
-    
-#     #else : {
-#     #    findLetter{string , target ,  index + 1};
-#     #}
-
-# #}
-
-
+#     elif {string[index] = target } : { # This is a elif statement
+#        log "found"
+#     } 
+#     else : {
+#        findLetter{string , target ,  index + 1};
+#     }
+# }
 
 # #let string : `it a mutable string.`
 # #string[0] : `I`
@@ -167,7 +163,7 @@
 # #log length{google}
 
 # # log google
-# # linearSearch{google , "10"}
+# # linearSearch{ google , "10" }
 # #log google[0]
 
 # #log "end of file" + "asdasd"
@@ -175,12 +171,30 @@
 
 # #array[0] : 100
 
+greet_user function {name} : upper{"welcome"} + " , " +  name
+
+
+
+let name : 'Enter your name : '
+let welcome_string : greet_user{name}
+
+
+log "Length of string (" , welcome_string , ") : " , length{welcome_string}
+log "Upper case : " , upper{welcome_string}
+log "Lower case : " , lower{welcome_string}
+log "isFunction : " , isFunction{welcome_string}
+log "isUpper : " , isUpper{welcome_string};
+log "isLower : " , isLower{welcome_string}
+log "Type of " , welcome_string , " : " , type welcome_string 
+
+
 # # example[2] : "1234567890"
 
-# # let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
+# let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
 # # array[2] : 200
-# # log array
+# log 
 # # Array
 # # List
 # # Map
 # # Stack and Queue
+

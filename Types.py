@@ -441,8 +441,21 @@ class BuiltinFunction(BaseFunction):
             return Number(int(value.value)) , None
     execute_int.params = ["value"]
 
+    def execute_isUpper(self , symbol_table):
+
+        value = symbol_table["value"]
+        if isinstance(value , String):
+            return  Boolean(value.string.isupper()) , None
+    execute_isUpper.params = ["value"]    
+    
+    def execute_isLower(self , symbol_table):
+
+        value = symbol_table["value"]
+        if isinstance(value , String):
+            return Boolean(value.string.islower()) , None
+    execute_isLower.params = ["value"]    
+
     def execute_MutableString(self , symbol_table):
-        # print("yes")
         value = symbol_table["value"]
         if isinstance(value , String) :
             return MutableString(value.string) , None

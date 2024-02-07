@@ -529,7 +529,6 @@ class Parser:
         #     return PopNode(variable=variable) , None
     
     def switch_statement(self):
-
         if self.current_token.type != token_lb:
             return None , WrongSyntaxError(file=self.file , details="Expected a '{' in switch statement.",position=None)
         
@@ -545,6 +544,11 @@ class Parser:
         self.next()
         if self.current_token.type != token_colon:
             return None ,  WrongSyntaxError(file=self.file , details="Expected a ':' in switch statement." , position=None)
+        
+        self.next()
+
+        if self.current_token.type != token_lb:
+            return None , WrongSyntaxError(file=self.file , details="Expected a '{' in switch statement.",position=None)
         
         self.next()
 
@@ -608,7 +612,11 @@ class Parser:
 
         if error:
             return None , error
-
+        
+        if self.current_token.type != token_rb:
+            return None , WrongSyntaxError(file=self.file , details="Expected a '}' in switch statement.",position=None)
+        
+        self.next()
         return SwitchNode(condition=condition , cases=case_conditions , default_body= default_body) , None
 
 
