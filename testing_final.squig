@@ -171,21 +171,37 @@
 
 # #array[0] : 100
 
-greet_user function {name} : upper{"welcome"} + " , " +  name
+# greet_user function {name} : upper{"welcome , " +  name}
+
+# let name : 'Enter your name : '
+# let welcome_string : greet_user{name}
 
 
+# log "Length of string (" , welcome_string , ") : " , length{welcome_string}
+# log "Upper case : " , upper{welcome_string}
+# log "Lower case : " , lower{welcome_string}
+# log "isFunction : " , isFunction{welcome_string}
+# log "isUpper : " , isUpper{welcome_string};
+# log "isLower : " , isLower{welcome_string}
+# log "Type of " , welcome_string , " : " , type welcome_string 
 
-let name : 'Enter your name : '
-let welcome_string : greet_user{name}
+# for x{100} : {
+#     if {(type welcome_string) = "String" } : {
+#         log welcome_string , x 
+#     } else : {
+#         if {welcome_string != 0} : log welcome_string
+#     }
+#     welcome_string : x
+# }
+
+# file file_name : "harish.squig"
+# let content  : trim{file_name}
 
 
-log "Length of string (" , welcome_string , ") : " , length{welcome_string}
-log "Upper case : " , upper{welcome_string}
-log "Lower case : " , lower{welcome_string}
-log "isFunction : " , isFunction{welcome_string}
-log "isUpper : " , isUpper{welcome_string};
-log "isLower : " , isLower{welcome_string}
-log "Type of " , welcome_string , " : " , type welcome_string 
+# log "First charactor : " , length{content[2]}
+# log content
+
+
 
 
 # # example[2] : "1234567890"
