@@ -40,11 +40,13 @@ token_newline = "newline"
 token_eof = "eof"
 token_writetofile = "writetofile"
 token_mutstring = "mutstring"
+token_at = "at"
 
 keywords = ("if" , "else" , "elif", "function" ,
             "for","return", "break" ,"continue" , "let",
             "delete" , "type" , "use" , "log" , "file" , "close",
             "default" , "case" , "switch", "true" , "false" , "pop",
+            "class"
             )
 
 class Token:

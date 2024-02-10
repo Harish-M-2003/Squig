@@ -49,10 +49,11 @@ class AssignmentOperatorNode(BinaryOperatorNode):
 
 class VariableNode:
 
-    def __init__(self,variable , factor):
+    def __init__(self,variable , factor , members = None):
 
         self.variable = variable
         self.factor = factor
+        self.members = members
 
     def __repr__(self):
 
@@ -60,9 +61,10 @@ class VariableNode:
 
 class VariableAccessNode:
 
-    def __init__(self,variable):
+    def __init__(self,variable , members = None):
 
         self.variable = variable
+        self.members = members
 
     def __repr__(self):
 
@@ -315,3 +317,31 @@ class PopNode:
 
         self.variable = variable
         self.index = index
+
+class ClassNode:
+    
+    def __init__(self , class_name , class_body = []):
+
+        self.class_name = class_name
+        self.class_body = class_body
+    
+    def __repr__(self) -> str:
+        
+        return f"Class{self.class_name}"
+
+
+class ObjectNode:
+
+    def __init__(self , object_name , class_name):
+
+        self.object_name = object_name
+        self.class_name = class_name
+
+class ObjectPropAccessNode:
+
+    def __init__(self , object_name , prop_name):
+
+        self.object_name = object_name
+        self.prop_name = prop_name
+
+        

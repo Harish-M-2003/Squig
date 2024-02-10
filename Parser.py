@@ -39,6 +39,7 @@ class Parser:
         
         
         statement,  error = self.expression()
+        # print("let Node" , statements)
         if error:
             return None , error
         
@@ -76,8 +77,17 @@ class Parser:
             if self.current_token.type != token_colon:
                 return None , WrongSyntaxError(self.file , f"Expected a ':' after variable '{variable.value}'.",position = self.current_token.position.copy_position())
 
+
             self.next()
 
+            if self.current_token.type == token_at:
+                self.next()
+                if self.current_token.type != token_variable:
+                    return None  , WrongSyntaxError(self.file , "Expected a class name after '@' for instantiation an object.")
+
+                class_name = self.current_token
+                self.next()
+                return ObjectNode(variable , class_name) , None
 
             expression , error = self.expression()
             # print(expression , "in expression function")
@@ -282,6 +292,13 @@ class Parser:
             indexs = []
             self.next()
 
+            if self.current_token.type == token_keyword and self.current_token.value == "class":
+                class_statement , error = self.class_statement(variable)
+                if error:
+                    return None , error
+                return class_statement , None
+
+
             if self.current_token.type == token_colon:
                 self.next()
 
@@ -290,6 +307,20 @@ class Parser:
                 if error:
                     return None , error
                 return VariableNode(variable , expression) , None
+            
+            if self.current_token.type == token_dot:
+                self.next()
+                prop_node = self.current_token
+                self.next()
+                # if self.current_token.type == token_lb:
+                #     print("it function call")
+                if self.current_token.type != token_colon:
+                    return VariableAccessNode(variable , prop_node) , None
+                self.next()
+                value , error = self.expression()
+                if error:
+                    return None , error
+                return VariableNode(variable , value , prop_node) , None
             
             if self.current_token.type == token_writetofile:
                 self.next()
@@ -1037,6 +1068,26 @@ class Parser:
         self.next()
         # print(type(elements))
         return CollectionNode(elements) , None
+    
+
+    def class_statement(self , class_name):
+        
+        self.next()
+
+        if self.current_token.type != token_lb:
+            return None , WrongSyntaxError(self.file , "Expected a opening '{' in class.")
+        
+        self.next()
+
+        class_body , error = self.statements()
+        if error:
+            return None , error
+        
+        if self.current_token.type != token_rb:
+            return None , WrongSyntaxError(self.file , "Expected a closing '}' in class.")
+        self.next()
+        
+        return ClassNode(class_name , class_body) , None
     
 
 if __name__ == "__main__":

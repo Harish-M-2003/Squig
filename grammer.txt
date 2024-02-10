@@ -1,6 +1,7 @@
 statements : newline* expression (newline+ expression)* newline*
 
 expression : let variable assign expression
+           | let variable assign at class_name
            : relational-expression ((and|or) relational-expression)*
 
 relational-expression : not relational-expression 
@@ -29,9 +30,12 @@ atom : int|float|string|variable|input-string|Mutstring
      : pop variable (ls key rs) ?
      : file-statement
      : switch-statement
+     : class-statement
+     : instantiation-statement
 
-variable : variable (lsquare expression rsquare)*
+variable : variable (lsquare expression rsquare)*   
          | variable
+
 collection-statement : lb (expression ( comma expression )*)? rb
                      | lb (expression colon expression (comma expression)*)? rb -> commented this implementations
 
@@ -47,3 +51,5 @@ function-statement : variable fun lb ((variable ( comma variable)*)? rb colon ex
 file-statement : file (lt (w|a|r|w+|r+|a+) gt)? variable colon expression
 
 switch-statement : switch (expression) lb newline* (( case expression colon statement )* (default colon statement)) newline+ rb
+
+class-statement : class_name class lb statements rb 

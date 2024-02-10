@@ -234,3 +234,23 @@
 
 # log map
 
+harish class {
+    let name : "harish"   
+    let age : 21
+
+    greet function {} : {
+        log "testing"
+    }
+}
+
+let first_class : @harish # Object instantiation
+
+log first_class.name # Accessing members of a class
+log first_class.age
+
+if { first_class.name = "shinchan"} : {
+    log "working like as expected"
+} else : {
+    log "not working properly"
+}
+

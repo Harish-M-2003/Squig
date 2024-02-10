@@ -24,10 +24,11 @@ class Interpreter:
         
         lines = []
         for statement in node.statement:
-            line ,error = self.process(statement)
-            if error:
-                return None , error
-            lines.append(line)
+
+                line ,error = self.process(statement)
+                if error:
+                    return None , error
+                lines.append(line)
         
         # print(lines)
         # print(*lines)
@@ -273,14 +274,19 @@ class Interpreter:
     def VariableNode(self , node):
 
         variable = node.variable.value
-        
+        members = node.members
         value , error = self.process(node.factor)
 
         
         if error:
             return None , error
         
-        self.global_symbol_table[variable] = value
+        if type(self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]) == dict:
+            object_member = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
+            # print(object_member , "Object")
+            object_member[members.value] = value
+        else:
+            self.global_symbol_table[variable] = value
 
         return "" , None
     
@@ -290,7 +296,7 @@ class Interpreter:
         
         if variable in self.global_symbol_table:
             return None , RedeclarationError(file=self.file , details=f"variable '{variable}' cannot be created more than once." , position=None )
-        
+    
         value , error = self.process(node.factor)
         if error:
             return None , error
@@ -321,6 +327,7 @@ class Interpreter:
     def VariableAccessNode(self , node):
 
         variable = node.variable.value
+        members = node.members # Need to fix this for access nested props
 
         if variable in self.global_symbol_table:
             if isinstance(self.global_symbol_table[variable] , Types.File):
@@ -334,6 +341,12 @@ class Interpreter:
                     return None , WrongFileOperationError(file=self.file , name="IOFileOperationError" , details=f"Performing unsupported operation for file '{self.global_symbol_table[variable].file_name}'.")
             # elif isinstance(self.global_symbol_table[variable] , Types.HashMap):
             #     return self.global_symbol_table[variable] , None
+            
+            if type(self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]) == dict:
+                # print("it is a class")
+                object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
+                return object_members[members.value] , None
+
             return self.global_symbol_table[variable] , None
         else:
             return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
@@ -938,6 +951,51 @@ class Interpreter:
         #         cases[case_key] = case_value 
         
         # statement = cases.get(str(condition.value))
+
+    def ClassNode(self , node):
+
+        class_name = node.class_name.value
+        class_scope = {}
+        interpreter = Interpreter(self.file , class_scope)
+        result , error = interpreter.process(node.class_body)
+        if error:
+            return None , error
+
+        if class_name not in self.global_symbol_table:
+            self.global_symbol_table[class_name] = class_scope
+        else:
+            return None , RunTimeError(self.file , f"{class_name} cannot be used again for declaring a class.")
+        return None , None
+    
+
+    def ObjectNode(self , node):
+
+        object_name = node.object_name.value
+        class_name = node.class_name.value
+
+        if object_name not in self.global_symbol_table :
+            self.global_symbol_table[object_name] = class_name+"@"+ str(id(self.global_symbol_table[class_name]))
+    
+        return None , None
+    
+    # def ObjectPropAccessNode(self , node):
+
+    #     object_name = node.object_name.value
+    #     prop_name = node.prop_name.value
+
+    #     if object_name not in self.global_symbol_table :
+    #         return None , RuntimeError(self.file , f"Object '{object_name}' is undefined.")
+        
+    #     elif type(self.global_symbol_table[self.global_symbol_table[object_name][:self.global_symbol_table[object_name].find("@")]]) != dict:
+    #         # print(type(self.global_symbol_table[self.global_symbol_table[object_name][:self.global_symbol_table[object_name].find("@")]]))
+    #         return None , RunTimeError(self.file , f"'{object_name}' is not a valid class.")
+        
+    #     object_members = self.global_symbol_table[self.global_symbol_table[object_name][:self.global_symbol_table[object_name].find("@")]]
+        
+    #     needed_member = object_members[prop_name]
+    #     # print(self.global_symbol_table)
+    #     return  needed_member , None
+
         
     def no_process(self , node):
 

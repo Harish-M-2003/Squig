@@ -228,6 +228,10 @@ class Lexer:
                 if error:
                     return None , error
                 tokens.append(input_string)
+            
+            elif self.current_char == "@":
+                tokens.append(Token(token_at , token_position=self.position.copy_position()))
+                self.next()
 
             elif self.current_char == "(":
                 tokens.append(Token(token_lparen,token_position=self.position.copy_position()))
@@ -321,6 +325,7 @@ class Lexer:
             elif self.current_char == '=':
                 tokens.append(Token(token_eql,token_position=self.position.copy_position()))
                 self.next()
+
             elif self.current_char == '`':
                 
                 string , error = self.tokenize_string()
