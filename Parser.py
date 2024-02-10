@@ -34,12 +34,6 @@ class Parser:
     def statements(self):
         statements = []
 
-        
-        
-
-        # while self.current_token.type == token_newline:
-        #     self.next()
-
         if self.current_token.type == token_eof:
             return CollectionNode(elements=statements) , None
         
@@ -57,7 +51,7 @@ class Parser:
                 break
             
             if self.current_token.type == token_rb:
-                self.next()
+            #     self.next()
                 break
 
             statement , error = self.expression()
@@ -412,7 +406,7 @@ class Parser:
                 if error:
                     return None , error
                 expressions.append(line)
-                
+            
             return ShowNode(expressions)  , None
         
         elif self.current_token.type == token_keyword and self.current_token.value == "file":
@@ -585,14 +579,14 @@ class Parser:
             
             # while self.current_token.type == token_newline:
             #     self.next()
-
-            
             
             case_conditions[case_condition] = case_body
 
+            if self.current_token.type == token_rb:
+                self.next()
+
         # while self.current_token.type == token_newline:
         #     self.next()
-
         if self.current_token.type != token_keyword and self.current_token.value != "default":
             
             return None ,  WrongSyntaxError(file=self.file , details="Expected a 'default' in switch statement.",position=None)
@@ -610,6 +604,7 @@ class Parser:
             self.next()
             default_body , error = self.statements()
 
+
         if error:
             return None , error
         
@@ -617,6 +612,13 @@ class Parser:
             return None , WrongSyntaxError(file=self.file , details="Expected a '}' in switch statement.",position=None)
         
         self.next()
+
+        
+        if self.current_token.type != token_rb:
+            return None , WrongSyntaxError(file=self.file , details="Expected a '}' in switch statement.",position=None)
+        
+        self.next()
+
         return SwitchNode(condition=condition , cases=case_conditions , default_body= default_body) , None
 
 
@@ -694,6 +696,11 @@ class Parser:
 
             if error:
                 return None , error
+            
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a closing '}' in function .")
+            
+            self.next()
             
             return FunctionNode(function_name , param_list , statement) , None
 
@@ -810,20 +817,22 @@ class Parser:
             #     self.next()
             if self.current_token.type == token_rb:
                 return None , RunTimeError(self.file , "blocks cannot be empty. check 'if clause' at line {linenumber}")
-            case1 , error = self.statements()
+            cases1 , error = self.statements()
         else:
             
             # while self.current_token.type == token_newline:
             #     self.next()
             if self.current_token.type == token_rb:
                 return None , RunTimeError(self.file , "blocks cannot be empty. check 'if clause' at line {linenumber}")
-            case1 , error = self.expression()
-
+            cases1 , error = self.expression()
+        
         if error:
                 return None , error
         
-        cases.append((condition , case1))
-
+        cases.append((condition , cases1))
+        if self.current_token.type != token_rb:
+            return None , WrongSyntaxError("Expected a closing '}' in if statement")
+        self.next()
         # while self.current_token.type == token_newline:
         #     self.next()
         while self.current_token.type == token_keyword and self.current_token.value == "elif":
@@ -866,7 +875,10 @@ class Parser:
             
             if error:
                 return None , error
-
+            
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a closing '}' for elif block.")
+            self.next()
             cases.append((condition , block))
 
             # while self.current_token.type == token_newline:
@@ -895,13 +907,15 @@ class Parser:
             if error:
                 return None , error
             
+                # print("if statement" , self.current_token)
             # print(self.current_token)
-            # if self.current_token.type != token_rb:
-            #     return None , WrongSyntaxError(self.file , "Expected a '}' in the 'else clause'.", position = self.current_token.position.copy_position() )
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a '}' in the 'else clause'.", position = self.current_token.position.copy_position() )
             
-            # self.next()
+            self.next()
 
             else_case = block
+        
 
         return IfNode(cases , else_case) , None
 

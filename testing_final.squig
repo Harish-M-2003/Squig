@@ -6,16 +6,20 @@
 # # let a : 10
 # # let b : 90
 
-# # greet function {name , time}: String {
+# greet function {name , time} : {
 
-# #    if {time = 0} : {
-# #        return "";
-# #    } else : {
-# #        log "welcome" , name , time;
-# #        greet{name , time - 1};
-# #        log "welcome" , name , time;
-# #    }
-# # }
+#    if {time = 0} : {
+#        log "harish";
+#    } else : {
+#        log "welcome" , name , time;
+#        greet{name , time - 1};
+#        log "welcome" , name , time;
+#    }
+# }
+
+# greet{"harish"  , 5}
+
+
 
 
 
@@ -98,8 +102,8 @@
 # # log  "google" - "shinchan"
 # findLetter function {string , target , index} : {
 
-#     This is a muti-line statement function
-#     This is a function which checks does the given string containes the target character in it or not.
+#     #This is a muti-line statement function
+#     #This is a function which checks does the given string containes the target character in it or not.
 
 #     if {index >= length{string}} : { # This is a if statement
 #        log "not found";
@@ -121,7 +125,7 @@
 # #log type pop string[0]
 # #log string , length{string}
 
-# #findLetter{"Squig" , "q" , 0}
+# findLetter{"Squig" , "a" , 0}
 
 # #let v :  pop google["test"]
 
@@ -167,9 +171,10 @@
 # #log google[0]
 
 # #log "end of file" + "asdasd"
-# #let array : {1,2,3,4,5,6} # Since the array values cannot be changed at runtime , need to redesign it's logic
-
-# #array[0] : 100
+# let array : {1,2,3,{4,5},6} # Since the array values cannot be changed at runtime , need to redesign it's logic
+# log array
+# array[-2] : 100
+# log array
 
 # greet_user function {name} : upper{"welcome , " +  name}
 
@@ -213,4 +218,19 @@
 # # List
 # # Map
 # # Stack and Queue
+
+# switch {"asdas"} : {
+#     case "harish" : {
+#         log "correct"
+#     } case "shinchan" : {
+#         log "working"
+#     }
+#     default : {
+#         log "invalid"
+#     }
+# }
+
+# let map : {"name" : "harish" , "age" : 21}
+
+# log map
 
