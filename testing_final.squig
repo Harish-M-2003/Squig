@@ -20,10 +20,6 @@
 # greet{"harish"  , 5}
 
 
-
-
-
-
 # n1 : 5;
 # n2 : 5;
 
@@ -234,23 +230,39 @@
 
 # log map
 
-harish class {
-    let name : "harish"   
-    let age : 21
+# human class {
+#     let name : "harish";
+#     let age : -1;
+    
+# }
 
-    greet function {} : {
-        log "testing"
-    }
+# let harish : @human
+
+# log harish.name
+
+# Human class {
+#     let name : "Harish";
+#     let age : -1;
+#     let liked_languages : {"python" , "java" , "javascript"};
+#     let map : {"shinchan" : "japanese cartoon" , "jacki chan" : "chinese cartoon"};
+
+#     intro function {} : {
+
+#         log  "testing" + name
+
+#     }
+# }
+
+# let human : @Human
+
+# # log human.name + String{human.age}
+# let languages : length{human.name};
+# let intro : human.intro;
+# intro{}
+# log languages
+
+for x{10} : {
+    log "testing"
 }
 
-let first_class : @harish # Object instantiation
-
-log first_class.name # Accessing members of a class
-log first_class.age
-
-if { first_class.name = "shinchan"} : {
-    log "working like as expected"
-} else : {
-    log "not working properly"
-}
-
+log "hello world"

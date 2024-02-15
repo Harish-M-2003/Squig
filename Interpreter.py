@@ -342,7 +342,7 @@ class Interpreter:
             # elif isinstance(self.global_symbol_table[variable] , Types.HashMap):
             #     return self.global_symbol_table[variable] , None
             
-            if type(self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]) == dict:
+            if type(self.global_symbol_table.get(variable)) == str : # changed this line
                 # print("it is a class")
                 object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
                 return object_members[members.value] , None
@@ -1058,18 +1058,18 @@ if __name__ == "__main__":
     
     # print("\n\tNote : If you tend find any bug kindly report it to us in github : https://github.com/Harish-M-2003/Squig")
     # print()
-    print("\n\tNote : If you tend find any bug kindly report it to us in github : https://github.com/Harish-M-2003/Squig")
+    print("\n\tNote: If you happen to find any bugs, kindly report them to us on GitHub: https://github.com/Harish-M-2003/Squig.")
     print()
 
     while True:
         try:
-            # file = sys.argv[-1]
+            file = sys.argv[-1]
 
-            # if not file.endswith(".squig"):
-            #      print(f"File : '{file[:file.find('.')]}' is not a squig file.")
-            #      break
-            # code = open(file).read()
-            code = open("testing_final.squig").read()
+            if not file.endswith(".squig"):
+                 print(f"File : '{file[:file.find('.')]}' is not a squig file.")
+                 break
+            code = open(file).read()
+            # code = open("testing_final.squig").read()
             # code = input("squig >") 
             code = code.strip()
             if not code:

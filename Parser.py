@@ -791,13 +791,15 @@ class Parser:
             # print("it's  a newline statement" , self.current_token)
             if error:
                 return None , error
+        
             
             # while self.current_token.type == token_newline:
             #     self.next()
             
-            # if self.current_token.type != token_rb:
-            #     return None , WrongSyntaxError(self.file , "Expected a closing '{' in for loop." , position = None) 
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a closing '}' in for loop." , position = None) 
             
+            self.next()
             return ForNode(iterator_variable_name , start_range , end_range , None , statement , None) , None
 
 
@@ -805,7 +807,6 @@ class Parser:
         if error:
 
             return None , WrongSyntaxError(self.file , "Something went wrong in for loop body.", position = self.current_token.position.copy_position() )
-        
 
         return ForNode(iterator_variable_name , start_range , end_range , None , loop_body , None) , None
                 
