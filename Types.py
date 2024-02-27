@@ -990,7 +990,10 @@ class MutableString(BaseType):
         """
 
         if  index < len(self.mut_string) and index >= 0:
-            self.mut_string[index] = char
+            # self.mut_string[index] =  char #this the bug
+            del self.mut_string[index]
+            # self.mut_string = list(char) + self.mut_string
+            self.mut_string = self.mut_string[:index] + list(char) + self.mut_string[index :]
             self.string = MutableString("".join(self.mut_string))
         else:
             return None , None  # Need to handle this

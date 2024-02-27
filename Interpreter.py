@@ -236,7 +236,9 @@ class Interpreter:
             value = self.global_symbol_table[variable].string
             if not value:
                 return None , RunTimeError(self.file , "Cannot slice a empty string")
-
+            
+            if type(value) == Types.MutableString:
+                value = value.string
             return Types.MutableString(value[indexs[0].number]) , None
         
         elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
@@ -341,8 +343,7 @@ class Interpreter:
                     return None , WrongFileOperationError(file=self.file , name="IOFileOperationError" , details=f"Performing unsupported operation for file '{self.global_symbol_table[variable].file_name}'.")
             # elif isinstance(self.global_symbol_table[variable] , Types.HashMap):
             #     return self.global_symbol_table[variable] , None
-            
-            if type(self.global_symbol_table.get(variable)) == str : # changed this line
+            if type(self.global_symbol_table.get(variable , None)) == str : # changed this line
                 # print("it is a class")
                 object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
                 return object_members[members.value] , None
@@ -492,8 +493,7 @@ class Interpreter:
 
             else:
                 return None , RunTimeError(self.file , f"cannot perfom unsupported operation between {type(left).__name__ , type(right).__name__}.")
-        
-
+            
         return None , None
 
     
@@ -751,7 +751,9 @@ class Interpreter:
                 
                 return None, RunTimeError(self.file , "Index out of range , in pop statemtent.")
             
-            value =  datastructure.remove(index.number)
+            value , error =  datastructure.remove(index.number)
+            if error:
+                return None , error
             return value , None
 
         # print(type(index) , "in pop")

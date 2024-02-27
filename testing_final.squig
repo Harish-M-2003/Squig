@@ -261,8 +261,23 @@
 # intro{}
 # log languages
 
-for x{10} : {
-    log "testing"
-}
+# for x{10} : {
+#     log "testing"
+# }
 
-log "hello world"
+# log "hello world"
+
+let name : `Some Example`;
+
+name[2] : `google`
+
+log name , length{ name }
+log pop name[-1]
+log name , length{ name }
+log pop name[-1]
+log name , length{ name }
+log pop name[0]
+log name , length{ name }
+
+
+# log length{name}
