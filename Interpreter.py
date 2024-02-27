@@ -1011,56 +1011,48 @@ if __name__ == "__main__":
 
     symbol_table = {
 
-        "String" : Types.BuiltinFunction(file , "String"),
-        "MutableString" : Types.BuiltinFunction(file , "MutableString"),
-        "Number" : Types.BuiltinFunction(file , "Number"), #has some issue
-        "Bool" : Types.BuiltinFunction(file , "Bool"), #has some issue
+        "string" : Types.BuiltinFunction(file , "String"),
+        "mut" : Types.BuiltinFunction(file , "MutableString"),
+        "number" : Types.BuiltinFunction(file , "Number"), #has some issue
+        "bool" : Types.BuiltinFunction(file , "Bool"), #has some issue
         "int" : Types.BuiltinFunction(file , "int") ,
-
-        "isNumber" : Types.BuiltinFunction(file , "is_number"),#checked
-        "isString" : Types.BuiltinFunction(file , "is_string"),#checked
-        "isBool" : Types.BuiltinFunction(file , "is_bool"),#checked
+        "isnumber" : Types.BuiltinFunction(file , "is_number"),#checked
+        "isstring" : Types.BuiltinFunction(file , "is_string"),#checked
+        "isbool" : Types.BuiltinFunction(file , "is_bool"),#checked
         "length" : Types.BuiltinFunction(file , "length"),#checked
-        "isCollection" : Types.BuiltinFunction(file , "is_collection"),#checked
-
+        "iscollection" : Types.BuiltinFunction(file , "is_collection"),#checked
         "find" : Types.BuiltinFunction(file , "find"),
         "replace" : Types.BuiltinFunction(file , "replace"),
-        "isPalindrome" : Types.BuiltinFunction(file , "is_palindrome"),
-        "isFunction" : Types.BuiltinFunction(file , "is_function"),
+        "ispalindrome" : Types.BuiltinFunction(file , "is_palindrome"),
+        "isfunction" : Types.BuiltinFunction(file , "is_function"),
         "lTrim" : Types.BuiltinFunction(file , "ltrim"),
         "rTrim" : Types.BuiltinFunction(file , "rtrim"),
         "trim" : Types.BuiltinFunction(file , "trim"),
-        "isAlpha" : Types.BuiltinFunction(file ,"is_alpha"),
-        "isAlnum" : Types.BuiltinFunction(file , "is_alnum"),
-        "isInt" : Types.BuiltinFunction(file , "is_int"),
-        "isUpper" : Types.BuiltinFunction(file , "isUpper"),
-        "isLower" : Types.BuiltinFunction(file , "isLower"),
-
-        "isFloat" : Types.BuiltinFunction(file , "is_float"),#checked
-        "isTitle" : Types.BuiltinFunction(file , "is_title"),#checked
-        "isAscii" : Types.BuiltinFunction(file , "is_ascii"),
+        "isalpha" : Types.BuiltinFunction(file ,"is_alpha"),
+        "isalnum" : Types.BuiltinFunction(file , "is_alnum"),
+        "isint" : Types.BuiltinFunction(file , "is_int"),
+        "isupper" : Types.BuiltinFunction(file , "isUpper"),
+        "islower" : Types.BuiltinFunction(file , "isLower"),
+        "isfloat" : Types.BuiltinFunction(file , "is_float"),#checked
+        "istitle" : Types.BuiltinFunction(file , "is_title"),#checked
+        "isascii" : Types.BuiltinFunction(file , "is_ascii"),
         "lower" : Types.BuiltinFunction(file , "lower"), #checked
         "upper" : Types.BuiltinFunction(file , "upper"), #checked
-
-        "isSpace" : Types.BuiltinFunction(file , "is_space"),
+        "isspace" : Types.BuiltinFunction(file , "is_space"),
         "slice" : Types.BuiltinFunction(file , "slice"),
-        "toCap" : Types.BuiltinFunction(file , "toCap"),
-
-        "startsWith" : Types.BuiltinFunction(file , "startswith"),#checked
-        "endsWith" : Types.BuiltinFunction(file , "endswith"),#checked
-        
-        "swapCase" : Types.BuiltinFunction(file , "swapcase"),
-        "charAt" : Types.BuiltinFunction(file , "charat"),
+        "tocap" : Types.BuiltinFunction(file , "toCap"),
+        "startswith" : Types.BuiltinFunction(file , "startswith"),#checked
+        "endswith" : Types.BuiltinFunction(file , "endswith"),#checked
+        "swapcase" : Types.BuiltinFunction(file , "swapcase"),
+        "charat" : Types.BuiltinFunction(file , "charat"),
         "reverse" : Types.BuiltinFunction(file , "reverse"),
-
         "title" : Types.BuiltinFunction(file , "title"),
         "split" : Types.BuiltinFunction(file , "split"),
-
     }
     
     # print("\n\tNote : If you tend find any bug kindly report it to us in github : https://github.com/Harish-M-2003/Squig")
     # print()
-    print("\n\tNote: If you happen to find any bugs, kindly report them to us on GitHub: https://github.com/Harish-M-2003/Squig.")
+    print("\n\tNote: If you happen to find any bugs, kindly report them to us on GitHub: https://github.com/Harish-M-2003/Squig")
     print()
 
     while True:
@@ -1070,10 +1062,10 @@ if __name__ == "__main__":
             if not file.endswith(".squig"):
                  print(f"File : '{file[:file.find('.')]}' is not a squig file.")
                  break
-            code = open(file).read()
+            code = open(file).read().strip()
             # code = open("testing_final.squig").read()
             # code = input("squig >") 
-            code = code.strip()
+            # code = code.strip()
             if not code:
                 break
         except KeyboardInterrupt:

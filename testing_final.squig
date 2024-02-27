@@ -279,5 +279,11 @@ log name , length{ name }
 log pop name[0]
 log name , length{ name }
 
+log isstring{name}
+
+let example : mut{"harish"}
+example[0] : `12`
+log pop example[-1]
+log example
 
 # log length{name}
