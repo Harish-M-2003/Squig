@@ -3,3 +3,6 @@
 2.) Need to Chagne the implementation of 
 3.) Check if_statement function for bug.
 4.) Check for loop statement for bug
+
+Bugs in Array :
+1.) Handle index out of bound exception.

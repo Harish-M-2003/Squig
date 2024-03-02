@@ -395,8 +395,11 @@ class BaseFunction(BaseType):
 class UserDefinedFunction(BaseFunction):
 
     def __init__(self ,file, variable , params , body):
-
         super().__init__(file , variable , params , body)
+
+    def __repr__(self):
+
+        return f"Function< {id(self)} >"
     
     def execute(self , args , global_symbol_table = None):
 

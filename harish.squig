@@ -1,5 +1,7 @@
 
 
-sum function { n1 , n2 } : n1 + n2 ; 
+sum function { n1 , n2} :  {
+     n1 + n2
+}; 
 
 # let sum { n1 , n2 } => n1 + n2

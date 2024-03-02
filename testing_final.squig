@@ -267,23 +267,42 @@
 
 # log "hello world"
 
-let name : `Some Example`;
+# let name : `Some Example`;
 
-name[2] : `google`
+# name[2] : `google`
 
-log name , length{ name }
-log pop name[-1]
-log name , length{ name }
-log pop name[-1]
-log name , length{ name }
-log pop name[0]
-log name , length{ name }
+# log name , length{ name }
+# log pop name[-1]
+# log name , length{ name }
+# log pop name[-1]
+# log name , length{ name }
+# log pop name[0]
+# log name , length{ name }
 
-log isstring{name}
+# log isstring{name}
 
-let example : mut{"harish"}
-example[0] : `12`
-log pop example[-1]
-log example
+# let example : bool{"harish"}
+# log example
+# example[0] : `12`
+# log pop example[-1]
+# log example
 
 # log length{name}
+
+# loop , array
+
+# use "harish.squig";
+
+# let array : {1,2,3,3,4,5 , {10 , 12 , {50 , 60} , 80}};
+# log array[-1][-2]["1"]
+# let total : sum{5,5}
+# log type total[0]
+# array[length{array}] : 100 # Need to handle
+
+# log length{array}
+# clear array
+# update , remove , length ,
+
+let name : 'Enter your name : '
+
+log name

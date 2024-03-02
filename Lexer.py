@@ -319,12 +319,16 @@ class Lexer:
             elif self.current_char == "&":
                 tokens.append(Token(token_and , self.current_char,token_position=self.position.copy_position()))
                 self.next()
+
             elif self.current_char == "|":
                 tokens.append(Token(token_or , self.current_char,token_position=self.position.copy_position()))
                 self.next()
+                
             elif self.current_char == '=':
                 tokens.append(Token(token_eql,token_position=self.position.copy_position()))
                 self.next()
+                if self.current_char == "=":
+                    return None , InvalidLiteral(self.file,f"Unexpected Literal '{self.current_char}='.", position = self.position.copy_position() )
 
             elif self.current_char == '`':
                 

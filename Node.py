@@ -10,6 +10,15 @@ class NumberNode:
 
         return f"{self.factor.value}"
     
+class ClearNode:
+
+    def __init__(self , variable_name):
+
+        self.variable_name = variable_name
+    
+    def __repr__(self) -> str:
+        
+        return f"ClearNode({self.variable_name})"
 
 class StringNode:
 

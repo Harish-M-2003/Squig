@@ -255,6 +255,13 @@ class Parser:
 
             return TypesNode(types) , None
         
+        elif self.current_token.type == token_keyword and self.current_token.value == "clear":
+            self.next()
+            variable_name , error  = self.expression()
+            if error:
+                return None , error
+            return ClearNode(variable_name) , None
+        
         elif self.current_token.type == token_keyword and self.current_token.value in ("true" , "false"):
 
             boolean_node  = BooleanNode(self.current_token.value)
@@ -814,7 +821,6 @@ class Parser:
 
         cases = []
         else_case = None
-
         if not (self.current_token.type == token_keyword and self.current_token.value == "if"):
 
             return None , WrongSyntaxError(self.file , "Expected 'if' keyword.", position = self.current_token.position.copy_position() )
@@ -829,6 +835,7 @@ class Parser:
         #     self.next()
         condition ,  error = self.expression()
         
+        print("inside if" , self.current_token)
         # while self.current_token.type == token_newline:
         #     self.next()
         if error:

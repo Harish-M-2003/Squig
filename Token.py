@@ -46,7 +46,7 @@ keywords = ("if" , "else" , "elif", "function" ,
             "for","return", "break" ,"continue" , "let",
             "delete" , "type" , "use" , "log" , "file" , "close",
             "default" , "case" , "switch", "true" , "false" , "pop",
-            "class" , "none"
+            "class" , "none" , "clear"
             )
 
 class Token:

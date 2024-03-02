@@ -210,11 +210,14 @@ class Interpreter:
         indexs = []
         for idx in node.index:
             index , error = self.process(idx)
-            if not isinstance(index , Types.Number) and isinstance(self.global_symbol_table[variable] , Types.Collection):
-                return None , WrongTypeError(self.file , f"Unexpected index type found in Collection '{variable}'")
+            if not isinstance(self.global_symbol_table[variable] , Types.Collection):
+                return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(self.global_symbol_table[variable]).__name__} cannot be indexed.")
+            if not isinstance(index , Types.Number):
+                return None , WrongTypeError(self.file , f"Type '{type(index).__name__}' connot be used for indexing Collection '{variable}'.")
             if error:
                 return None , error
             indexs.append(index)
+            
         if isinstance(self.global_symbol_table[variable],Types.Collection) or isinstance(self.global_symbol_table[variable] , Types.String):
 
             value = self.global_symbol_table[variable].index(indexs[0].number)
@@ -970,6 +973,21 @@ class Interpreter:
         return None , None
     
 
+    def ClearNode(self , node):
+
+        variable_name = node.variable_name.variable.value
+        if variable_name in self.global_symbol_table:
+            collection = self.global_symbol_table[variable_name]
+            if type(collection) == Types.Collection:
+                collection.elements.clear()
+            else:
+                return None , RunTimeError(self.file , f"Cannot clear elements of type {type(collection).__name__}")
+        else:
+            return None , RunTimeError(self.file , f"Variable '{variable_name}' is undefined.")
+                
+        return None , None
+    
+
     def ObjectNode(self , node):
 
         object_name = node.object_name.value
@@ -1085,9 +1103,12 @@ if __name__ == "__main__":
             print(error.print())
             break
         try:
-            
-            parser = Parser(tokens , file)
-            ast , error = parser.parse()
+            try :
+                parser = Parser(tokens , file)
+                ast , error = parser.parse()
+            except Exception:
+                print("Squig : \nSomething went wrong while trying to parse your code , kindly raise an issue in github , attach the code that caused this error in the issue.")
+                break
             
             if error:
                 print(error.print())
@@ -1096,8 +1117,12 @@ if __name__ == "__main__":
             if not ast.elements:
                 break
 
-            interpreter = Interpreter(file , symbol_table)
-            result , error = interpreter.process(ast)
+            try:
+                interpreter = Interpreter(file , symbol_table)
+                result , error = interpreter.process(ast)
+            except Exception:
+                print("\tSquig : \n\t\tSomething went wrong while trying to interpret your code , kindly raise an issue in github ,  attach the code that caused this error in the issue.")
+                break
 
             if error:
                 print(error.print())
