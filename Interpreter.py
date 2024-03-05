@@ -281,14 +281,21 @@ class Interpreter:
         variable = node.variable.value
         members = node.members
         value , error = self.process(node.factor)
-
         
         if error:
             return None , error
         
-        if type(self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]) == dict:
-            object_member = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
-            # print(object_member , "Object")
+        object_name = self.global_symbol_table.get(variable , -1)
+        if object_name == -1:
+            return None , RunTimeError(self.file , f"Variable {variable} is undefined")
+
+        if  type(object_name) == Types.String and "@" not in object_name.value:
+            
+            self.global_symbol_table[variable] = value
+        
+        elif type(self.global_symbol_table[object_name[:object_name.find("@")]]) == dict:
+
+            object_member = self.global_symbol_table[object_name[:object_name.find("@")]]
             object_member[members.value] = value
         else:
             self.global_symbol_table[variable] = value
@@ -1103,12 +1110,12 @@ if __name__ == "__main__":
             print(error.print())
             break
         try:
-            try :
-                parser = Parser(tokens , file)
-                ast , error = parser.parse()
-            except Exception:
-                print("Squig : \nSomething went wrong while trying to parse your code , kindly raise an issue in github , attach the code that caused this error in the issue.")
-                break
+            # try :
+            parser = Parser(tokens , file)
+            ast , error = parser.parse()
+            # except Exception:
+            #     print("Squig : \nSomething went wrong while trying to parse your code , kindly raise an issue in github , attach the code that caused this error in the issue.")
+            #     break
             
             if error:
                 print(error.print())
@@ -1117,12 +1124,12 @@ if __name__ == "__main__":
             if not ast.elements:
                 break
 
-            try:
-                interpreter = Interpreter(file , symbol_table)
-                result , error = interpreter.process(ast)
-            except Exception:
-                print("\tSquig : \n\t\tSomething went wrong while trying to interpret your code , kindly raise an issue in github ,  attach the code that caused this error in the issue.")
-                break
+            # try:
+            interpreter = Interpreter(file , symbol_table)
+            result , error = interpreter.process(ast)
+            # except Exception:
+            #     print("\tSquig : \n\t\tSomething went wrong while trying to interpret your code , kindly raise an issue in github ,  attach the code that caused this error in the issue.")
+            #     break
 
             if error:
                 print(error.print())

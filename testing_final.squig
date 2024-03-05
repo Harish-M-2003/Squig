@@ -254,7 +254,9 @@
 # }
 
 # let human : @Human
-
+# log human.name
+# human.name : "shinchan"
+# log human.name
 # # log human.name + String{human.age}
 # let languages : length{human.name};
 # let intro : human.intro;
@@ -303,6 +305,8 @@
 # clear array
 # update , remove , length ,
 
-let name : 'Enter your name : '
 
-log name
+# let name : "testing"
+# name : "shinchan"
+
+# log name

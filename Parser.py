@@ -834,8 +834,11 @@ class Parser:
         # while self.current_token.type == token_newline:
         #     self.next()
         condition ,  error = self.expression()
+
+        if type(condition) == VariableNode:
+            return None , RunTimeError(self.file , "cannot use assignment statement in conditions")
         
-        print("inside if" , self.current_token)
+        # print("inside if" , self.current_token)
         # while self.current_token.type == token_newline:
         #     self.next()
         if error:
