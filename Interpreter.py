@@ -590,16 +590,17 @@ class Interpreter:
         elements = []
         start_value , error = self.process(node.start_value)
         end_value = Types.Number(0)
-        step_value = Types.Number(1)
+        step_value = Types.Number(node.step_value)
 
         if node.end_value:
             end_value , error = self.process(node.end_value)
             if error:
                 return None , error
             
-        if node.step_value:
+        if node.step_value != 1:
 
             step_value , error = self.process(node.step_value)
+
             if error:
                 return None , error
         
@@ -615,7 +616,7 @@ class Interpreter:
                 elements.append(body)
         
         elif end_value.number:
-
+            
             for var in range(start_value.number , end_value.number , step_value.number):
 
                 self.global_symbol_table[variable] = Types.Number(var)

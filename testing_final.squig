@@ -336,8 +336,8 @@
 # log 4 <= 3 | 3 <= 4
 # log 4 <= 3 & 3 <= 4
 
-for x{5 } : {
-    log "testing"
+for x{3} : {
+    log x
 }
 
 # log {5} / 5

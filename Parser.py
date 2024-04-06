@@ -769,14 +769,22 @@ class Parser:
         
         self.next()
         start_range , error = self.expression()
+        step_range  = 1
         end_range = None
 
         if self.current_token.type == token_comma:
-
+            self.next()
             end_range , error = self.expression()
-            
+            if error:
+                return None , error
 
-        elif self.current_token.type != token_rb:
+            if self.current_token.type == token_comma:
+                self.next()
+                step_range , error = self.expression()
+                if error:
+                    return None , error
+
+        if self.current_token.type != token_rb:
 
             return None , WrongSyntaxError(self.file , "Expected a '}' after the range in for loop.", position = self.current_token.position.copy_position() )
         self.next()
@@ -786,8 +794,6 @@ class Parser:
             return None , WrongSyntaxError(self.file , "Expected a ':' after the for loop range", position = self.current_token.position.copy_position() )
         
         self.next()
-
-        # start of newline feature
 
         if self.current_token.type == token_lb:
             self.next()
@@ -808,7 +814,8 @@ class Parser:
                 return None , WrongSyntaxError(self.file , "Expected a closing '}' in for loop." , position = None) 
             
             self.next()
-            return ForNode(iterator_variable_name , start_range , end_range , None , statement , None) , None
+
+            return ForNode(iterator_variable_name , start_range , end_range , step_range , statement , None) , None
 
 
         loop_body , error = self.expression()
@@ -816,7 +823,7 @@ class Parser:
 
             return None , WrongSyntaxError(self.file , "Something went wrong in for loop body.", position = self.current_token.position.copy_position() )
 
-        return ForNode(iterator_variable_name , start_range , end_range , None , loop_body , None) , None
+        return ForNode(iterator_variable_name , start_range , end_range , step_range , loop_body , None) , None
                 
     def if_statement(self):
 
