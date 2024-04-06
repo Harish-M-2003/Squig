@@ -774,6 +774,7 @@ class Parser:
         if self.current_token.type == token_comma:
 
             end_range , error = self.expression()
+            
 
         elif self.current_token.type != token_rb:
 

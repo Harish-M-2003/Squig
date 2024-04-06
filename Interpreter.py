@@ -84,6 +84,7 @@ class Interpreter:
                 return None , RunTimeError(self.file , f"Multiplication {error_message}")
             
         elif operator == token_modulo:
+            
             try:
                 return left.modulo(right)
             except :
@@ -95,9 +96,10 @@ class Interpreter:
                     return None , WrongTypeError(self.file  ,f"'%' cannot be used between {type(left).__name__} and {type(right).__name__}")
 
                 return None , RunTimeError(self.file , f"0 is an invalid modulo operand.")
+            
         elif operator == token_divide:
             try:
-                return left.div(right)
+                return left.div(right_operand = right)
             except :
                 try:
                     if right.number != 0:
@@ -154,7 +156,7 @@ class Interpreter:
         elif operator == token_or:
             try:
                 return left._or_(right)
-            except :
+            except:
                 return None , RunTimeError(self.file , f"'|' {error_message}")
         
 
@@ -614,7 +616,6 @@ class Interpreter:
         
         elif end_value.number:
 
-            
             for var in range(start_value.number , end_value.number , step_value.number):
 
                 self.global_symbol_table[variable] = Types.Number(var)
@@ -624,11 +625,9 @@ class Interpreter:
                 
                 elements.append(body)
         
-
         return Types.Collection(filename=self.file,elements=elements) , None
     
     def DeleteNode(self , node):
-
 
         variable = [var.value for var in node.variable]
         

@@ -2,7 +2,6 @@ from Error import *
 from os import *
 import Interpreter
 
-
 def isFloat(num):
 
     numbers = [char for char in num]
@@ -23,6 +22,8 @@ def isFloat(num):
     
     return True
 
+
+
 class BaseType:
 
     def __init__(self , name, value , file=None):
@@ -31,12 +32,180 @@ class BaseType:
         self.value = value
         self.file = file
     
-    
     def isType(self , value):
 
         if type(value) == type(self):
             return True
         return False
+    
+    def add(self , right_operand):
+
+        if isinstance( self , String) and isinstance(right_operand , String):
+            return String(self.string + right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Number(self.number + right_operand.number) , None
+        
+        if isinstance(self , Collection) and isinstance(right_operand , Collection):
+            return Collection(filename=self.file , elements=self.elements + right_operand.elements) , None
+        
+        if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
+            return MutableString(self.string + right_operand.string) , None
+        
+        raise Error()
+
+    def div(self , right_operand):
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Number(self.number / right_operand.number) , None
+        
+        raise Error()
+
+    def mul(self , right_operand):
+
+        if isinstance(self , String) and isinstance(right_operand , Number): 
+            return String(self.string * right_operand.number) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , String):
+            return String(self.number * right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Number(self.number * right_operand.number) ,  None
+        
+        if isinstance(self , Collection) and isinstance(right_operand , Number):
+            return Collection(filename=self.file , elements=self.elements * right_operand.number) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Collection):
+            return Collection(filename=self.file , elements=right_operand.elements * self.number) , None
+            
+        raise Error()
+        
+
+    def sub(self , right_operand):
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Number(self.number - right_operand.number) , None
+        
+        raise Error()
+
+    def lt(self , right_operand):
+        
+        if isinstance( self, String) and isinstance( right_operand , String):
+            return Boolean(self.string < right_operand.string) , None
+        
+        if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
+            return Boolean(self.string < right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Boolean(self.number < right_operand.number) , None
+
+        raise Error()
+
+    def gt(self , right_operand):
+        
+        if isinstance(self , String) and isinstance(right_operand , String):
+            return Boolean(self.string > right_operand.string) , None
+        
+        if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
+            return Boolean(self.string > right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Boolean(self.number > right_operand.number) , None
+        
+        raise Error()
+
+    def lte(self , right_operand):
+        
+        if isinstance(self, String) and isinstance(self , String):
+            return Boolean(self.string <= right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(self , Number):
+            return Boolean(self.number <= right_operand.number) , None
+        
+        if isinstance(self , MutableString) and isinstance(self , MutableString):
+            return Boolean(self.string <= right_operand.string) , None
+
+        raise Error()
+
+    def gte(self , right_operand):
+        
+        if isinstance(self, String) and isinstance(self , String):
+            return Boolean(self.string >= right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(self , Number):
+            return Boolean(self.number >= right_operand.number) , None
+        
+        if isinstance(self , MutableString) and isinstance(self , MutableString):
+            return Boolean(self.string >= right_operand.string) , None
+
+        raise Error()
+
+    def eql(self , right_operand):
+        
+        if isinstance(self, String) and isinstance(self , String):
+            return Boolean(self.string == right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(self , Number):
+            return Boolean(self.number == right_operand.number) , None
+        
+        if isinstance(self , MutableString) and isinstance(self , MutableString):
+            return Boolean(self.string == right_operand.string) , None
+
+        raise Error()
+
+    def ne(self , right_operand):
+
+        if isinstance(self, String) and isinstance(self , String):
+            return Boolean(self.string != right_operand.string) , None
+        
+        if isinstance(self , Number) and isinstance(self , Number):
+            return Boolean(self.number != right_operand.number) , None
+        
+        if isinstance(self , MutableString) and isinstance(self , MutableString):
+            return Boolean(self.string != right_operand.string) , None
+
+        raise Error()
+
+    def _and_(self , right_operand ):
+        
+        if isinstance(self, String) and isinstance(right_operand , String):
+            return Boolean(self.string and right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            
+            left_value = True if self.value == "true" else False
+            right_value = False if right_operand.value == "false" else True
+
+            return Boolean(left_value and right_value) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Boolean(self.number and right_operand.number) , None
+        
+        if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
+            return Boolean(self.string and right_operand.string) , None
+        
+        raise Error()
+
+    def _or_(self , right_operand):
+
+
+        if isinstance(self, String) and isinstance(right_operand , String):
+            return Boolean(self.string or right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+
+            left_value = True if self.value == "true" else False
+            right_value = False if right_operand.value == "false" else True
+
+            return Boolean(left_value or right_value) , None
+        
+        if isinstance(self , Number) and isinstance(right_operand , Number):
+            return Boolean(self.number or right_operand.number) , None
+        
+        if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
+            return Boolean(self.string or right_operand.string) , None
+        
+        raise Error()
 
 class String(BaseType):
 
@@ -50,42 +219,6 @@ class String(BaseType):
 
         return f'{self.string}'
     
-    # def div(self , number):
-    #     if isinstance(number , Number):
-    #         return Number(int(self.string) / number.number) , None
-    #     elif isinstance(number , String):
-    #         if number.string.isdigit():
-    #             return Number(int(self.string) / int(number.string)) , None
-            
-    #     return None , RunTimeError(self.file , f"cannot perform operation between types {type(self).__name__ , type(number).__name__}")
-    
-    def add(self , string):
-
-        if isinstance(string , String):
-
-            # if self.string.isdigit() and string.string.isdigit():
-            #     return Number(int(self.string) + int(string.string)) , None
-            
-            return String(self.string + string.string) , None
-        
-        # elif isinstance(string , Number):
-        #     if self.string.isdigit():
-        #         return Number(int(self.string) + string.number) , None
-        #     elif isFloat(self.string):
-        #         return Number(string.number*float(self.string)) , None
-        #     return String(self.string + str(string.number)) , None
-        # else:
-        raise Error()
-        # return None , RunTimeError(self.file ,
-        #                          f"Unexpected operation between '{type(self.string).__name__ , type(string).__name__}'.")
-            
-    def mul(self , number):
-        if isinstance(number , Number):
-            return String(self.string * number.number) , None
-        raise Error()
-        # else:
-        #     return None , RunTimeError(self.file ,f"Unexpected operation between '{type(self.string).__name__ , type(number).__name__}'.")
-        
     def index(self,index): # Need to check this method
 
         if index > len(self.string):
@@ -93,62 +226,6 @@ class String(BaseType):
 
         return String(self.string[index])
     
-    def lt(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string < string.string) , None
-        
-        if isinstance(string , MutableString):
-            return Boolean(self.string < string.string) , None
-        raise Error()
-    
-    def gt(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string > string.string) , None
-        
-        if isinstance(string , MutableString):
-            return Boolean(self.string > string.string) , None
-        raise Error()
-    
-    def lte(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string <= string.string) , None
-        if isinstance(string , MutableString):
-            return Boolean(self.string <= string.string) , None
-        raise Error()
-        
-    def gte(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string >= string.string) , None
-        
-        if isinstance(string , MutableString):
-            return Boolean(self.string >= string.string) , None
-        raise Error()
-    
-    def eql(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string == string.string) , None
-        
-        if isinstance(string , MutableString):
-            return Boolean(self.string == string.string) , None
-        raise Error()
-    
-    def ne(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string != string.string) , None
-        
-        if isinstance(string , MutableString):
-            return Boolean(self.string != string.string) , None
-        raise Error()
-    
-    def _and_(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string and string.string) , None
-        raise Error()
-    
-    def _or_(self , string):
-        if isinstance(string, String):
-            return Boolean(self.string or string.string) , None
-        raise Error()
 
     
 class InputString:
@@ -171,7 +248,7 @@ class InputString:
 
 class Collection(BaseType):
 
-    def __init__(self,filename , elements):
+    def __init__(self , filename , elements):
 
         super().__init__("Collection" , elements)
         self.elements = elements
@@ -189,23 +266,8 @@ class Collection(BaseType):
 
         return self.elements[index]
     
-    def mul(self , number):
 
-        if isinstance(number , Number):
-            return Collection(self.elements*number.number) , None
-        raise Error()
-        # else:
-        #     return None ,  RunTimeError(self.file , f"Unsupported operation '*' between types ('Collection' , {type(number).__name}).")
-
-    def add(self , collection):
-
-        if isinstance(collection , Collection):
-
-            return Collection(filename=self.file,elements=self.elements + collection.elements) , None
-        else:
-            return Collection(filename=self.file,elements=self.elements + (collection,))  , None
-
-class  Boolean:
+class  Boolean(BaseType):
 
     def __init__(self,value):
 
@@ -217,18 +279,6 @@ class  Boolean:
     def __repr__(self):
 
         return f"{self.value}"
-    
-    def _and_(self , right):
-
-        if isinstance(right , Boolean):
-            return Boolean(self.value and right.value) , None
-        raise Error()
-    
-    def _or_(self , right):
-
-        if isinstance(right , Boolean):
-            return Boolean(self.value or right.value) , None
-        raise Error()
     
     def _not_(self):
         return Boolean("true" if self.value != "true" else "false")
@@ -248,59 +298,6 @@ class Number(BaseType):
 
         return f"{self.number}"
 
-    def add(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number + number.number) , None
-        # elif isinstance(number , Collection):
-        #     return Collection((self.number,) + number.elements) , None
-        # elif isinstance(number , String):
-        #     if number.string.isdigit():
-        #         return Number(self.number + int(number.string)) , None
-        #     elif isFloat(number.string):
-        #         return Number(float(number.string)*self.number) , None
-        #     return String(str(self.number) + number.string) , None
-        raise Error()
-        # return None , RunTimeError(self.file , f"cannot perform operation between types {type(self).__name__ , type(number).__name__}")
-
-    
-    def sub(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number - number.number) , None
-        # elif isinstance(number , String):
-        #     if number.string.isdigit():
-        #         return Number(self.number - int(number.string)) , None
-        #     elif isFloat(number.string):
-        #         return Number(float(number.string)*self.number) , None
-        raise Error()
-        # return None , RunTimeError(self.file , f"cannot perform operation between types {type(self).__name__ , type(number).__name__}")
-    
-    def mul(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number * number.number) , None
-        # elif isinstance(number , Collection):
-        #     return Collection(number.elements*self.number ) , None
-        # elif isinstance(number , String):
-        #     if number.string.isdigit():
-        #         return Number(int(number.string)*self.number) , None
-        #     elif isFloat(number.string):
-        #         return Number(float(number.string)*self.number) , None
-        #     return String(self.number * number.string) , None
-        raise Error()
-        # return None , RunTimeError(self.file , f"cannot perform operation between types {type(self).__name__ , type(number).__name__}")
-
-    def div(self , number):
-        if isinstance(number , Number):
-            return Number(self.number / number.number) , None
-        # elif isinstance(number , String):
-        #     if number.string.isdigit():
-        #         return Number(self.number / int(number.string)) , None
-        #     elif isFloat(number.string):
-        #         return Number(self.number / float(number.number)) , None
-        raise Error()
-        # return None , RunTimeError(self.file , f"cannot perform operation between types {type(self).__name__ , type(number).__name__}")
     
     def pow(self , number):
         if isinstance(number , Number):
@@ -308,49 +305,6 @@ class Number(BaseType):
         # elif isinstance(number , String):
         #     if number.string.isdigit():
         #         return Number(self.number ** int(number.string)) , None
-        raise Error()
-
-        # return None , RunTimeError(self.file , f"cannot perform operation between types {type(self).__name__ , type(number).__name__}")
-        
-    def lt(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number < number.number) , None
-        raise Error()
-
-    
-    def gt(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number > number.number) , None
-        raise Error()
-    
-    def lte(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number <= number.number) , None
-        raise Error()
-        
-    def gte(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number >= number.number) , None
-        raise Error()
-    
-    def eql(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number == number.number) , None
-        raise Error()
-    
-    def ne(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number != number.number) , None
-        raise Error()
-    
-    def _and_(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number and number.number) , None
-        raise Error()
-    
-    def _or_(self , number):
-        if isinstance(number , Number):
-            return Boolean(self.number or number.number) , None
         raise Error()
     
     def modulo(self , number):
@@ -1021,107 +975,4 @@ class MutableString(BaseType):
     def __len__(self):
 
         return len(self.mut_string)
-    
-    def gte(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string >= operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string >= operand.string) , None
-        
-        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-        raise Error()
-
-
-    def lte(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string <= operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string <= operand.string) , None
-        
-        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-        raise Error()
-
-    def ne(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string != operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string != operand.string) , None
-        
-        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-        raise Error()
-
-    def gt(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string > operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string > operand.string) , None
-        
-        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-        raise Error()
-
-    def lt(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string < operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string < operand.string) , None
-        raise Error()
-        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
-
-    def _and_(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string and operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string and operand.string) , None
-        
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
-
-    def _or_(self , operand):
-        
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string or operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string or operand.string) , None
-        
-        return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
-    
-    def eql(self , operand):
-        # print("yeah")
-        if isinstance(operand , MutableString) :
-
-            return Boolean(self.string == operand.string) , None
-        
-        if isinstance(operand , String):
-            return Boolean(self.string == operand.string) , None
-        raise Error()
-    
-    def add(self , operand):
-
-        if isinstance(operand , MutableString):
-            return MutableString(self.string + operand.string) , None
-        raise Error()
-        # return None , WrongTypeError(self.file , f"Cannot compare {type(self).__name__} with {type(operand).__name__}")
-    
     

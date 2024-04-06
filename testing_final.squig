@@ -253,6 +253,7 @@
 #     }
 # }
 
+
 # let human : @Human
 # log human.name
 # human.name : "shinchan"
@@ -301,7 +302,7 @@
 # log type total[0]
 # array[length{array}] : 100 # Need to handle
 
-# log length{array}
+# log length{array[-1]}
 # clear array
 # update , remove , length ,
 
@@ -310,3 +311,34 @@
 # name : "shinchan"
 
 # log name
+
+# log 'Enter your name : '
+
+# google function { query } : {
+#     "Search result for " + query
+# }
+
+# let value : google{"harish"}
+
+# log value[0]
+
+# log "Hello"
+
+# log "harish" + "M " + "testing"
+# log 5 + 5
+# log {1,2} + {3,4}
+# log {5} + {1,2}
+# log `harish` + `M`
+# log 5 - 5
+# log 5 * 5
+# log {"testing"} * 2
+
+# log 4 <= 3 | 3 <= 4
+# log 4 <= 3 & 3 <= 4
+
+for x{5 } : {
+    log "testing"
+}
+
+# log {5} / 5
+# log 5 + "asda"
