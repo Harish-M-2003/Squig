@@ -3,41 +3,33 @@ from Token import *
 class NumberNode:
 
     def __init__(self,factor):
-
         self.factor = factor
 
     def __repr__(self):
-
         return f"{self.factor.value}"
     
 class ClearNode:
 
     def __init__(self , variable_name):
-
         self.variable_name = variable_name
     
-    def __repr__(self) -> str:
-        
+    def __repr__(self):
         return f"ClearNode({self.variable_name})"
 
 class StringNode:
 
     def __init__(self,string):
-
         self.string = string
 
     def __repr__(self):
-
         return f'"{self.string.value}"'
 
 class InputStringNode:
 
     def __init__(self,string):
-
         self.string = string
 
     def __repr__(self):
-
         return f"{self.string.value}"
 
 class BinaryOperatorNode:
@@ -53,42 +45,35 @@ class BinaryOperatorNode:
         return f"({self.left},{self.operator},{self.right})"
 
 class AssignmentOperatorNode(BinaryOperatorNode):
-
     pass
 
 class VariableNode:
 
     def __init__(self,variable , factor , members = None):
-
         self.variable = variable
         self.factor = factor
         self.members = members
 
     def __repr__(self):
-
         return f"{self.variable} : {self.factor}"
 
 class VariableAccessNode:
 
     def __init__(self,variable , members = None):
-
         self.variable = variable
         self.members = members
 
     def __repr__(self):
-
         return f"{self.variable.value}"
         
 
 class UnaryOperatorNode:
 
     def __init__(self , operator , factor):
-
         self.operator = operator
         self.factor = factor
 
     def __repr__(self):
-
         if self.operator.type == token_minus:
             return '-' + f"{self.factor.factor.value}"
         elif self.operator.type == token_not:
@@ -98,7 +83,6 @@ class UnaryOperatorNode:
 class IfNode:
 
     def __init__(self , cases , else_case):
-
         self.cases = cases
         self.else_case = else_case
 
@@ -121,26 +105,22 @@ class CollectionNode:
 class CollectionAccessNode:
 
     def __init__(self , variable , index):
-
         self.variable = variable
         self.index = index
 
     def __repr__(self):
-
         return f"{self.variable}:{self.index}"
 
 
 class StringAccessNode:
 
     def __init__(self,string , indexs):
-
         self.string = string
         self.indexs = indexs
 
 class DeleteNode:
 
     def __init__(self,variable):
-
         self.variable = variable
 
     def __repr__(self):
@@ -150,7 +130,6 @@ class DeleteNode:
 class ForNode:
 
     def __init__(self,variable , start , end , step , body , multi_value):
-
         self.variable = variable
         self.start_value = start
         self.end_value = end
@@ -165,7 +144,6 @@ class ForNode:
 class FunctionNode:
 
     def __init__(self , variable , param , body):
-
         self.variable = variable
         self.param = param
         self.body = body
@@ -178,7 +156,6 @@ class FunctionNode:
 class FunctionCallNode:
 
     def __init__(self , variable , param = []):
-
         self.variable = variable
         self.param = param
 
@@ -189,13 +166,11 @@ class FunctionCallNode:
 class TypesNode:
     
     def __init__(self,data):
-
         self.data = data
 
 class UseNode:
 
     def __init__(self,name):
-
         self.name = name
 
     def __repr__(self):
@@ -205,7 +180,6 @@ class UseNode:
 class BooleanNode:
 
     def __init__(self , value):
-
         self.bool = value
 
     def __repr__(self):
@@ -225,7 +199,6 @@ class ReturnNode:
 class ShowNode:
 
     def __init__(self , statement):
-
         self.statement = statement
     
     def __repr__(self):
@@ -235,7 +208,6 @@ class ShowNode:
 class LetNode:
 
     def __init__(self , variable , expression):
-        
         self.variable = variable
         self.factor = expression
     
@@ -246,7 +218,6 @@ class LetNode:
 class FileNode:
 
     def __init__(self , filename , mode):
-
         self.filename = filename
         self.mode = mode
     
@@ -257,17 +228,15 @@ class FileNode:
 class CloseNode:
 
     def __init__(self , file):
-
         self.filename = file
     
-    def __repr__(self) -> str:
+    def __repr__(self):
         
-        return f"close( {self.filename } )"
+        return f"close({self.filename })"
     
 class FileWriteNode:
 
     def __init__(self , variable , content):
-
         self.variable = variable
         self.content = content
 
@@ -278,7 +247,6 @@ class FileWriteNode:
 class SwitchNode:
 
     def __init__(self , condition , default_body , cases = {} , ):
-
         self.condition = condition
         self.cases = cases
         self.default = default_body
@@ -327,30 +295,30 @@ class PopNode:
         self.variable = variable
         self.index = index
 
-class ClassNode:
+# class ClassNode:
     
-    def __init__(self , class_name , class_body = []):
+#     def __init__(self , class_name , class_body = []):
 
-        self.class_name = class_name
-        self.class_body = class_body
+#         self.class_name = class_name
+#         self.class_body = class_body
     
-    def __repr__(self) -> str:
+#     def __repr__(self) -> str:
         
-        return f"Class{self.class_name}"
+#         return f"Class{self.class_name}"
 
 
-class ObjectNode:
+# class ObjectNode:
 
-    def __init__(self , object_name , class_name):
+#     def __init__(self , object_name , class_name):
 
-        self.object_name = object_name
-        self.class_name = class_name
+#         self.object_name = object_name
+#         self.class_name = class_name
 
-class ObjectPropAccessNode:
+# class ObjectPropAccessNode:
 
-    def __init__(self , object_name , prop_name):
+#     def __init__(self , object_name , prop_name):
 
-        self.object_name = object_name
-        self.prop_name = prop_name
+#         self.object_name = object_name
+#         self.prop_name = prop_name
 
         

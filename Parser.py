@@ -80,14 +80,14 @@ class Parser:
 
             self.next()
 
-            if self.current_token.type == token_at:
-                self.next()
-                if self.current_token.type != token_variable:
-                    return None  , WrongSyntaxError(self.file , "Expected a class name after '@' for instantiation an object.")
+            # if self.current_token.type == token_at:
+            #     self.next()
+            #     if self.current_token.type != token_variable:
+            #         return None  , WrongSyntaxError(self.file , "Expected a class name after '@' for instantiation an object.")
 
-                class_name = self.current_token
-                self.next()
-                return ObjectNode(variable , class_name) , None
+            #     class_name = self.current_token
+            #     self.next()
+            #     return ObjectNode(variable , class_name) , None
 
             expression , error = self.expression()
             # print(expression , "in expression function")
@@ -1089,24 +1089,24 @@ class Parser:
         return CollectionNode(elements) , None
     
 
-    def class_statement(self , class_name):
+    # def class_statement(self , class_name):
         
-        self.next()
+    #     self.next()
 
-        if self.current_token.type != token_lb:
-            return None , WrongSyntaxError(self.file , "Expected a opening '{' in class.")
+    #     if self.current_token.type != token_lb:
+    #         return None , WrongSyntaxError(self.file , "Expected a opening '{' in class.")
         
-        self.next()
+    #     self.next()
 
-        class_body , error = self.statements()
-        if error:
-            return None , error
+    #     class_body , error = self.statements()
+    #     if error:
+    #         return None , error
         
-        if self.current_token.type != token_rb:
-            return None , WrongSyntaxError(self.file , "Expected a closing '}' in class.")
-        self.next()
+    #     if self.current_token.type != token_rb:
+    #         return None , WrongSyntaxError(self.file , "Expected a closing '}' in class.")
+    #     self.next()
         
-        return ClassNode(class_name , class_body) , None
+    #     return ClassNode(class_name , class_body) , None
     
 
 if __name__ == "__main__":

@@ -60,7 +60,7 @@ class Interpreter:
         operator = node.operator.type
 
         right , error = self.process(node.right)
-        error_message = f"operation cannot be performed between Types {type(left).__name__} and  {type(right).__name__}."
+        error_message = f"cannot be used between {type(left).__name__} and {type(right).__name__}."
 
         if error:
             return None , error
@@ -69,19 +69,19 @@ class Interpreter:
             try:
                 return left.add(right)
             except :
-                return None , RunTimeError(self.file , f"Addition {error_message}")
+                return None , RunTimeError(self.file , f"'+' {error_message}")
         
         elif operator == token_minus:
             try:
                 return left.sub(right)
             except :
-                return None , RunTimeError(self.file , f"Subtraction {error_message}")
+                return None , RunTimeError(self.file , f"'-' {error_message}")
             
         elif operator == token_mul:
             try:
                 return left.mul(right)
             except :
-                return None , RunTimeError(self.file , f"Multiplication {error_message}")
+                return None , RunTimeError(self.file , f"'*' {error_message}")
             
         elif operator == token_modulo:
             
@@ -90,7 +90,7 @@ class Interpreter:
             except :
                 try:
                     if right.number != 0:
-                        return None , RunTimeError(self.file , f"Modulo {error_message}")
+                        return None , RunTimeError(self.file , f"'%' {error_message}")
                 except:
                     
                     return None , WrongTypeError(self.file  ,f"'%' cannot be used between {type(left).__name__} and {type(right).__name__}")
@@ -103,16 +103,17 @@ class Interpreter:
             except :
                 try:
                     if right.number != 0:
-                        return None , RunTimeError(self.file , f"Division {error_message}")
+                        return None , RunTimeError(self.file , f"'/' {error_message}")
                 except :
-                    return None , WrongTypeError(self.file  ,f"'/' cannot be used between {type(left).__name__} and {type(right).__name__}")
+                    # return None , WrongTypeError(self.file  ,f"'/' cannot be used between {type(left).__name__} and {type(right).__name__}")
+                    return None , WrongTypeError(self.file  ,f"'/' {error_message}")
                 return None , RunTimeError(self.file , f"{left.number} cannot be divided by zero.")
         
         elif operator == token_power:
             try:
                 return left.pow(right)
             except :
-                return None , RunTimeError(self.file , f"Exponentiation {error_message}")
+                return None , RunTimeError(self.file , f"** {error_message}")
         elif operator == token_lt:
             try:
                 return left.lt(right)
@@ -210,19 +211,25 @@ class Interpreter:
             return None , RunTimeError(self.file , f"Collection '{variable}' is undefind.")
         
         indexs = []
+        variable_value = self.global_symbol_table[variable]
+        # print(variable_value)
         for idx in node.index:
             index , error = self.process(idx)
-            if not isinstance(self.global_symbol_table[variable] , Types.Collection):
-                return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(self.global_symbol_table[variable]).__name__} cannot be indexed.")
+            # if not isinstance(self.global_symbol_table[variable] , Types.Collection):
+            if not isinstance(variable_value , Types.Collection):
+                # return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(self.global_symbol_table[variable]).__name__} cannot be indexed.")
+                return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(variable_value).__name__} cannot be indexed.")
             if not isinstance(index , Types.Number):
                 return None , WrongTypeError(self.file , f"Type '{type(index).__name__}' connot be used for indexing Collection '{variable}'.")
             if error:
                 return None , error
             indexs.append(index)
-            
-        if isinstance(self.global_symbol_table[variable],Types.Collection) or isinstance(self.global_symbol_table[variable] , Types.String):
+        
+        # if isinstance(self.global_symbol_table[variable],Types.Collection) or isinstance(self.global_symbol_table[variable] , Types.String):
+        if isinstance(variable_value,Types.Collection) or isinstance(variable_value , Types.String):
 
-            value = self.global_symbol_table[variable].index(indexs[0].number)
+            # value = self.global_symbol_table[variable].index(indexs[0].number)
+            value = variable_value.index(indexs[0].number)
 
             if len(indexs) > 1:
                 if isinstance(value , CollectionNode) or isinstance(value,Types.String) or isinstance(value , StringNode) or isinstance(value , Types.Collection):
@@ -235,10 +242,12 @@ class Interpreter:
 
             return value , None
         
-        elif isinstance(self.global_symbol_table[variable], Types.MutableString):
+        # elif isinstance(self.global_symbol_table[variable], Types.MutableString):
+        elif isinstance(variable_value, Types.MutableString):
 
 
-            value = self.global_symbol_table[variable].string
+            # value = self.global_symbol_table[variable].string
+            value = variable_value.string
             if not value:
                 return None , RunTimeError(self.file , "Cannot slice a empty string")
             
@@ -246,7 +255,8 @@ class Interpreter:
                 value = value.string
             return Types.MutableString(value[indexs[0].number]) , None
         
-        elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
+        # elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
+        elif isinstance(variable_value ,Types.HashMap):
             # print("Asdad")
             
         #     if len(indexs) > 1:
@@ -255,23 +265,27 @@ class Interpreter:
             if isinstance(indexs[0] , Types.Number):
 
                 # key = self.global_symbol_table[variable].index_values.get(indexs[0].value , -1)
-                if indexs[0].value > len(self.global_symbol_table[variable].key_values) or indexs[0].value < 0:
+                # if indexs[0].value > len(self.global_symbol_table[variable].key_values) or indexs[0].value < 0:
+                if indexs[0].value > len(variable_value.key_values) or indexs[0].value < 0:
                     return None , RunTimeError(self.file , "Index out of range while trying to acessing the 'Map'.")
-                key = self.global_symbol_table[variable].index_values[indexs[0].value]
+                # key = self.global_symbol_table[variable].index_values[indexs[0].value]
+                key = variable_value.index_values[indexs[0].value]
                 # print("index value is of type number")
                 # print(key , "acessing")
                 
         #         if key == -1:
         #             return None , RunTimeError(self.file , "Index out of range , while trying to accessing Map data.")
                
-                return  Types.Collection(filename=self.file , elements=[key , self.global_symbol_table[variable].key_values.get(key , None )]), None
+                return  Types.Collection(filename=self.file , elements=[key , variable_value.key_values.get(key , None )]), None
+                # return  Types.Collection(filename=self.file , elements=[key , self.global_symbol_table[variable].key_values.get(key , None )]), None
             
             elif isinstance(indexs[0] , Types.String):
                 
                 # print("index value is of type string")
                 key = indexs[0].string
         #         # print("it's string")
-                return self.global_symbol_table[variable].key_values.get(key , None ) , None
+                # return self.global_symbol_table[variable].key_values.get(key , None ) , None
+                return variable_value.key_values.get(key , None ) , None
         # elif isinstance(self.global_symbol_table[variable] , Types.String):{
         #     if 
         # }
@@ -289,18 +303,18 @@ class Interpreter:
         
         object_name = self.global_symbol_table.get(variable , -1)
         if object_name == -1:
-            return None , RunTimeError(self.file , f"Variable {variable} is undefined")
+            return None , RunTimeError(self.file , f"Variable {variable} is undefined.")
 
-        if  type(object_name) == Types.String and "@" not in object_name.value:
+        # if  type(object_name) == Types.String and "@" not in object_name.value:
             
-            self.global_symbol_table[variable] = value
+        #     self.global_symbol_table[variable] = value
         
-        elif type(self.global_symbol_table[object_name[:object_name.find("@")]]) == dict:
+        # elif type(self.global_symbol_table[object_name[:object_name.find("@")]]) == dict:
 
-            object_member = self.global_symbol_table[object_name[:object_name.find("@")]]
-            object_member[members.value] = value
-        else:
-            self.global_symbol_table[variable] = value
+        #     object_member = self.global_symbol_table[object_name[:object_name.find("@")]]
+        #     object_member[members.value] = value
+        # else:
+        self.global_symbol_table[variable] = value
 
         return "" , None
     
@@ -616,7 +630,7 @@ class Interpreter:
                 elements.append(body)
         
         elif end_value.number:
-            
+
             for var in range(start_value.number , end_value.number , step_value.number):
 
                 self.global_symbol_table[variable] = Types.Number(var)
