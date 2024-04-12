@@ -357,6 +357,7 @@
 # log 6 - "Example String."
 # log "h" / 6
 # log 6 / "h"
+# log "harish"[-1] + "h"
 
 
 # let human : @Human
@@ -367,3 +368,9 @@
 # let languages : length{human.name};
 # let intro : human.intro;
 # intro{}
+# log 0 = 0
+
+let name : `name`
+let Name : "Harish"
+log Name[0]
+log name[0] 

@@ -10,7 +10,7 @@ class Interpreter:
     def process(self , node):
         
         method = getattr(self , f"{type(node).__name__}" , self.no_process)
-        
+        # print(method)
         return method(node)
     
     def ShowNode(self , node):
@@ -212,11 +212,14 @@ class Interpreter:
         
         indexs = []
         variable_value = self.global_symbol_table[variable]
-        # print(variable_value)
+        # print(type(variable_value))
         for idx in node.index:
             index , error = self.process(idx)
             # if not isinstance(self.global_symbol_table[variable] , Types.Collection):
-            if not isinstance(variable_value , Types.Collection):
+            # print(type(variable_value) , isinstance(variable_value , Types.MutableString))
+            if not isinstance(variable_value , Types.Collection) and \
+                not isinstance(variable_value , Types.MutableString) and \
+                not isinstance(variable_value , Types.String):
                 # return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(self.global_symbol_table[variable]).__name__} cannot be indexed.")
                 return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(variable_value).__name__} cannot be indexed.")
             if not isinstance(index , Types.Number):
@@ -594,7 +597,7 @@ class Interpreter:
             indexs.append(index)
         
 
-        return string[indexs[0].number] , None
+        return Types.String(string[indexs[0].number]) , None
     
     def ForNode(self , node):
 
@@ -811,6 +814,7 @@ class Interpreter:
     #     return None , None
     
     def UseNode(self , node):
+        
         module_name = node.name.string.value
         code = ""
 
@@ -886,7 +890,7 @@ class Interpreter:
         # if not variable_value.isType(target_value):
         #     return None , RunTimeError(self.file , "Cannot Manipulate a Mutable String with Another type.")
 
-        if type(variable_value).__name__ == "MutableString":
+        if type(variable_value) == Types.MutableString:
             # print("right")
             if type(target_value) != Types.MutableString:
                 return None , RunTimeError(self.file , f"'{type(target_value).__name__}' cannot be combined with 'MutableString.'")

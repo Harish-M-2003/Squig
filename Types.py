@@ -930,6 +930,7 @@ class MutableString(BaseType):
     """
 
     def __init__(self , string):
+        
         self.string = string
         self.mut_string = [char for char in string]
 
