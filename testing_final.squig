@@ -370,7 +370,8 @@
 # intro{}
 # log 0 = 0
 
-let name : `name`
-let Name : "Harish"
-log Name[0]
-log name[0] 
+let name : ``
+
+name[0] : `m`
+
+log name

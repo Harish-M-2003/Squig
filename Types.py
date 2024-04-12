@@ -271,6 +271,7 @@ class  Boolean(BaseType):
 
     def __init__(self,value):
 
+        super().__init__("Boolean" , value)
         self.value = str(value).lower() if type(value).__name__ == "bool" else value
         
         # In the above line if the value is of type bool it is converted to a lower case string and stored in the
@@ -914,12 +915,6 @@ class HashMap(BaseType):
     
 class MutableString(BaseType):
 
-    # Use self.mut_string property for any processing in MutableString
-    # Need to Change the implementation from list to linkedlist
-    # since self.mut_string is list , it takes O(n) time complexity to remove the first item.
-    # because of the shifting of elements in the list when new letter is added or on existing letter is poped.
-    # to overcome this , we can use linkedlist which would be a better choice.
-
     """
         The 'Mutable string' is a string datatype in which we can create , update and 
         remove letters or words from a Mutable string. 
@@ -930,7 +925,7 @@ class MutableString(BaseType):
     """
 
     def __init__(self , string):
-        
+
         self.string = string
         self.mut_string = [char for char in string]
 
@@ -947,14 +942,15 @@ class MutableString(BaseType):
 
         """
 
-        if  index < len(self.mut_string) and index >= 0:
+        if  index < len(self.mut_string) and index >= 0 :
             # self.mut_string[index] =  char #this the bug
             del self.mut_string[index]
-            # self.mut_string = list(char) + self.mut_string
-            self.mut_string = self.mut_string[:index] + list(char) + self.mut_string[index :]
+            # self.mut_string = self.mut_string[:index] + list(char) + self.mut_string[index :]
+            self.mut_string.insert(index , char)
             self.string = MutableString("".join(self.mut_string))
         else:
-            return None , None  # Need to handle this
+            return None ,  None
+        # Need to handle this
         
         return self , None
     

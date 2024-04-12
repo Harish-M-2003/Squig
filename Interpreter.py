@@ -856,6 +856,7 @@ class Interpreter:
         return Types.Boolean(node.bool) , None
     
     def MutableStringNode(self , node):
+
         string  = node.string.value
         
         return Types.MutableString(string) , None
@@ -878,7 +879,7 @@ class Interpreter:
         # if variable not in self.global_symbol_table and type(variable_value) == Types.HashMap:
         #     return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
         
-        if type(variable_value).__name__ == "String":
+        if type(variable_value) == Types.String:
             return None , RunTimeError(self.file , f"'{variable}' is a immutable string which cannot be modified.")
         
         # print(node.index , "node.index")
@@ -893,11 +894,11 @@ class Interpreter:
         if type(variable_value) == Types.MutableString:
             # print("right")
             if type(target_value) != Types.MutableString:
-                return None , RunTimeError(self.file , f"'{type(target_value).__name__}' cannot be combined with 'MutableString.'")
+                return None , WrongTypeError(self.file , f"'{type(target_value).__name__}' cannot be combined with 'MutableString.'")
             value , error = variable_value.include(index.number , target_value.string)
             if error:
                 return None , error
-            if not value:
+            if not value :
                 return None , RunTimeError(self.file , f"Manipulation Index out of range for MutableString '{variable_value.string}' stored in variable '{variable}'")
         
         elif type(variable_value) == Types.HashMap:
