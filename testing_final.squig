@@ -1,377 +1,55 @@
-# # Arithmetic operations working correctly -> + , - , * , / , **
-# # Boolean Operations are working properly -> & , |
-# # Logical operations are working properly -> > , < , <= , >= , = , !=
-# # input statement working properly
 
-# # let a : 10
-# # let b : 90
+# print statement (No Issues)
 
-# greet function {name , time} : {
+# log "Hello world"
+# log "Hello world" , "From Squig"
+# log "Hello" ,  "world" , "From" , "Squig"
+# log "Hello" ,  "world" , "From" , "Squig"
 
-#    if {time = 0} : {
-#        log "harish";
-#    } else : {
-#        log "welcome" , name , time;
-#        greet{name , time - 1};
-#        log "welcome" , name , time;
-#    }
-# }
-
-# greet{"harish"  , 5}
-
-
-# n1 : 5;
-# n2 : 5;
-
-# #s1 : ""
-# #s2 : "string"
-
-# s1 : `string`
-# s2 : `testing`
-
-
-
-
-# # s1 : 1 ; s2 : 2;
-
-# # greet function  {name , times} : {
-
-# #     if {times = 0 }: {"
-# #     "}
-# #     else : {
-# #         log "welcome" ,  name
-# #         greet{name , times - 1}
-# #     }
-# # }
-
-# # name : age : "j" -> bug
-
-# # greet {"harish" , 5}
-
-# # log s1 > s2
-# # log s1 < s2
-# # log s1 >= s2
-# # log s1 <= s2
-# # log s1 != s2
-# # log s1 = s2
-# # log s1 & s2
-# # log s1 | s2
-
-# # log s1 + s2
-# # log n1 - n2
-# # log n1 / n2
-# # log n1 * n2
-# # log n1 ** n2
-# # log n1 % s2
-
-
-# # points : {"1" : "shinchan"}
-# # log points
-
-
-# # log n1 + s1 works
-# # log n1 - s1 works
-# # log n1 * s1 works
-# # log n1 / s1 works
-# # log n1 ** s1 works
-
-# # log s1 + n1 
-# # log s1 - n2
-# # log s1 * n2
-# # log s1 / n2
-# # log s1 ** n2 
-# # everything works
-
-# # greet{"shinchan" , 5};
-
-# # log "basic operation"
-
-# # log 1 + 2
-# # log 1/2
-# # log 1/1
-# # log 22%2
-
-# # log 4 - 9.5
-
-# # log "l" + 5
-# # log 5 % "l"
-# # log  "google" - "shinchan"
-# findLetter function {string , target , index} : {
-
-#     #This is a muti-line statement function
-#     #This is a function which checks does the given string containes the target character in it or not.
-
-#     if {index >= length{string}} : { # This is a if statement
-#        log "not found";
-#     } 
-
-#     elif {string[index] = target } : { # This is a elif statement
-#        log "found"
-#     } 
-#     else : {
-#        findLetter{string , target ,  index + 1};
-#     }
-# }
-
-# #let string : `it a mutable string.`
-# #string[0] : `I`
-# #string[2] : `!!!`
-# #log string , length{string}
-
-# #log type pop string[0]
-# #log string , length{string}
-
-# findLetter{"Squig" , "a" , 0}
-
-# #let v :  pop google["test"]
-
-# #log v + "test"
-
-# #log google
-
-# #google[2] : "example"
-
-# #log google
-# #google["test"] : "asdkjnasd"
-# #log google
-
-# # let name : "harish"
-
-# #values[-1] : 10
-# #log values
-# #log pop values[1]
-# #log values
-
-# #log "Welcome back" , type name
-
-# #log google["c"]
-# #log google["a"]
-# #google["example1"] : "sdasdasdads"
-# #log google
-
-
-
-# #log type google[0] 
-
-# #let string : `tosting`
-
-# #string[1] : `e`
-
-# #log string
-
-# #log length{google}
-# #log length{google}
-
-# # log google
-# # linearSearch{ google , "10" }
-# #log google[0]
-
-# #log "end of file" + "asdasd"
-# let array : {1,2,3,{4,5},6} # Since the array values cannot be changed at runtime , need to redesign it's logic
-# log array
-# array[-2] : 100
-# log array
-
-# greet_user function {name} : upper{"welcome , " +  name}
-
-# let name : 'Enter your name : '
-# let welcome_string : greet_user{name}
-
-
-# log "Length of string (" , welcome_string , ") : " , length{welcome_string}
-# log "Upper case : " , upper{welcome_string}
-# log "Lower case : " , lower{welcome_string}
-# log "isFunction : " , isFunction{welcome_string}
-# log "isUpper : " , isUpper{welcome_string};
-# log "isLower : " , isLower{welcome_string}
-# log "Type of " , welcome_string , " : " , type welcome_string 
-
-# for x{100} : {
-#     if {(type welcome_string) = "String" } : {
-#         log welcome_string , x 
-#     } else : {
-#         if {welcome_string != 0} : log welcome_string
-#     }
-#     welcome_string : x
-# }
-
-# file file_name : "harish.squig"
-# let content  : trim{file_name}
-
-
-# log "First charactor : " , length{content[2]}
-# log content
-
-
-
-
-# # example[2] : "1234567890"
-
-# let array : {1,2,3,4,45} #Collections are immutable , need to change the implementation logic.
-# # array[2] : 200
-# log 
-# # Array
-# # List
-# # Map
-# # Stack and Queue
-
-# switch {"asdas"} : {
-#     case "harish" : {
-#         log "correct"
-#     } case "shinchan" : {
-#         log "working"
-#     }
-#     default : {
-#         log "invalid"
-#     }
-# }
-
-# let map : {"name" : "harish" , "age" : 21}
-
-# log map
-
-# human class {
-#     let name : "harish";
-#     let age : -1;
-    
-# }
-
-# let harish : @human
-
-# log harish.name
-
-# log languages
-
-# for x{10} : {
-#     log "testing"
-# }
-
-# log "hello world"
-
-# let name : `Some Example`;
-
-# name[2] : `google`
-
-# log name , length{ name }
-# log pop name[-1]
-# log name , length{ name }
-# log pop name[-1]
-# log name , length{ name }
-# log pop name[0]
-# log name , length{ name }
-
-# log isstring{name}
-
-# let example : bool{"harish"}
-# log example
-# example[0] : `12`
-# log pop example[-1]
-# log example
-
-# log length{name}
-
-# loop , array
-
-# use "harish.squig";
-
-# let array : {1,2,3,3,4,5 , {10 , 12 , {50 , 60} , 80}};
-# log array[-1][-2]["1"]
-# let total : sum{5,5}
-# log type total[0]
-# array[length{array}] : 100 # Need to handle
-
-# log length{array[-1]}
-# clear array
-# update , remove , length ,
-
-
-# let name : "testing"
-# name : "shinchan"
-
-# log name
+# input statement (no issues)
 
 # log 'Enter your name : '
 
-# google function { query } : {
-#     "Search result for " + query
-# }
+# Assignment Operator (no issues)
 
-# let value : google{"harish"}
+# let username : "Harish"
 
-# log value[0]
+# Short-hand Assignmenet Operators:
 
-# log "Hello"
+# let a : 5
 
-# log "harish" + "M " + "testing"
+# a +: 5
+# a *: 5
+# a /: 5
+# a **: 2
+# a %: 2 (no to implement this feature)
+# log a
+
+# Arithmatic Operations
+
 # log 5 + 5
-# log {1,2} + {3,4}
-# log {5} + {1,2}
-# log `harish` + `M`
-# log 5 - 5
 # log 5 * 5
-# log {"testing"} * 2
+# log 5 / 5
+# log 5 ** 2
+# log 5 % 5
 
-# log 4 <= 3 | 3 <= 4
-# log 4 <= 3 & 3 <= 4
+# Relational Operator
 
-# let array : {4,3,5,2}
-# let temp : null;
+# log 5 > 5
+# log 5 < 5
+# log 5 <= 5
+# log 5 >= 5
+# log 5 = 5
+# log 5 != 5
+# log true = 1
+# log true / false 
+# log false - true
 
-# sort function {array}:
+# Logical Operator
 
-#     for row {length{array} - 1}: {
+# log true & true
+# log true & false
+# log false | true
+# log true | true , false | false
 
-#         for col {row + 1 , length{array}} : {
-
-#             if {array[row] > array[col] } : {
-#                 temp : array[row]
-#                 array[row] : array[col]
-#                 array[col] : temp
-#         }
-#     }
-# }
-
-# sort{array}
-# log array
-
-
-# log {5} / 5
-# log 5 + "asda"
-
-# nums function {n}: {
-#     if {n > 0} : {
-#         nums{n - 1}
-#         log n
-#     }
-# }
-
-# nums{10}
-
-# Testing String and String Operators
-
-# log "Example String"
-# log "Example String" + ", Another example string"
-# log "Example String" * 2
-# log 2 * "Example String"
-# log "Example String" - 6
-# log 6 - "Example String."
-# log "h" / 6
-# log 6 / "h"
-# log "harish"[-1] + "h"
-
-
-# let human : @Human
-# log human.name
-# human.name : "shinchan"
-# log human.name
-# # log human.name + String{human.age}
-# let languages : length{human.name};
-# let intro : human.intro;
-# intro{}
-# log 0 = 0
-
-let name : ``
-
-name[0] : `m`
-
-log name
+# log true ^ false (need to implement this operation)

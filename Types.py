@@ -52,6 +52,11 @@ class BaseType:
         if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
             return MutableString(self.string + right_operand.string) , None
         
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            left_bool = True if self.value == "true" else False
+            right_bool = True if right_operand.value == "true" else False
+            return Boolean(True if left_bool + right_bool else False) , None
+        
         raise Error()
 
     def div(self , right_operand):
@@ -59,6 +64,14 @@ class BaseType:
         if isinstance(self , Number) and isinstance(right_operand , Number):
             return Number(self.number / right_operand.number) , None
         
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            left_bool = True if self.value == "true" else False
+            right_bool = True if right_operand.value == "true" else False
+            try:
+                return Boolean(True if left_bool / right_bool else False) , None
+            except ZeroDivisionError:
+                return None , RunTimeError(self.file , "Cannot divide by false.")
+
         raise Error()
 
     def mul(self , right_operand):
@@ -77,14 +90,27 @@ class BaseType:
         
         if isinstance(self , Number) and isinstance(right_operand , Collection):
             return Collection(filename=self.file , elements=right_operand.elements * self.number) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value and right_operand.value) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            left_bool = True if self.value == "true" else False
+            right_bool = True if right_operand.value == "true" else False
+            return Boolean(True if left_bool * right_bool else False) , None
             
         raise Error()
         
 
     def sub(self , right_operand):
-        
+
         if isinstance(self , Number) and isinstance(right_operand , Number):
             return Number(self.number - right_operand.number) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            left_bool = True if self.value == "true" else False
+            right_bool = True if right_operand.value == "true" else False
+            return Boolean(True if left_bool - right_bool else False) , None
         
         raise Error()
 
@@ -98,6 +124,9 @@ class BaseType:
         
         if isinstance(self , Number) and isinstance(right_operand , Number):
             return Boolean(self.number < right_operand.number) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value < right_operand.value) , None
 
         raise Error()
 
@@ -112,6 +141,9 @@ class BaseType:
         if isinstance(self , Number) and isinstance(right_operand , Number):
             return Boolean(self.number > right_operand.number) , None
         
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value > right_operand.value) , None
+        
         raise Error()
 
     def lte(self , right_operand):
@@ -124,6 +156,9 @@ class BaseType:
         
         if isinstance(self , MutableString) and isinstance(self , MutableString):
             return Boolean(self.string <= right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value <= right_operand.value) , None
 
         raise Error()
 
@@ -137,6 +172,9 @@ class BaseType:
         
         if isinstance(self , MutableString) and isinstance(self , MutableString):
             return Boolean(self.string >= right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value >= right_operand.value) , None
 
         raise Error()
 
@@ -150,6 +188,9 @@ class BaseType:
         
         if isinstance(self , MutableString) and isinstance(self , MutableString):
             return Boolean(self.string == right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value == right_operand.value) , None
 
         raise Error()
 
@@ -163,6 +204,9 @@ class BaseType:
         
         if isinstance(self , MutableString) and isinstance(self , MutableString):
             return Boolean(self.string != right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value != right_operand.value) , None
 
         raise Error()
 
@@ -184,6 +228,9 @@ class BaseType:
         if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
             return Boolean(self.string and right_operand.string) , None
         
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value and right_operand.value) , None
+        
         raise Error()
 
     def _or_(self , right_operand):
@@ -204,6 +251,9 @@ class BaseType:
         
         if isinstance(self , MutableString) and isinstance(right_operand , MutableString):
             return Boolean(self.string or right_operand.string) , None
+        
+        if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
+            return Boolean(self.value or right_operand.value) , None
         
         raise Error()
 
@@ -269,7 +319,7 @@ class Collection(BaseType):
 
 class  Boolean(BaseType):
 
-    def __init__(self,value):
+    def __init__(self , value):
 
         super().__init__("Boolean" , value)
         self.value = str(value).lower() if type(value).__name__ == "bool" else value

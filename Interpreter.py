@@ -623,14 +623,37 @@ class Interpreter:
         
         if not end_value.number:
 
-            for var in range(start_value.number):
-
-                self.global_symbol_table[variable] = Types.Number(var)
-                body , error = self.process(node.body)
-                if error:
-                    return None , error
+            if type(start_value) == Types.String:
                 
-                elements.append(body)
+                for var in start_value.value:
+
+                    self.global_symbol_table[variable] = Types.String(var)
+                    body , error = self.process(node.body)
+                    if error:
+                        return None , error
+                    
+                    elements.append(body)
+            
+            elif type(start_value) == Types.Number:
+                
+                for var in range(start_value.number):
+
+                    self.global_symbol_table[variable] = Types.Number(var)
+                    body , error = self.process(node.body)
+                    if error:
+                        return None , error
+                    
+                    elements.append(body)
+            
+            elif type(start_value) == Types.Collection:
+
+                for var in start_value.elements:
+                    self.global_symbol_table[variable] = var
+                    body , error = self.process(node.body)
+                    if error:
+                        return None , error
+                    elements.append(body)
+                    
         
         elif end_value.number:
 
