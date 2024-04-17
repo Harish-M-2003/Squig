@@ -1,0 +1,4 @@
+
+play function {path} : {
+    PLAY_AUDIO__{path}
+}
