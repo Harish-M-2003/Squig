@@ -53,3 +53,13 @@
 # log true | true , false | false
 
 # log true ^ false (need to implement this operation)
+
+for x{10} : {
+    count : 0
+    for y{x} : {
+        count :+ 1
+    }
+    log count
+}
+
+log "end of for loop"

@@ -325,8 +325,8 @@ class Interpreter:
         
         variable = node.variable.value
         
-        if variable in self.global_symbol_table:
-            return None , RedeclarationError(file=self.file , details=f"variable '{variable}' cannot be created more than once." , position=None )
+        # if variable in self.global_symbol_table:
+        #     return None , RedeclarationError(file=self.file , details=f"variable '{variable}' cannot be created more than once." , position=None )
     
         value , error = self.process(node.factor)
         if error:
