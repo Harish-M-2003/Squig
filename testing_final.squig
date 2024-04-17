@@ -54,12 +54,27 @@
 
 # log true ^ false (need to implement this operation)
 
-for x{10} : {
-    count : 0
-    for y{x} : {
-        count :+ 1
-    }
-    log count
-}
+# For Loop (No issues)
 
-log "end of for loop"
+# let count : 0
+
+# for x{10} : {
+#     for y{x} : {
+#         for z{10} : {
+#             count :+ 1
+#         }
+#     }
+#     log count
+# }
+
+# log "end of for loop"
+
+# return , break , continue , pass (need to implement this keywords)
+
+# Collection (need to implement insert at and slice)
+
+let values : {"shinchan" , "harish" , "Doraemon"}
+
+# log values + {"Doraemon"}
+# log {"Doraemon"}  + values # Creates a new Collection Object
+# log pop values

@@ -767,9 +767,13 @@ class Interpreter:
         
         # print(self.global_symbol_table[variable] , node.index.index , "in Pop Node")
         # print(type(node.index.index[0]) , node.index.index)
-        index , error = self.process(node.index.index[0])
-        if error:
-            return None , error
+        # print("testing " , type(node.index))
+        index = Types.Number(-1)
+
+        if type(node.index) == CollectionAccessNode:
+            index , error = self.process(node.index.index[0])
+            if error:
+                return None , error
         
         datastructure = self.global_symbol_table[variable]
 
@@ -787,6 +791,9 @@ class Interpreter:
         
         elif type(datastructure) == Types.Collection and type(index) == Types.Number:
 
+            if not datastructure.elements:
+                return None , RunTimeError(self.file , "Cannot pop from an Empty Collection")
+            
             if index.number >= len(datastructure.elements):
                 return None, RunTimeError(self.file , "Index out of range , in pop statemtent.")
             
