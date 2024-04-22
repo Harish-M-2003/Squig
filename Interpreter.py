@@ -845,7 +845,7 @@ class Interpreter:
     
     def UseNode(self , node):
         
-        module_name = node.name.string.value
+        module_name = node.name.string.value.replace(":","/")
         code = ""
 
         if not module_name.endswith('.squig'):
