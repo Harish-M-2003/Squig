@@ -73,9 +73,41 @@
 
 # Collection (need to implement insert at and slice)
 
-let values : {"shinchan" , "harish" , "Doraemon"}
+# let values : {"shinchan" , "harish" , "Doraemon"}
 
 # log values + {"Doraemon"}
 # log {"Doraemon"}  + values # Creates a new Collection Object
 # log pop values
 # use "std:time"
+
+# use "std:time"
+
+let name : "harish"
+
+name : "doreamon" + "asd"
+
+let status : if { name = "harish"} : {
+
+    "testing"
+
+} elif {name = "doreamon"} : {
+
+    name
+
+} 
+else : {
+
+    "shinchan"
+
+}
+
+
+example function {} :  switch {name} : {
+
+    case "harish" : name
+    case "doraemon" : name
+    default :"shinchan"
+
+}
+
+log example{}

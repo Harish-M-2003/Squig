@@ -299,11 +299,11 @@ class Parser:
             indexs = []
             self.next()
 
-            if self.current_token.type == token_keyword and self.current_token.value == "class":
-                class_statement , error = self.class_statement(variable)
-                if error:
-                    return None , error
-                return class_statement , None
+            # if self.current_token.type == token_keyword and self.current_token.value == "class":
+            #     class_statement , error = self.class_statement(variable)
+            #     if error:
+            #         return None , error
+            #     return class_statement , None
 
 
             if self.current_token.type == token_colon:
@@ -339,8 +339,12 @@ class Parser:
             if self.current_token.type == token_lb:
 
                 function_call , error = self.call(variable)
+                
                 if error:
                     return None , error
+                
+                if self.current_token.type == token_colon:
+                    return None , WrongSyntaxError(self.file , "Unexpected '{'" + f" bracket found after variable {variable.value}.")
                 
                 return function_call  , None
                 
@@ -629,6 +633,7 @@ class Parser:
             
             return None ,  WrongSyntaxError(file=self.file , details="Expected a 'default' in switch statement.",position=None)
         
+        has_brackets = False
         self.next()
         if self.current_token.type != token_colon:
             return None ,  WrongSyntaxError(file=self.file , details="Expected a ':' in switch statement.",position=None)
@@ -637,22 +642,25 @@ class Parser:
         default_body , error = None , None
        
         if self.current_token.type != token_lb:
+            has_brackets = True
             default_body , error = self.expression()
         else:
             self.next()
             default_body , error = self.statements()
+        
 
 
         if error:
             return None , error
         
-        if self.current_token.type != token_rb:
+        if has_brackets and self.current_token.type != token_rb:
+            
             return None , WrongSyntaxError(file=self.file , details="Expected a '}' in switch statement.",position=None)
         
         self.next()
 
         
-        if self.current_token.type != token_rb:
+        if not has_brackets and self.current_token.type != token_rb:
             return None , WrongSyntaxError(file=self.file , details="Expected a '}' in switch statement.",position=None)
         
         self.next()
