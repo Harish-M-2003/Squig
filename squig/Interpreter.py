@@ -844,23 +844,31 @@ class Interpreter:
     #     return None , None
     
     def UseNode(self , node):
+
+        import os
         
-        module_name = node.name.string.value.replace(":","/")
+        module_name = os.path.join(os.getcwd() , node.name.string.value.replace(":","\\"))
         code = ""
+        isRead = False
 
         if not module_name.endswith('.squig'):
             
             try:
-                with open(module_name+".squig") as script:
+                path = module_name + ".squig"
+                with open(path) as script:
                     code = script.read()
-            except:
+                    isRead = True
+                    # need to fix issue , it telling file not exsists even if the file is , when the file is empty.
+            except Exception as e:
+
                 return None , WrongImportError(self.file , f"Cannot use '{module_name}' as module.")
 
-        if not code:
+        if not isRead:
             try:
                 with open(module_name) as script:
                     code = script.read()
-            except:
+            except Exception as e:
+
                 return None , RunTimeError(self.file , f"file '{module_name}' doesn't exists.")
         
         file = "<" + module_name +">"
