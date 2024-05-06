@@ -858,7 +858,6 @@ class Interpreter:
                 with open(path) as script:
                     code = script.read()
                     isRead = True
-                    # need to fix issue , it telling file not exsists even if the file is , when the file is empty.
             except Exception as e:
 
                 return None , WrongImportError(self.file , f"Cannot use '{module_name}' as module.")
