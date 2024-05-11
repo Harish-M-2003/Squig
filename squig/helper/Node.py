@@ -228,10 +228,11 @@ class ShowNode:
     
 class LetNode:
 
-    def __init__(self , variable , expression):
+    def __init__(self , variable , expression , isConstant):
 
         self.variable = variable
         self.factor = expression
+        self.isConstant = isConstant
     
     def __repr__(self):
 
@@ -321,6 +322,11 @@ class PopNode:
 
         self.variable = variable
         self.index = index
+
+class NullNode:
+
+    def __repr__(self) -> str:
+        return "null"
 
 # class ClassNode:
     

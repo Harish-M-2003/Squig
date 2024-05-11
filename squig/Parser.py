@@ -28,7 +28,8 @@ class Parser:
             if error:
                 return None , error
             return result , None
-        except:
+        except Exception as e:
+            print(e)
             return None , WrongSyntaxError(self.file , "Error occured due to inconsistent placing of brackets. check in parse function , if you get this is error kindly report this to us by raising an github issue in the repo https://github.com/Harish-M-2003/Squig" )
     
     def statements(self):
@@ -64,7 +65,9 @@ class Parser:
         return CollectionNode(elements=statements) , None
         
     def expression(self):
-        if self.current_token.type == token_keyword and self.current_token.value == "let":
+        if self.current_token.type == token_keyword and self.current_token.value in ("let" , "imu"):
+            isConstant = self.current_token.value == "imu"
+            
             self.next()
             if self.current_token.type != token_variable:
                 # print(self.current_token)
@@ -89,13 +92,18 @@ class Parser:
             #     self.next()
             #     return ObjectNode(variable , class_name) , None
 
+            # if self.current_token.type == token_keyword and self.current_token.value == "none":
+            #     self.next()
+            #     return LetNode(variable , NullNode()) , None
+            
             expression , error = self.expression()
             # print(expression , "in expression function")
             if error:
                 return None , error
 
             # return VariableNode(variable , expression) , None
-            return LetNode(variable , expression) , None
+            
+            return LetNode(variable , expression , isConstant) , None
 
         left , error = self.relational_expression()
         
@@ -246,6 +254,9 @@ class Parser:
             self.next()
             return NumberNode(token) , None
         
+        elif self.current_token.type == token_keyword and self.current_token.value == "null":
+            self.next()
+            return NullNode() , None
         
         elif self.current_token.type  == token_keyword and self.current_token.value == "type":
             self.next()
@@ -808,7 +819,7 @@ class Parser:
             # while self.current_token.type == token_newline:
             #     self.next()
             if self.current_token.type == token_rb:
-                return None , RunTimeError(self.file , "blocks cannot be empty , check 'for clause' at line {linenumber}.")
+                return None , RunTimeError(self.file , "blocks cannot be empty , check 'for clause' at line {linenumber}.") 
             statement , error = self.statements()
             # print("it's  a newline statement" , self.current_token)
             if error:

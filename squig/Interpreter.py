@@ -21,13 +21,14 @@ class Interpreter:
         # print("working")
         # print("in interpretor" , node.statement)
         # print(node.statement)
-        
+
         lines = []
         for statement in node.statement:
 
                 line ,error = self.process(statement)
                 if error:
                     return None , error
+                
                 lines.append(line)
         
         # print(lines)
@@ -317,9 +318,17 @@ class Interpreter:
         #     object_member = self.global_symbol_table[object_name[:object_name.find("@")]]
         #     object_member[members.value] = value
         # else:
-        self.global_symbol_table[variable] = value
+        if not object_name[1]:
+            self.global_symbol_table[variable] = (value , object_name[1])
+        else:
+            return None , RunTimeError(self.file , f"immutable variable '{variable}' cannot be modified")
+        # else:
+        #     print("constant node")
+        return None , None
+    
+    def NullNode(self , node):
 
-        return "" , None
+        return Types.Null() , None
     
     def LetNode(self , node):
         
@@ -327,13 +336,17 @@ class Interpreter:
         
         # if variable in self.global_symbol_table:
         #     return None , RedeclarationError(file=self.file , details=f"variable '{variable}' cannot be created more than once." , position=None )
-    
+        # if node.factor:
         value , error = self.process(node.factor)
+        # else:
+        #     value , error = None , None
+
         if error:
             return None , error
-        self.global_symbol_table[variable] = value
+        
+        self.global_symbol_table[variable] = (value , node.isConstant)
 
-        return "" , None
+        return None , None
     
     def FileWriteNode(self , node):
         # need to fix issue
@@ -361,23 +374,24 @@ class Interpreter:
         members = node.members # Need to fix this for access nested props
 
         if variable in self.global_symbol_table:
-            if isinstance(self.global_symbol_table[variable] , Types.File):
+            
+            if isinstance(self.global_symbol_table[variable][0] , Types.File):
                 # print(self.global_symbol_table[variable].content())
                 
                 try:
-                    file = self.global_symbol_table[variable]
+                    file = self.global_symbol_table[variable][0]
                     # print(file.file.read())
                     return file.content() , None
                 except:
                     return None , WrongFileOperationError(file=self.file , name="IOFileOperationError" , details=f"Performing unsupported operation for file '{self.global_symbol_table[variable].file_name}'.")
             # elif isinstance(self.global_symbol_table[variable] , Types.HashMap):
             #     return self.global_symbol_table[variable] , None
-            if type(self.global_symbol_table.get(variable , None)) == str : # changed this line
-                # print("it is a class")
-                object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
-                return object_members[members.value] , None
+            # if type(self.global_symbol_table.get(variable , None)) == str : # changed this line
+            #     # print("it is a class")
+            #     object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
+            #     return object_members[members.value] , None
 
-            return self.global_symbol_table[variable] , None
+            return self.global_symbol_table[variable][0] , None
         else:
             return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
 
@@ -533,7 +547,6 @@ class Interpreter:
         if error:
             return None , error
 
-        # types = "Type : '" + type(node).__name__.replace("Node" , '') +"'"
         types = type(node).__name__.replace("Node" , '')
 
         return Types.String(string=types , filename=self.file) , None
@@ -982,7 +995,6 @@ class Interpreter:
         if error:
             return None , error
         
-        # print(node.cases)
         cases = node.cases.get(str(condition.value) , False)
         
         if not cases :
@@ -995,45 +1007,25 @@ class Interpreter:
         
         else:
             statement , error = self.process(node.cases.get(str(condition.value)))
-            # print(type(node.cases.get(str(condition.value))) , "t")
             if error:
                 return None , error
             
             return statement , None
-        
 
-        
-        # cases = {}
+    # def ClassNode(self , node):
 
+    #     class_name = node.class_name.value
+    #     class_scope = {}
+    #     interpreter = Interpreter(self.file , class_scope)
+    #     result , error = interpreter.process(node.class_body)
+    #     if error:
+    #         return None , error
 
-
-        # for case_key , case_value in node.cases.items():
-          
-        #     if case_key == condition:
-        #         case_value , error = self.process(case_value)
-
-        #         if error:
-        #             return None , error
-            
-        
-        #         cases[case_key] = case_value 
-        
-        # statement = cases.get(str(condition.value))
-
-    def ClassNode(self , node):
-
-        class_name = node.class_name.value
-        class_scope = {}
-        interpreter = Interpreter(self.file , class_scope)
-        result , error = interpreter.process(node.class_body)
-        if error:
-            return None , error
-
-        if class_name not in self.global_symbol_table:
-            self.global_symbol_table[class_name] = class_scope
-        else:
-            return None , RunTimeError(self.file , f"{class_name} cannot be used again for declaring a class.")
-        return None , None
+    #     if class_name not in self.global_symbol_table:
+    #         self.global_symbol_table[class_name] = class_scope
+    #     else:
+    #         return None , RunTimeError(self.file , f"{class_name} cannot be used again for declaring a class.")
+    #     return None , None
     
 
     def ClearNode(self , node):
@@ -1051,15 +1043,15 @@ class Interpreter:
         return None , None
     
 
-    def ObjectNode(self , node):
+    # def ObjectNode(self , node):
 
-        object_name = node.object_name.value
-        class_name = node.class_name.value
+    #     object_name = node.object_name.value
+    #     class_name = node.class_name.value
 
-        if object_name not in self.global_symbol_table :
-            self.global_symbol_table[object_name] = class_name+"@"+ str(id(self.global_symbol_table[class_name]))
+    #     if object_name not in self.global_symbol_table :
+    #         self.global_symbol_table[object_name] = class_name+"@"+ str(id(self.global_symbol_table[class_name]))
     
-        return None , None
+    #     return None , None
     
     # def ObjectPropAccessNode(self , node):
 

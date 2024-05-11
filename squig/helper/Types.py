@@ -57,6 +57,7 @@ class BaseType:
             right_bool = True if right_operand.value == "true" else False
             return Boolean(True if left_bool + right_bool else False) , None
         
+        
         raise Error()
 
     def div(self , right_operand):
@@ -78,7 +79,7 @@ class BaseType:
 
         if isinstance(self , String) and isinstance(right_operand , Number): 
             return String(self.string * right_operand.number) , None
-        
+      
         if isinstance(self , Number) and isinstance(right_operand , String):
             return String(self.number * right_operand.string) , None
         
@@ -107,6 +108,7 @@ class BaseType:
         if isinstance(self , Number) and isinstance(right_operand , Number):
             return Number(self.number - right_operand.number) , None
         
+        
         if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
             left_bool = True if self.value == "true" else False
             right_bool = True if right_operand.value == "true" else False
@@ -127,7 +129,7 @@ class BaseType:
         
         if isinstance(self , Boolean) and isinstance(right_operand , Boolean):
             return Boolean(self.value < right_operand.value) , None
-
+        
         raise Error()
 
     def gt(self , right_operand):
@@ -186,6 +188,9 @@ class BaseType:
         if isinstance(self , Number) and isinstance(self , Number):
             return Boolean(self.number == right_operand.number) , None
         
+        if isinstance(self , Null) and isinstance(self , Null):
+            return Boolean(self.value == right_operand.value) , None
+        
         if isinstance(self , MutableString) and isinstance(self , MutableString):
             return Boolean(self.string == right_operand.string) , None
         
@@ -201,6 +206,9 @@ class BaseType:
         
         if isinstance(self , Number) and isinstance(self , Number):
             return Boolean(self.number != right_operand.number) , None
+        
+        if isinstance(self , Null) and isinstance(self , Null):
+            return Boolean(self.value != right_operand.value) , None
         
         if isinstance(self , MutableString) and isinstance(self , MutableString):
             return Boolean(self.string != right_operand.string) , None
@@ -447,6 +455,7 @@ class BuiltinFunction(BaseFunction):
         value = symbol_table["value"]
         if isinstance(value , Number):
             return Number(int(value.value)) , None
+        
     execute_int.params = ["value"]
 
     def execute_isUpper(self , symbol_table):
@@ -1023,3 +1032,11 @@ class MutableString(BaseType):
 
         return len(self.mut_string)
     
+
+class Null(BaseType):
+
+    def __init__(self, name = "null", value = None, file=None):
+        super().__init__(name, value, file)
+
+    def __repr__(self) -> str:
+        return "null"
