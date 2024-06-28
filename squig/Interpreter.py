@@ -374,12 +374,16 @@ class Interpreter:
         members = node.members # Need to fix this for access nested props
 
         if variable in self.global_symbol_table:
-            
-            if isinstance(self.global_symbol_table[variable][0] , Types.File):
+            # print(self.global_symbol_table)
+            variable_value = self.global_symbol_table[variable]
+            if type(variable_value) != tuple:
+                variable_value = (variable_value , False)
+            # if isinstance(self.global_symbol_table[variable][0] , Types.File): # comment this line , because got Type Error
+            if isinstance(variable_value[0] , Types.File):
                 # print(self.global_symbol_table[variable].content())
                 
                 try:
-                    file = self.global_symbol_table[variable][0]
+                    file = variable_value[0]
                     # print(file.file.read())
                     return file.content() , None
                 except:
@@ -391,7 +395,7 @@ class Interpreter:
             #     object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
             #     return object_members[members.value] , None
 
-            return self.global_symbol_table[variable][0] , None
+            return variable_value[0] , None
         else:
             return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
 
@@ -772,6 +776,8 @@ class Interpreter:
     
     def PopNode(self , node):
 
+        # Need to fix this bug
+
         variable = node.variable.value
         # local_symbol_table = self.global_symbol_table[variable].key_values
 
@@ -815,16 +821,19 @@ class Interpreter:
             
             return value , None
         
-        elif type(datastructure) == Types.MutableString and type(index) == Types.Number:
+        elif type(datastructure[0]) == Types.MutableString and type(index) == Types.Number:
 
-            if index.number >= len(datastructure.mut_string):
+            if index.number >= len(datastructure[0].mut_string):
                 
                 return None, RunTimeError(self.file , "Index out of range , in pop statemtent.")
             
-            value , error =  datastructure.remove(index.number)
-            if error:
+            value , error =  datastructure[0].remove(index.number)
+            if error!= None:
                 return None , error
+            
+            # print("testing" , value)
             return value , None
+        # return None , None 
 
         # print(type(index) , "in pop")
         
