@@ -228,11 +228,12 @@ class ShowNode:
     
 class LetNode:
 
-    def __init__(self , variable , expression , isConstant):
+    def __init__(self , variable , expression , isConstant , type_mentioned):
 
         self.variable = variable
         self.factor = expression
         self.isConstant = isConstant
+        self.type_mentioned = type_mentioned
     
     def __repr__(self):
 

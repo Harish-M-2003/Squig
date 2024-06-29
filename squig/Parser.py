@@ -77,9 +77,16 @@ class Parser:
             
             self.next()
 
-            if self.current_token.type != token_colon:
+            if self.current_token.type != token_colon and self.current_token.type != token_type_specifier:
                 return None , WrongSyntaxError(self.file , f"Expected a ':' after variable '{variable.value}'.",position = self.current_token.position.copy_position())
-
+            
+            type_mentioned = None
+            if self.current_token.type == token_type_specifier:
+                self.next()
+                type_mentioned = self.current_token
+                self.next()
+                if self.current_token.type != token_colon:
+                    return LetNode(variable , None , isConstant , type_mentioned) , None
 
             self.next()
 
@@ -98,12 +105,14 @@ class Parser:
             
             expression , error = self.expression()
             # print(expression , "in expression function")
+            if not type_mentioned:
+                type_mentioned = type(expression).__name__.replace("Node" , "").strip().lower()
             if error:
                 return None , error
 
             # return VariableNode(variable , expression) , None
             
-            return LetNode(variable , expression , isConstant) , None
+            return LetNode(variable , expression , isConstant , type_mentioned) , None
 
         left , error = self.relational_expression()
         

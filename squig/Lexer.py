@@ -101,6 +101,9 @@ class Lexer:
         elif self.current_char == "/":
             self.next()
             return Token(token_colon_divide,token_position=self.position.copy_position())  , None
+        elif self.current_char == ":":
+            self.next()
+            return Token(token_type_specifier,token_position=self.position.copy_position()) , None
         
 
         return Token(token_colon,token_position=self.position.copy_position()) , None

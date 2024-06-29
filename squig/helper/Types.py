@@ -26,7 +26,7 @@ def isFloat(num):
 
 class BaseType:
 
-    def __init__(self , name, value , file=None):
+    def __init__(self , name = None, value = None , file=None):
 
         self.name = name
         self.value = value
@@ -264,6 +264,14 @@ class BaseType:
             return Boolean(self.value or right_operand.value) , None
         
         raise Error()
+    
+class DataType(BaseType):
+
+    def __init__(self , type_mentioned):
+        super().__init__("Datatype" , type_mentioned)
+    
+    def __repr__(self):
+        return f"Type : {self.value}"
 
 class String(BaseType):
 

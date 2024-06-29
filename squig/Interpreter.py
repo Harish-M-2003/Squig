@@ -1,5 +1,6 @@
 from Parser import *
 import helper.Types as Types
+import sys
 
 class Interpreter:
 
@@ -294,13 +295,13 @@ class Interpreter:
         #     if 
         # }
         
-        
 
     def VariableNode(self , node):
 
         variable = node.variable.value
         members = node.members
         value , error = self.process(node.factor)
+        
         
         if error:
             return None , error
@@ -319,7 +320,16 @@ class Interpreter:
         #     object_member[members.value] = value
         # else:
         if not object_name[1]:
-            self.global_symbol_table[variable] = (value , object_name[1])
+            current_value_type = type(value).__name__.lower().strip()
+
+            if current_value_type == "boolean" :
+                current_value_type = "bool"
+
+            if current_value_type != object_name[-1].value:
+                type_mentioned  = object_name[-1].value
+                type_mentioned = type_mentioned if type_mentioned != "bool" else "boolean"
+                return None , WrongTypeError(self.file , f"'{current_value_type}' cannot be assigned to variable '{variable}' of type '{type_mentioned}'")
+            self.global_symbol_table[variable] = (value , object_name[1] , object_name[-1])
         else:
             return None , RunTimeError(self.file , f"immutable variable '{variable}' cannot be modified")
         # else:
@@ -338,14 +348,31 @@ class Interpreter:
         #     return None , RedeclarationError(file=self.file , details=f"variable '{variable}' cannot be created more than once." , position=None )
         # if node.factor:
         value , error = self.process(node.factor)
+        type_mentioned = None
+
+
+
+        if type(node.type_mentioned) != Token:
+            type_mentioned = Types.DataType(node.type_mentioned)
+        # print(value , "check")
         # else:
         #     value , error = None , None
 
         if error:
             return None , error
         
-        self.global_symbol_table[variable] = (value , node.isConstant)
+        if not type_mentioned:
 
+            type_mentioned = Types.DataType(node.type_mentioned.value)
+
+        current_value_type = Types.DataType(type(value).__name__.lower().strip())
+        
+        if current_value_type.value != "null" and current_value_type.value != type_mentioned.value:
+            return None , WrongTypeError(self.file , f"'{current_value_type.value}' cannot be assigned to variable '{variable}' of type '{type_mentioned.value}'")
+
+        
+        self.global_symbol_table[variable] = (value , node.isConstant , type_mentioned)
+        
         return None , None
     
     def FileWriteNode(self , node):
@@ -377,7 +404,9 @@ class Interpreter:
             # print(self.global_symbol_table)
             variable_value = self.global_symbol_table[variable]
             if type(variable_value) != tuple:
-                variable_value = (variable_value , False)
+                variable_value = (variable_value , False )
+
+            # print(variable_value)
             # if isinstance(self.global_symbol_table[variable][0] , Types.File): # comment this line , because got Type Error
             if isinstance(variable_value[0] , Types.File):
                 # print(self.global_symbol_table[variable].content())
@@ -1083,6 +1112,6 @@ class Interpreter:
         
     def no_process(self , node):
 
-        return "No process Node" , None
+        return Types.Null() , None
 
 FILE = "<core>"
