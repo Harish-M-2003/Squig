@@ -40,7 +40,7 @@ class Interpreter:
         #     return None , error
         
         print(*lines)
-        return None , None
+        return Types.Null() , None
     
     def StringNode(self , node):
 
@@ -213,26 +213,33 @@ class Interpreter:
             return None , RunTimeError(self.file , f"Collection '{variable}' is undefind.")
         
         indexs = []
-        variable_value = self.global_symbol_table[variable]
+        variable_value = self.global_symbol_table[variable][0]
+        # print(type(variable_value[0]))
         # print(type(variable_value))
+        # print(node.index)
         for idx in node.index:
             index , error = self.process(idx)
             # if not isinstance(self.global_symbol_table[variable] , Types.Collection):
             # print(type(variable_value) , isinstance(variable_value , Types.MutableString))
             if not isinstance(variable_value , Types.Collection) and \
                 not isinstance(variable_value , Types.MutableString) and \
+                not isinstance(variable_value , Types.HashMap) and \
                 not isinstance(variable_value , Types.String):
                 # return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(self.global_symbol_table[variable]).__name__} cannot be indexed.")
                 return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(variable_value).__name__} cannot be indexed.")
-            if not isinstance(index , Types.Number):
-                return None , WrongTypeError(self.file , f"Type '{type(index).__name__}' connot be used for indexing Collection '{variable}'.")
+            
+            if not isinstance(index , Types.Number) and \
+                (isinstance(variable_value , Types.Collection) or \
+                isinstance(variable_value , Types.String)):
+                    return None , WrongTypeError(self.file , f"Type '{type(index).__name__}' connot be used for indexing Collection '{variable}'.")
             if error:
                 return None , error
             indexs.append(index)
         
         # if isinstance(self.global_symbol_table[variable],Types.Collection) or isinstance(self.global_symbol_table[variable] , Types.String):
-        if isinstance(variable_value,Types.Collection) or isinstance(variable_value , Types.String):
-
+        if isinstance(variable_value,Types.Collection) or \
+            isinstance(variable_value, Types.String):
+            
             # value = self.global_symbol_table[variable].index(indexs[0].number)
             value = variable_value.index(indexs[0].number)
 
@@ -280,8 +287,7 @@ class Interpreter:
                 
         #         if key == -1:
         #             return None , RunTimeError(self.file , "Index out of range , while trying to accessing Map data.")
-               
-                return  Types.Collection(filename=self.file , elements=[key , variable_value.key_values.get(key , None )]), None
+                return  Types.Collection(filename=self.file , elements=[key , variable_value.key_values.get(key , Types.Null() )]), None
                 # return  Types.Collection(filename=self.file , elements=[key , self.global_symbol_table[variable].key_values.get(key , None )]), None
             
             elif isinstance(indexs[0] , Types.String):
@@ -290,10 +296,12 @@ class Interpreter:
                 key = indexs[0].string
         #         # print("it's string")
                 # return self.global_symbol_table[variable].key_values.get(key , None ) , None
-                return variable_value.key_values.get(key , None ) , None
+                return variable_value.key_values.get(key , Types.Null() ) , None
         # elif isinstance(self.global_symbol_table[variable] , Types.String):{
         #     if 
         # }
+
+        return Types.Null() , None
         
 
     def VariableNode(self , node):
@@ -320,21 +328,21 @@ class Interpreter:
         #     object_member[members.value] = value
         # else:
         if not object_name[1]:
-            current_value_type = type(value).__name__.lower().strip()
+            # current_value_type = type(value).__name__.lower().strip()
 
-            if current_value_type == "boolean" :
-                current_value_type = "bool"
+            # if current_value_type == "boolean" :
+            #     current_value_type = "bool"
 
-            if current_value_type != object_name[-1].value:
-                type_mentioned  = object_name[-1].value
-                type_mentioned = type_mentioned if type_mentioned != "bool" else "boolean"
-                return None , WrongTypeError(self.file , f"'{current_value_type}' cannot be assigned to variable '{variable}' of type '{type_mentioned}'")
+            # if current_value_type != object_name[-1].value:
+            #     type_mentioned  = object_name[-1].value
+            #     type_mentioned = type_mentioned if type_mentioned != "bool" else "boolean"
+            #     return None , WrongTypeError(self.file , f"'{current_value_type}' cannot be assigned to variable '{variable}' of type '{type_mentioned}'")
             self.global_symbol_table[variable] = (value , object_name[1] , object_name[-1])
         else:
             return None , RunTimeError(self.file , f"immutable variable '{variable}' cannot be modified")
         # else:
         #     print("constant node")
-        return None , None
+        return Types.Null() , None
     
     def NullNode(self , node):
 
@@ -365,15 +373,15 @@ class Interpreter:
 
             type_mentioned = Types.DataType(node.type_mentioned.value)
 
-        current_value_type = Types.DataType(type(value).__name__.lower().strip())
+        # current_value_type = Types.DataType(type(value).__name__.lower().strip())
         
-        if current_value_type.value != "null" and current_value_type.value != type_mentioned.value:
-            return None , WrongTypeError(self.file , f"'{current_value_type.value}' cannot be assigned to variable '{variable}' of type '{type_mentioned.value}'")
+        # if current_value_type.value != "null" and current_value_type.value != type_mentioned.value:
+        #     return None , WrongTypeError(self.file , f"'{current_value_type.value}' cannot be assigned to variable '{variable}' of type '{type_mentioned.value}'")
 
         
         self.global_symbol_table[variable] = (value , node.isConstant , type_mentioned)
         
-        return None , None
+        return Types.Null() , None
     
     def FileWriteNode(self , node):
         # need to fix issue
@@ -392,7 +400,7 @@ class Interpreter:
         else:
             return None , WrongFileOperationError(file=self.file , name="IOFileOperationError" , details=f"Trying to write content to a closed file '{self.global_symbol_table[variable].file_name}'.")
 
-        return None, None
+        return Types.Null(), None
 
 
     def VariableAccessNode(self , node):
@@ -403,6 +411,7 @@ class Interpreter:
         if variable in self.global_symbol_table:
             # print(self.global_symbol_table)
             variable_value = self.global_symbol_table[variable]
+            # print("Testing" , variable_value)
             if type(variable_value) != tuple:
                 variable_value = (variable_value , False )
 
@@ -570,7 +579,7 @@ class Interpreter:
             else:
                 return None , RunTimeError(self.file , f"cannot perfom unsupported operation between {type(left).__name__ , type(right).__name__}.")
             
-        return None , None
+        return Types.Null() , None
 
     
 
@@ -607,7 +616,8 @@ class Interpreter:
             if error:
                 return None , error
             return block , None
-        return "",None
+        
+        return Types.Null() ,None
 
     def UnaryOperatorNode(self , node):
 
@@ -728,11 +738,17 @@ class Interpreter:
         
             self.global_symbol_table.pop(var) 
 
-        return None , None
+        return Types.Null() , None
     
 
     def FunctionNode(self , node):     
         variable = node.variable.value
+
+        return_type = node.type_mentioned
+        if type(return_type) != Token:
+            return_type = Types.DataType(node.type_mentioned)
+        else:
+            return_type = Types.DataType(node.type_mentioned.value)
         
         body = node.body
         params = []
@@ -743,11 +759,11 @@ class Interpreter:
         # if error:
         #     return None , error
         
-        function =  Types.UserDefinedFunction(self.file , variable , params  , body)
+        function =  Types.UserDefinedFunction(self.file , variable , params  , body , return_type)
 
         self.global_symbol_table[variable] = function 
         
-        return  None , None 
+        return  Types.Null() , None 
 
 
         
@@ -767,9 +783,12 @@ class Interpreter:
         function_output  = self.global_symbol_table[variable]
         output , error = function_output.execute(args , self.global_symbol_table) # changing for fix
         
+        # if output and function_output.type_mentioned.value != "null" and  type(output.elements[0]).__name__.lower().strip() != function_output.type_mentioned.value:
+        #     return None , WrongTypeError(self.file , f"Mistached return type '{function_output.type_mentioned.value}' found in function '{variable}'.")
         if error:
             return None , error
-        return output , None
+        
+        return output.elements[-1] if isinstance(output , Types.Collection) else output , None
     
     def FileNode(self , node):
         
@@ -793,7 +812,7 @@ class Interpreter:
 
         # print(self.global_symbol_table[variable_name.value].read())
 
-        return None , None
+        return Types.Null() , None
     
     def CloseNode(self , node):
 
@@ -801,7 +820,7 @@ class Interpreter:
         file = node.filename.variable.value
         self.global_symbol_table[file].close()
         del self.global_symbol_table[file]
-        return None , None
+        return Types.Null() , None
     
     def PopNode(self , node):
 
@@ -1008,7 +1027,7 @@ class Interpreter:
                 if index.string not in variable_value.index_values:
                     variable_value.index_values.append(index.string)
                 # print(variable_value.index_values , variable_value.key_values)
-                    return None , None
+                    return Types.Null() , None
         #     # print(variable_value.index_values)
             # variable_value.key_values[index.string] = target_value
             # print(target_value , variable_value.key_values[index.string] , type(index))
@@ -1025,7 +1044,7 @@ class Interpreter:
         #     if not value:
         #         return None , RunTimeError(self.file , f"Manipulation Index out of range for Collection '{variable_value.string}' stored in variable '{variable}'")
             
-        return None , None
+        return Types.Null() , None
     
     def SwitchNode(self , node):
 
@@ -1072,13 +1091,19 @@ class Interpreter:
         if variable_name in self.global_symbol_table:
             collection = self.global_symbol_table[variable_name]
             if type(collection) == Types.Collection:
+                # check this statemenet in newer versions.
                 collection.elements.clear()
+            elif type(collection) == tuple:
+                if type(collection[0]) == Types.Collection:
+                    collection[0].elements.clear()
+                elif type(collection[0]) == Types.String:
+                    self.global_symbol_table[variable_name] = ""
             else:
                 return None , RunTimeError(self.file , f"Cannot clear elements of type {type(collection).__name__}")
         else:
             return None , RunTimeError(self.file , f"Variable '{variable_name}' is undefined.")
                 
-        return None , None
+        return Types.Null() , None
     
 
     # def ObjectNode(self , node):
@@ -1109,7 +1134,6 @@ class Interpreter:
     #     # print(self.global_symbol_table)
     #     return  needed_member , None
 
-        
     def no_process(self , node):
 
         return Types.Null() , None

@@ -382,12 +382,13 @@ class Number(BaseType):
 
 class BaseFunction(BaseType):
 
-    def __init__(self , file , variable , params , body):
+    def __init__(self , file , variable , params , body , type_mentioned):
 
         self.file = file
         self.variable = variable
         self.params = params
         self.body = body
+        self.type_mentioned = type_mentioned
 
     def generate_local_symbol_table(self):
 
@@ -415,8 +416,8 @@ class BaseFunction(BaseType):
         
 class UserDefinedFunction(BaseFunction):
 
-    def __init__(self ,file, variable , params , body):
-        super().__init__(file , variable , params , body)
+    def __init__(self ,file, variable , params , body , type_mentioned):
+        super().__init__(file , variable , params , body , type_mentioned)
 
     def __repr__(self):
 

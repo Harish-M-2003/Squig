@@ -368,7 +368,7 @@ class Parser:
                 
                 return function_call  , None
                 
-            if self.current_token.type == token_keyword and self.current_token.value == "function":
+            if self.current_token.type == token_keyword and self.current_token.value == "fn":
                 function_expression , error = self.function_statement(variable)
                 
                 if error:
@@ -722,6 +722,7 @@ class Parser:
         
     
     def function_statement(self , function_name):
+        
 
         self.next()
 
@@ -748,10 +749,15 @@ class Parser:
             return None , WrongSyntaxError(self.file  , "Expected a '}' in " + f"{function_name.value} function definition.", position = self.current_token.position.copy_position() )
         
         self.next()
-        if self.current_token.type != token_colon:
+        if self.current_token.type != token_colon and self.current_token.type != token_type_specifier:
 
             return None , WrongSyntaxError(self.file , "Expected a ':' in " +f"{function_name.value} function definition", position = self.current_token.position.copy_position() )
         
+        type_mentioned = None
+        if self.current_token.type == token_type_specifier:
+            self.next()
+            type_mentioned = self.current_token
+
         self.next()
 
         if self.current_token.type == token_lb:
@@ -768,7 +774,7 @@ class Parser:
             
             self.next()
             
-            return FunctionNode(function_name , param_list , statement) , None
+            return FunctionNode(function_name , param_list , statement , type_mentioned) , None
 
         function_body , error = self.expression()
 
@@ -779,7 +785,7 @@ class Parser:
         #     return None , WrongSyntaxError(self.file , f"expected an 'end' in {function_name} definition.")
         # # self.next()
 
-        return FunctionNode(function_name , param_list , function_body) , None
+        return FunctionNode(function_name , param_list , function_body , type_mentioned) , None
 
     def for_statement(self):
 

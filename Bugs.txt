@@ -1,7 +1,0 @@
-
-1.) Need To change the implementation of Array (tuple -> list)
-3.) Check if_statement function for bug.
-6.) Need to implement Scop issues
-
-Bugs in Array :
-1.) Handle index out of bound exception.

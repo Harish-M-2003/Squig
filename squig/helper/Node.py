@@ -157,11 +157,12 @@ class ForNode:
     
 class FunctionNode:
 
-    def __init__(self , variable , param , body):
+    def __init__(self , variable , param , body , type_mentioned):
 
         self.variable = variable
         self.param = param
         self.body = body
+        self.type_mentioned = type_mentioned
 
     def __repr__(self):
 

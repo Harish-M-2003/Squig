@@ -43,7 +43,7 @@ token_mutstring = "mutstring"
 token_at = "at"
 token_type_specifier = "typesecifiper"
 
-keywords = ("if" , "else" , "elif", "function" ,
+keywords = ("if" , "else" , "elif", "fn" ,
             "for","return", "break" ,"continue" , "let",
             "delete" , "type" , "use" , "log" , "file" , "close",
             "default" , "case" , "switch", "true" , "false" , "pop", "clear" , "null" , "imu"
