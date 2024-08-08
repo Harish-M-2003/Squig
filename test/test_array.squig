@@ -1,0 +1,23 @@
+
+let array : {1,2,3,4,5};
+
+# Print Array to screen
+log array;
+
+# Accessing Collection Elemenets
+log array[0] , array[-1]
+
+# Manipulating Collection Elemenets
+array[2] : 2000
+log array
+
+# Collection Length
+log "Length : " ,  length{array}
+
+# Delete A Elemenet From Collection
+let value : pop array[0]
+log "Pop value : " , value , array
+
+# Insert Elemenet in Collection
+log reverse{array}
+

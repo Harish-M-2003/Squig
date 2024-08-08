@@ -1002,6 +1002,8 @@ class BuiltinFunction(BaseFunction):
         value = symbol_table["value"]
         if isinstance(value, String):
             return String(value.string[::-1]), None
+        if isinstance(value , Collection):
+            return Collection(filename=self.file , elements=value.elements[::-1]) , None
         # elif isinstance(value , Number):
         #     return Number(int(str(value.number)[::-1])) , None
         # elif isinstance(value , Collection):

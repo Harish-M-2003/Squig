@@ -780,15 +780,21 @@ class Interpreter:
                 return None , error
             args.append(value)
 
+        # print(self.global_symbol_table[variable])
         function_output  = self.global_symbol_table[variable]
         output , error = function_output.execute(args , self.global_symbol_table) # changing for fix
-        
+        # print(type(output) , "asdasd")
         # if output and function_output.type_mentioned.value != "null" and  type(output.elements[0]).__name__.lower().strip() != function_output.type_mentioned.value:
         #     return None , WrongTypeError(self.file , f"Mistached return type '{function_output.type_mentioned.value}' found in function '{variable}'.")
         if error:
             return None , error
         
-        return output.elements[-1] if isinstance(output , Types.Collection) else output , None
+        if isinstance(output , Types.Collection):
+            return output , None
+        
+        return output , None
+        
+        # return output.elements[-1] if isinstance(output , Types.Collection) else output , None
     
     def FileNode(self , node):
         
@@ -827,6 +833,7 @@ class Interpreter:
         # Need to fix this bug
 
         variable = node.variable.value
+        # print(node.)
         # local_symbol_table = self.global_symbol_table[variable].key_values
 
         if variable not in self.global_symbol_table:
@@ -836,13 +843,13 @@ class Interpreter:
         # print(type(node.index.index[0]) , node.index.index)
         # print("testing " , type(node.index))
         index = Types.Number(-1)
-
         if type(node.index) == CollectionAccessNode:
+            
             index , error = self.process(node.index.index[0])
             if error:
                 return None , error
         
-        datastructure = self.global_symbol_table[variable]
+        datastructure , is_constant , literal_type = self.global_symbol_table[variable]
 
         if type(datastructure) == Types.HashMap and type(index) == Types.String:
             datastructure.index_values.remove(index.string)
@@ -857,7 +864,6 @@ class Interpreter:
             return datastructure.key_values.pop(key) , None
         
         elif type(datastructure) == Types.Collection and type(index) == Types.Number:
-
             if not datastructure.elements:
                 return None , RunTimeError(self.file , "Cannot pop from an Empty Collection")
             
@@ -976,7 +982,7 @@ class Interpreter:
             return None , error
 
         variable = node.variable.value
-        variable_value , isconstant , literal_type = self.global_symbol_table[variable]
+        variable_value , is_constant , literal_type = self.global_symbol_table[variable]
 
         # print(variable_value , variable)
 
