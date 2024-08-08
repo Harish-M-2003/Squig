@@ -42,4 +42,5 @@ symbol_table = {
         "split" : Types.BuiltinFunction(file , "split"),
         "remove" : Types.BuiltinFunction(file , "remove"),
         "insert" : Types.BuiltinFunction(file , "insert"),
+        "sort" : Types.BuiltinFunction(file , "sort"),
     }

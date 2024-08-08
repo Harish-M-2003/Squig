@@ -521,6 +521,21 @@ class BuiltinFunction(BaseFunction):
         return Boolean(True) , None
     
     execute_insert.params = ["data_structure" , "index" , "value"]
+    
+    def execute_sort(self , symbol_table):
+
+        from util.sorting import merge_sort
+
+        data_structure = symbol_table["data_structure"]
+
+        if isinstance(data_structure , Collection):
+
+            merge_sort(data_structure.elements , 0 , len(data_structure.elements) - 1)
+        
+        return Boolean(True) , None
+    
+    execute_sort.params = ["data_structure"]
+
 
     def execute_isLower(self, symbol_table):
 

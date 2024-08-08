@@ -1,6 +1,6 @@
 
 # Collection Operations
-# Insertion , Deletion , Update , Length , Sort , Search
+# Insertion , Deletion , Update , Length , Sort , Search , copy , deep 
 
 let array : {1,2,3,4,5};
 
@@ -43,6 +43,12 @@ log array , length{array}
 log insert{array , 1 , 100}
 log insert{array , 3 , 500} 
 log array , length{array}
+
+# In place Sort a collection
+
+log array
+log sort{array}
+log array
 
 
 
