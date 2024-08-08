@@ -976,7 +976,7 @@ class Interpreter:
             return None , error
 
         variable = node.variable.value
-        variable_value = self.global_symbol_table[variable]
+        variable_value , isconstant , literal_type = self.global_symbol_table[variable]
 
         # print(variable_value , variable)
 
@@ -997,9 +997,9 @@ class Interpreter:
 
         # if not variable_value.isType(target_value):
         #     return None , RunTimeError(self.file , "Cannot Manipulate a Mutable String with Another type.")
-
+        # print(type(variable_value) , variable_value)
         if type(variable_value) == Types.MutableString:
-            # print("right")
+            # print("right" , target_value)
             if type(target_value) != Types.MutableString:
                 return None , WrongTypeError(self.file , f"'{type(target_value).__name__}' cannot be combined with 'MutableString.'")
             value , error = variable_value.include(index.number , target_value.string)
