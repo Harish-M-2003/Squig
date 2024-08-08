@@ -487,6 +487,22 @@ class BuiltinFunction(BaseFunction):
 
     execute_isUpper.params = ["value"]
 
+    def execute_remove(self , symbol_table):
+        data_structure = symbol_table["data_structure"]
+        index = symbol_table["index"]
+
+        if type(index) != Number:
+            return Null(None) , RunTimeError(self.file , "Index must be a 'Number'.")
+
+        if isinstance(data_structure , Collection):
+            if index.number > len(data_structure.elements):
+                return Null(None) , OutOfBoundError(self.file , "Collection index out of bound")
+            
+            del data_structure.elements[index.number]
+        
+        return Boolean(True) , None
+    execute_remove.params = ["data_structure" , "index"]
+
     def execute_isLower(self, symbol_table):
 
         value = symbol_table["value"]

@@ -18,6 +18,30 @@ log "Length : " ,  length{array}
 let value : pop array[0]
 log "Pop value : " , value , array
 
-# Insert Elemenet in Collection
+# Reverse a Collection
 log reverse{array}
+
+# Insert value at First in Collection 
+log { 500 } + array 
+
+# Insert value at Last in Collection
+log array + { 30 }
+
+# Remove a element from specific index
+
+log array
+log remove{array , -1}
+log array
+
+
+# Insert a element at specific index
+
+# log insert{array , 0, 100}
+
+
+
+
+
+
+
 

@@ -21,6 +21,12 @@ class RedeclarationError(Error):
 
         super().__init__(file , "RedeclarationError" , details , position=position)
 
+class OutOfBoundError(Error):
+
+    def __init__(self , file , details , position = None):
+
+        super().__init__(file , "OutBoundError" , details , position)
+
 class WrongSyntaxError(Error):
 
     def __init__(self,file , details,position = None):

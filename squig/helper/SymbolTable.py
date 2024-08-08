@@ -40,4 +40,6 @@ symbol_table = {
         "reverse" : Types.BuiltinFunction(file , "reverse"),
         "title" : Types.BuiltinFunction(file , "title"),
         "split" : Types.BuiltinFunction(file , "split"),
+        "remove" : Types.BuiltinFunction(file , "remove"),
+        "insert" : Types.BuiltinFunction(file , "insert"),
     }
