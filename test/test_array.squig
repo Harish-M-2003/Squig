@@ -2,6 +2,9 @@
 # Collection Operations
 # Insertion , Deletion , Update , Length , Sort , Search , copy , deep 
 
+# Remaning operation
+# Slicing
+
 let array : {1,2,3,4,5};
 
 # Print Array to screen
@@ -50,11 +53,21 @@ log array
 log sort{array}
 log array
 
+# search in collection
 
+log lsearch{array , 4}
+log bsearch{array , 500}
 
+# Shallow Copy collection
 
+let e1 : array
+# log e1 , array
+# e1[0] : 1234
+# log e1 , array
 
+# Deep Copy collection
 
-
-
-
+let e2 : copy array
+# log e2 , array
+# e2[0] : 1234
+# log e2 , array

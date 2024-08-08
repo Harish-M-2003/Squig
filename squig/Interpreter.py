@@ -355,6 +355,7 @@ class Interpreter:
         # if variable in self.global_symbol_table:
         #     return None , RedeclarationError(file=self.file , details=f"variable '{variable}' cannot be created more than once." , position=None )
         # if node.factor:
+        # print(node.factor)
         value , error = self.process(node.factor)
         type_mentioned = None
 
@@ -1110,6 +1111,19 @@ class Interpreter:
             return None , RunTimeError(self.file , f"Variable '{variable_name}' is undefined.")
                 
         return Types.Null() , None
+    
+    def DeepCopyNode(self , node):
+        
+        variable = node.value.variable.value
+        if variable not in self.global_symbol_table:
+            return None , RunTimeError(self.file , f"variable {variable} is undefined")
+        
+        value , is_constant , literal_value = self.global_symbol_table[variable]
+        if isinstance(value , Types.Collection):
+            return Types.Collection(filename=self.file , elements=value.elements.copy()) , None
+
+        return None , RunTimeError(self.file , "Deep copy is implemented only for collection.")
+    
     
 
     # def ObjectNode(self , node):

@@ -330,6 +330,15 @@ class NullNode:
     def __repr__(self) -> str:
         return "null"
 
+class DeepCopyNode:
+
+    def __init__(self , value):
+        self.value = value
+
+    def __repr__(self):
+
+        return f"{self.value}"
+
 # class ClassNode:
     
 #     def __init__(self , class_name , class_body = []):

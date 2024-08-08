@@ -46,7 +46,8 @@ token_type_specifier = "typesecifiper"
 keywords = ("if" , "else" , "elif", "fn" ,
             "for","return", "break" ,"continue" , "let",
             "delete" , "type" , "use" , "log" , "file" , "close",
-            "default" , "case" , "switch", "true" , "false" , "pop", "clear" , "null" , "imu"
+            "default" , "case" , "switch", "true" , "false" , "pop",
+            "clear" , "null" , "imu" , "copy"
             )
 
 class Token:

@@ -500,7 +500,11 @@ class BuiltinFunction(BaseFunction):
             
             del data_structure.elements[index.number]
         
+        else:
+            return None , RunTimeError(self.file , "remove is only implemented for colleciton")
+        
         return Boolean(True) , None
+        
     execute_remove.params = ["data_structure" , "index"]
 
     def execute_insert(self , symbol_table):
@@ -518,6 +522,9 @@ class BuiltinFunction(BaseFunction):
             
             data_structure.elements.insert(index.number , value)
         
+        else:
+            return None , RunTimeError(self.file , "insert is only implemented for colleciton")
+        
         return Boolean(True) , None
     
     execute_insert.params = ["data_structure" , "index" , "value"]
@@ -532,10 +539,48 @@ class BuiltinFunction(BaseFunction):
 
             merge_sort(data_structure.elements , 0 , len(data_structure.elements) - 1)
         
+        else:
+            return None , RunTimeError(self.file , "sort is only implemented for colleciton")
+        
         return Boolean(True) , None
+        
     
     execute_sort.params = ["data_structure"]
 
+
+    def execute_lsearch(self , symbol_table):
+
+        from util.searching import linear_search
+        
+        data_structure = symbol_table["data_structure"]
+        value = symbol_table["value"]
+
+        if isinstance(data_structure , Collection):
+
+            index = linear_search(data_structure.elements , value.value)
+            
+            return Number(index) , None
+        
+        else:
+            return None , RunTimeError(self.file , "lsearch is only implemented for colleciton")
+    
+    execute_lsearch.params = ["data_structure" , "value"]
+
+    def execute_bsearch(self , symbol_table):
+
+        from util.searching import interpolationSearch
+        data_structure = symbol_table["data_structure"]
+        value = symbol_table["value"]
+
+        if isinstance(data_structure , Collection):
+
+            index = interpolationSearch(data_structure.elements , len(data_structure.elements) , value.value)
+            return Number(index) , None
+        
+        else :
+            return None , RunTimeError(self.file , "bsearch is only implemented for collection")
+
+    execute_bsearch.params = ["data_structure" , "value"]
 
     def execute_isLower(self, symbol_table):
 

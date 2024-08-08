@@ -1,0 +1,33 @@
+
+let str : `Hello world`
+
+# Printing to screen
+log str
+
+# Accessing letters from mutable string
+
+log str[0] , str[-1]
+
+# Manipulation in mutable string
+
+log str , length{str}
+str[0] : `hello`
+# str[-1] : `hello ` got an error when trying to manipulate the value with negavtive indexing
+log str , length{str}
+
+# Deleting a character at front
+
+log str
+str[0] :  ``
+log str
+
+# Deleting a Character at last
+
+log str
+str[length{str}] : ``
+log str 
+
+# Length in Mutable String
+
+# Found a bug in Length of mutable string , returning (actual_length - 1)
+

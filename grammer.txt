@@ -32,6 +32,9 @@ atom : int|float|string|variable|input-string|Mutstring
      : switch-statement
      : class-statement
      : instantiation-statement
+     : copy_statement
+
+copy_statement : copy variable
 
 variable : variable (lsquare expression rsquare)*   
          | variable

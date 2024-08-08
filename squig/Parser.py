@@ -282,6 +282,16 @@ class Parser:
                 return None , error
             return ClearNode(variable_name) , None
         
+        elif self.current_token.type == token_keyword and self.current_token.value == "copy":
+            self.next()
+            if self.current_token.type != token_variable:
+                    return None , RunTimeError(self.file , "copy keyword must be associated with a variable")
+            variable , error = self.expression()
+            if error:
+                return None , error
+            
+            return DeepCopyNode(variable) , None
+        
         elif self.current_token.type == token_keyword and self.current_token.value in ("true" , "false"):
 
             boolean_node  = BooleanNode(self.current_token.value)
