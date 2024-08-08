@@ -1,4 +1,7 @@
 
+# Collection Operations
+# Insertion , Deletion , Update , Length , Sort , Search
+
 let array : {1,2,3,4,5};
 
 # Print Array to screen
@@ -36,7 +39,11 @@ log array
 
 # Insert a element at specific index
 
-# log insert{array , 0, 100}
+log array , length{array}
+log insert{array , 1 , 100}
+log insert{array , 3 , 500} 
+log array , length{array}
+
 
 
 

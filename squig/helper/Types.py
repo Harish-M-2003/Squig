@@ -503,6 +503,25 @@ class BuiltinFunction(BaseFunction):
         return Boolean(True) , None
     execute_remove.params = ["data_structure" , "index"]
 
+    def execute_insert(self , symbol_table):
+
+        data_structure = symbol_table["data_structure"]
+        index = symbol_table["index"]
+        value = symbol_table["value"]
+
+        if type(index) != Number:
+            return Null(None) , RunTimeError(self.file , "Index must be a 'Number'.")
+
+        if isinstance(data_structure , Collection):
+            if index.number > len(data_structure.elements):
+                return Null(None) , OutOfBoundError(self.file , "Collection index out of bound")
+            
+            data_structure.elements.insert(index.number , value)
+        
+        return Boolean(True) , None
+    
+    execute_insert.params = ["data_structure" , "index" , "value"]
+
     def execute_isLower(self, symbol_table):
 
         value = symbol_table["value"]
