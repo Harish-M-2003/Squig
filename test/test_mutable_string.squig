@@ -24,10 +24,15 @@ log str
 # Deleting a Character at last
 
 log str
-str[length{str}] : ``
+str[length{str}] : `` # Found an issue regrading out of index
 log str 
 
 # Length in Mutable String
 
-# Found a bug in Length of mutable string , returning (actual_length - 1)
+let e1 : `Hello`
+log length{e1}
 
+# Mutable string to string
+
+log type str
+log type string{str}

@@ -731,6 +731,10 @@ class BuiltinFunction(BaseFunction):
             return String(value.string), None
         elif isinstance(value, Collection):
             return String(str(value.elements)), None
+        elif isinstance(value , MutableString):
+            return String(value.string) , None
+        
+        return None , RunTimeError(self.file , f"Cannot convert type {type(value).__name__} to String.")
 
     execute_String.params = ["value"]
 
