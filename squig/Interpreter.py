@@ -1105,7 +1105,11 @@ class Interpreter:
                 if type(collection[0]) == Types.Collection:
                     collection[0].elements.clear()
                 elif type(collection[0]) == Types.String:
-                    self.global_symbol_table[variable_name] = ""
+                    self.global_symbol_table[variable_name] = Types.Null()
+                elif type(collection[0]) == Types.MutableString:
+                    self.global_symbol_table[variable_name] =Types.Null()
+                else:
+                    return None , RunTimeError(self.file , f"Cannot clear elements of type {type(collection).__name__}")
             else:
                 return None , RunTimeError(self.file , f"Cannot clear elements of type {type(collection).__name__}")
         else:

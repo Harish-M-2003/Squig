@@ -3,7 +3,6 @@ log "For Loop from 0 to 10"
 log " "
 for i {10} : log i
 
-
 # For loop from 2 to 10
 log " "
 log "For Loop from 2 to 10"
@@ -33,3 +32,6 @@ for letter{`hello world`} : log letter , letter
 log " "
 log "For loop for printing a triangle pattern"
 for m {1 , 10} : log "*" * m
+
+log " "
+let name : "harish"

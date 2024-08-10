@@ -27,6 +27,9 @@ log str
 str[length{str}] : `` # Found an issue regrading out of index
 log str 
 
+# Poping a value from mutable string
+# log pop str # Error while executing
+
 # Length in Mutable String
 
 let e1 : `Hello`
@@ -50,7 +53,10 @@ log type bool{Number} , bool{Number} , bool{``}
 
 # Mutable String to Collection
 
-# log type Number
-# log type Collection{Number} , Collection{Number}
+let values : for i{Number} : i 
+log values
 
-# Mutable String to Map
+# Clear a Mutable String 
+
+clear str
+log str
