@@ -731,7 +731,10 @@ class Interpreter:
         variable = [var.value for var in node.variable]
         
         for var in node.variable:
-            if isinstance(self.global_symbol_table[var.value] , Types.BuiltinFunction):
+            value = self.global_symbol_table.get(var.value , None)
+            if value == None:
+                return None , RunTimeError(self.file , f"Variable '{var.value}' is  undefined.")
+            if isinstance( value , Types.BuiltinFunction):
                 return None , RunTimeError(self.file , f"Cannot delete buitin method '{var.value}'")
 
         for var in variable:

@@ -59,4 +59,16 @@ log values
 # Clear a Mutable String 
 
 clear str
-log str
+# log str # this is throw an error
+
+# Shallow copy with Mutable string
+
+delete e1
+
+let e1 : `Hello world`
+let e2 : e1 # shallow copy
+
+log e2
+e1[0] : `h`
+log e2 , e1
+
