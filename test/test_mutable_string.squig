@@ -41,4 +41,14 @@ log type string{str}
 
 let Number : `1000`
 log type Number
-log type number{Number} 
+log type number{Number}
+
+# Mutable String to Boolean
+
+log type Number
+log type bool{Number} , bool{Number} , bool{``}
+
+# Mutable String to Collection
+
+log type Number
+log type collection{Number} , collection{Number}

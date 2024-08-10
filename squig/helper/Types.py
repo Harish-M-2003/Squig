@@ -656,7 +656,7 @@ class BuiltinFunction(BaseFunction):
 
     def execute_Bool(self, symbol_table):
         value = symbol_table["value"]
-        if isinstance(value, String):
+        if isinstance(value, String) or isinstance(value , MutableString):
             if value.string:
                 return Boolean(True), None
             else:
