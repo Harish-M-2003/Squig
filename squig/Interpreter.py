@@ -681,15 +681,16 @@ class Interpreter:
         if not end_value.number:
 
             if type(start_value) == Types.String or type(start_value) == Types.MutableString:
-                
+                is_mutable = type(start_value) == Types.String
                 for var in start_value.string:
 
-                    self.global_symbol_table[variable] = Types.String(var)
+                    self.global_symbol_table[variable] = Types.String(var) if is_mutable else Types.MutableString(var)
                     body , error = self.process(node.body)
                     if error:
                         return None , error
                     
                     elements.append(body)
+                del is_mutable
             
             elif type(start_value) == Types.Number:
                 

@@ -27,7 +27,7 @@ for element{{1,2,3,4,54 , {10,20}}} : log element
 # For loop for printing each elemenet from a mutable string
 log " "
 log "For loop for printing each element from a mutable string"
-for letter{`hello world`} : log letter
+for letter{`hello world`} : log letter , letter
 
 # For loop for printing a triangle pattern
 log " "
