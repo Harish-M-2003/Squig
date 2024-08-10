@@ -50,5 +50,7 @@ log type bool{Number} , bool{Number} , bool{``}
 
 # Mutable String to Collection
 
-log type Number
-log type collection{Number} , collection{Number}
+# log type Number
+# log type Collection{Number} , Collection{Number}
+
+# Mutable String to Map

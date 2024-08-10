@@ -858,7 +858,6 @@ class Parser:
                 return None , WrongSyntaxError(self.file , "Expected a closing '}' in for loop." , position = None) 
             
             self.next()
-
             return ForNode(iterator_variable_name , start_range , end_range , step_range , statement , None) , None
 
 
@@ -866,7 +865,7 @@ class Parser:
         if error:
 
             return None , WrongSyntaxError(self.file , "Something went wrong in for loop body.", position = self.current_token.position.copy_position() )
-
+        
         return ForNode(iterator_variable_name , start_range , end_range , step_range , loop_body , None) , None
                 
     def if_statement(self):

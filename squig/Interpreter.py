@@ -680,9 +680,9 @@ class Interpreter:
         
         if not end_value.number:
 
-            if type(start_value) == Types.String:
+            if type(start_value) == Types.String or type(start_value) == Types.MutableString:
                 
-                for var in start_value.value:
+                for var in start_value.string:
 
                     self.global_symbol_table[variable] = Types.String(var)
                     body , error = self.process(node.body)
