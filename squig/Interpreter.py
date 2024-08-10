@@ -1129,6 +1129,8 @@ class Interpreter:
         value , is_constant , literal_value = self.global_symbol_table[variable]
         if isinstance(value , Types.Collection):
             return Types.Collection(filename=self.file , elements=value.elements.copy()) , None
+        elif isinstance(value , Types.MutableString):
+            return Types.MutableString(value.string) , None
 
         return None , RunTimeError(self.file , "Deep copy is implemented only for collection.")
     

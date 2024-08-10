@@ -64,11 +64,30 @@ clear str
 # Shallow copy with Mutable string
 
 delete e1
-
+log " "
+log "Shallow copy with Mutable String"
 let e1 : `Hello world`
 let e2 : e1 # shallow copy
 
-log e2
+log "e2 : " , e2 
+log "e1 : " , e1
+log "changing e1[0] to 'h'"
 e1[0] : `h`
-log e2 , e1
+log "e2 : " , e2 
+log "e1 : " , e1
+
+# Deep Copy with Mutable String
+log " "
+log "Deep Copy with Mutable String"
+delete e1 , e2
+
+let e1 : `Hello world`
+let e2 : copy e1 # shallow copy
+
+log "e2 : " , e2 
+log "e1 : " , e1
+log "changing e1[0] to 'h'"
+e1[0] : `h`
+log "e2 : " , e2 
+log "e1 : " , e1
 
