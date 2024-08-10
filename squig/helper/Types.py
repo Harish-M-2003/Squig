@@ -812,7 +812,7 @@ class BuiltinFunction(BaseFunction):
             if not value.elements:
                 return Number(0), None
 
-        elif isinstance(value, String):
+        elif isinstance(value, String) or isinstance(value , MutableString):
             if value.string.isdigit():
                 return Number(int(value.string)), None
             elif isFloat(value.string):
@@ -825,7 +825,7 @@ class BuiltinFunction(BaseFunction):
                 return Number(1), None
             else:
                 return Number(0), None
-
+            
         return None, WrongTypeError(
             self.file, f"Cannot convert {value} to Number type."
         )

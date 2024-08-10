@@ -36,3 +36,9 @@ log length{e1}
 
 log type str
 log type string{str}
+
+# Mutable String to Number
+
+let Number : `1000`
+log type Number
+log type number{Number} 
