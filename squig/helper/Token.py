@@ -42,17 +42,45 @@ token_writetofile = "writetofile"
 token_mutstring = "mutstring"
 token_at = "at"
 token_type_specifier = "typesecifiper"
+token_left_shift = "leftshift"
+token_right_shift = "rightshift"
+token_bitwise_and = "bitwiseand"
+token_bitwise_or = "bitwiseor"
+token_bitwise_not = "bitwisenot"
+token_bitwise_xor = "bitwisexor"
 
-keywords = ("if" , "else" , "elif", "fn" ,
-            "for","return", "break" ,"continue" , "let",
-            "delete" , "type" , "use" , "log" , "file" , "close",
-            "default" , "case" , "switch", "true" , "false" , "pop",
-            "clear" , "null" , "imu" , "copy"
-            )
+keywords = (
+    "if",
+    "else",
+    "elif",
+    "fn",
+    "for",
+    "return",
+    "break",
+    "continue",
+    "let",
+    "delete",
+    "type",
+    "use",
+    "log",
+    "file",
+    "close",
+    "default",
+    "case",
+    "switch",
+    "true",
+    "false",
+    "pop",
+    "clear",
+    "null",
+    "imu",
+    "copy",
+)
+
 
 class Token:
 
-    def __init__(self,token_type , token_value = None , token_position = None):
+    def __init__(self, token_type, token_value=None, token_position=None):
 
         self.type = token_type
         self.value = token_value

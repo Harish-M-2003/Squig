@@ -37,10 +37,8 @@ class Lexer:
             if self.current_char == "<":
                 self.next() 
                 return Token(token_writetofile , token_position=self.position.copy_position()) , None
-           
-            else:
-                return None , InvalidLiteral(file=self.file , details="Invalid operator" , position=None)
             
+            return Token(token_right_shift , token_position=self.position.copy_position()) , None
 
         if self.current_char == "=":
             self.next()
@@ -50,23 +48,31 @@ class Lexer:
     
     def tokenize_greater_or_greaterThanEqual(self):
 
-        # Checks wether the given token is > or >= and returns the token.
+        # Checks wether the given token is > or >= and >>> and returns the token.
         self.next()
 
         if self.current_char == "=":
             self.next()
             return Token(token_gte,token_position=self.position.copy_position()) , None
+        
+        elif self.current_char == ">":
+            self.next()
+            return Token(token_left_shift , token_position=self.position.copy_position()) , None
+        
         return Token(token_gt,token_position=self.position.copy_position()) , None
 
     def tokenize_not_or_notEqual(self):
 
-        # Checks wether the given token is ! or != and returns the token.
+        # Checks wether the given token is ! , != or !! and returns the token.
 
         self.next()
 
         if self.current_char == "=":
             self.next()
             return Token(token_ne,token_position=self.position.copy_position()) , None
+        elif self.current_char == "!":
+            self.next()
+            return Token(token_bitwise_not , token_position=self.position.copy_position() ) , None
         return Token(token_not,token_position=self.position.copy_position()) , None
 
     def tokenize_mul_or_power(self):
@@ -190,8 +196,33 @@ class Lexer:
         self.next()
 
         return Token(token_input , message,token_position=self.position.copy_position()) , None
-            
+    
+    def tokenize_and(self):
 
+        self.next()
+        if self.current_char != "&":
+            return Token(token_and, self.current_char,token_position=self.position.copy_position()) , None
+        
+        self.next()
+        return Token(token_bitwise_and , self.current_char,token_position=self.position.copy_position()) , None
+    
+    def tokenize_or(self):
+
+        self.next()
+        if self.current_char != "|":
+            return Token(token_or, self.current_char,token_position=self.position.copy_position()) , None
+        
+        self.next()
+        return Token(token_bitwise_or , self.current_char,token_position=self.position.copy_position()) , None
+    
+    def tokenize_not(self):
+
+        self.next()
+        if self.current_char != "!":
+            return Token(token_not, self.current_char,token_position=self.position.copy_position()) , None
+        
+        self.next()
+        return Token(token_bitwise_not , self.current_char,token_position=self.position.copy_position()) , None
 
     def tokenize(self):
 
@@ -306,6 +337,10 @@ class Lexer:
                 if error:
                     return None , error
                 tokens.append(operator)
+
+            elif self.current_char == "^":
+                self.next()
+                tokens.append(Token(token_bitwise_xor , token_position=self.position.copy_position()))
                 
             elif self.current_char in token_letters:
                 operator , error = self.tokenize_variable()
@@ -320,12 +355,20 @@ class Lexer:
                 tokens.append(operator)
                 
             elif self.current_char == "&":
-                tokens.append(Token(token_and , self.current_char,token_position=self.position.copy_position()))
-                self.next()
+                operator , error = self.tokenize_and()
+                if error:
+                    return None , error
+                tokens.append(operator)
+                # tokens.append(Token(token_and , self.current_char,token_position=self.position.copy_position()))
+                # self.next()
 
             elif self.current_char == "|":
-                tokens.append(Token(token_or , self.current_char,token_position=self.position.copy_position()))
-                self.next()
+                # tokens.append(Token(token_or , self.current_char,token_position=self.position.copy_position()))
+                # self.next()
+                operator , error = self.tokenize_or()
+                if error:
+                    return None , error
+                tokens.append(operator)
                 
             elif self.current_char == '=':
                 tokens.append(Token(token_eql,token_position=self.position.copy_position()))

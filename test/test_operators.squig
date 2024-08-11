@@ -1,0 +1,33 @@
+
+# Arithmetic Operators
+
+let n1 : 10
+let n2 : 20
+
+log n1 + n1
+log n1 - n2
+log n1 * n2
+log n1 ** n2
+log n1 / n2
+log n1 % n2
+
+# Logical Operator
+
+log n1 ,">" , n2 , n1 > n2
+log n1 ,">=" , n2 , n1 >= n2
+log n1 ,"<" , n2 , n1 < n2
+log n1 ,"<=" , n2 , n1 <= n2
+log n1 ,"!=" , n2 , n1 != n2
+log n1 ,"=" , n2 , n1 = n2
+
+# Boolean Operator
+
+n1 : true
+n2 : false
+
+log n1 , "&" , n2 , n1 & n2 , n2 & n1
+log n1 , "|" , n2 , n1 | n2 , n2 & n1
+log n1 , "!" , !n1 
+
+
+# Bitwise Operator not implemented
