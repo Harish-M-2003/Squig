@@ -114,6 +114,28 @@ class Parser:
             
             return LetNode(variable , expression , isConstant , type_mentioned) , None
 
+        left , error = self.logical_expression()
+        
+        if error:
+            return None , error
+
+        # while self.current_token.type in (token_and , token_or):
+
+        while self.current_token.type in (token_bitwise_and , token_bitwise_not , token_bitwise_or , token_bitwise_xor , token_left_shift , token_right_shift):
+            operator = self.current_token
+            self.next()
+            right , error = self.relational_expression()
+            if error:
+                return None , error
+            left = BinaryOperatorNode(left , operator , right)
+
+
+
+        # print(left , "expression method")
+        return left , None
+    
+    def logical_expression(self):
+
         left , error = self.relational_expression()
         
         if error:
@@ -123,13 +145,15 @@ class Parser:
 
             operator = self.current_token
             self.next()
-            right , error = self.relational_expression()
+            right , error = self.logical_expression()
             if error:
                 return None , error
             left = BinaryOperatorNode(left , operator , right)
 
         # print(left , "expression method")
         return left , None
+    
+        
     
     def relational_expression(self):
 
