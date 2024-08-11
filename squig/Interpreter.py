@@ -161,6 +161,44 @@ class Interpreter:
                 return left._or_(right)
             except:
                 return None , RunTimeError(self.file , f"'|' {error_message}")
+        elif operator == token_bitwise_and:
+            try:
+                return left.bit_and(right)
+            except:
+                return None , RunTimeError(self.file , f"'&&' {error_message}") 
+        
+        elif operator == token_right_shift:
+            
+            try:
+                return left.bit_right_shift(right)
+            except:
+                return None , RunTimeError(self.file , f"'>>' {error_message}") 
+        
+        elif operator == token_bitwise_xor:
+            
+            try:
+                return left.bit_xor(right)
+            except:
+                return None , RunTimeError(self.file , f"'^' {error_message}") 
+        
+        elif operator == token_bitwise_or:
+            try:
+                return left.bit_or(right)
+            except:
+                return None , RunTimeError(self.file , f"'||' {error_message}")
+        
+        # elif operator == token_bitwise_not:
+        #     try:
+        #         return left.bit_not(right)
+        #     except:
+        #         return None , RunTimeError(self.file , f"'&&' {error_message}")
+        
+        elif operator == token_left_shift:
+            try:
+                return left.bit_left_shift(right)
+            except:
+                return None , RunTimeError(self.file , f"'<<' {error_message}") 
+        
         
 
     def CollectionNode(self , node):

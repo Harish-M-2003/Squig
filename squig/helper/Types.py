@@ -386,6 +386,42 @@ class Number(BaseType):
         if isinstance(number, Number):
             return Number(self.number % number.number), None
         raise Error()
+    
+    def bit_and(self , number):
+
+        if isinstance(number , Number):
+            return Number(self.number & number.number) , None
+        raise Error()
+    
+    # def bit_not(self , number):
+
+    #     if isinstance(number , Number):
+    #         return Number(~number.number) , None
+    #     raise Error()
+    
+    def bit_xor(self , number):
+
+        if isinstance(number , Number):
+            return Number(self.number ^ number.number) , None
+        raise Error()
+    
+    def bit_or(self , number):
+
+        if isinstance(number , Number):
+            return Number(self.number | number.number) , None
+        raise Error()
+    
+    def bit_left_shift(self , number):
+
+        if isinstance(number , Number):
+            return Number(self.number << number.number) , None
+        raise Error()
+    
+    def bit_right_shift(self , number):
+
+        if isinstance(number , Number):
+            return Number(self.number >> number.number) , None
+        raise Error()
 
 
 class BaseFunction(BaseType):

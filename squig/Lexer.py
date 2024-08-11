@@ -38,7 +38,7 @@ class Lexer:
                 self.next() 
                 return Token(token_writetofile , token_position=self.position.copy_position()) , None
             
-            return Token(token_right_shift , token_position=self.position.copy_position()) , None
+            return Token(token_left_shift , token_position=self.position.copy_position()) , None
 
         if self.current_char == "=":
             self.next()
@@ -57,7 +57,7 @@ class Lexer:
         
         elif self.current_char == ">":
             self.next()
-            return Token(token_left_shift , token_position=self.position.copy_position()) , None
+            return Token(token_right_shift , token_position=self.position.copy_position()) , None
         
         return Token(token_gt,token_position=self.position.copy_position()) , None
 
