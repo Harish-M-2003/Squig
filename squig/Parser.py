@@ -924,7 +924,7 @@ class Parser:
         
         cases.append((condition , cases1))
         if self.current_token.type != token_rb:
-            return None , WrongSyntaxError("Expected a closing '}' in if statement")
+            return None , WrongSyntaxError(self.file , "Expected a closing '}' in if statement")
         self.next()
         # while self.current_token.type == token_newline:
         #     self.next()
