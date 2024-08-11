@@ -1,14 +1,17 @@
+from helper.Error import RunTimeError
+
 def merge(arr, start, mid, end):
+
     start2 = mid + 1
 
     # If the direct merge is already sorted
-    if arr[mid].number <= arr[start2].number:
+    if arr[mid].value <= arr[start2].value:
         return
 
     # Two pointers to maintain start of both arrays to merge
     while start <= mid and start2 <= end:
         # If element 1 is in right place
-        if arr[start].number <= arr[start2].number:
+        if arr[start].value <= arr[start2].value:
             start += 1
         else:
             value = arr[start2]
@@ -33,4 +36,8 @@ def merge_sort(arr, l, r):
         merge_sort(arr, l, m)
         merge_sort(arr, m + 1, r)
 
-        merge(arr, l, m, r)
+        try :
+            merge(arr, l, m, r)
+        except Exception as e:
+            return RunTimeError("check sorting.py" , e)
+        return None

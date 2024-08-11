@@ -1,0 +1,46 @@
+
+# Create a integer 
+
+let integer_1 :  123
+let integer_2 : number{123}
+log integer_1 , type integer_1
+log integer_2 , type integer_2
+
+# Create a floating point number
+
+let float_1 : 23.5
+let float_2 : number{23.5}
+log float_1 , type float_1
+log float_2 , type float_2
+
+# Create a String
+
+let message_1 :  "Hello world"
+let message_2 :  string{"Hello world"}
+log message_1 , type message_1
+log message_2 , type message_2
+
+# Create a Mutable String
+
+let mut_message_1 : `Hello Mutable`
+let mut_message_2 : mut{`Hello Mutable`}
+log mut_message_1 , type mut_message_1
+log mut_message_2 , type mut_message_2
+
+# Create a Collection
+
+let collec_1 : {1,2,3,4}
+# let collec_2 : collection{1,2,3,4} not implemented this function
+log collec_1 , type collec_1
+# log collec_2 , type collec_2
+
+# Create a HashMap
+
+let hashmap_1 : {"1" : "one" , "2" : "two"}
+# Not implemented the HashMap function
+log hashmap_1 , type hashmap_1
+
+# Create a null
+
+let Null_1 : null
+log Null , type Null

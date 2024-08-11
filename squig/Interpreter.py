@@ -1127,6 +1127,7 @@ class Interpreter:
             return None , RunTimeError(self.file , f"variable {variable} is undefined")
         
         value , is_constant , literal_value = self.global_symbol_table[variable]
+        
         if isinstance(value , Types.Collection):
             return Types.Collection(filename=self.file , elements=value.elements.copy()) , None
         elif isinstance(value , Types.MutableString):

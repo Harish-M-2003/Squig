@@ -1,0 +1,42 @@
+
+# imu with integer number
+imu num : 100
+# num : 200
+log num , type num
+
+# imu with floating point number
+imu float : 12.2
+# float : 200
+log float , type float
+
+# imu with String 
+imu message : "Hello world"
+# message : "hello"
+log message , type message
+
+# imu with Mutable String
+delete message
+imu message : `Hello world`
+# message : `new Message`
+log message , type message
+
+# imu with collection
+imu collec : {1,2,2,34}
+# collec : {}
+log collec , type collec
+
+# imu with hashmap
+imu hashmap : {"1" : "one" , "2" : "two"}
+# hashmap : {}
+log hashmap , type hashmap
+
+
+# imu with boolean
+imu boolean : true
+# boolean : false
+log boolean , type boolean
+
+# imu with null
+
+imu Null : null
+log Null

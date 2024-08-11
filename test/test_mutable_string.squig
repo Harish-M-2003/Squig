@@ -1,3 +1,4 @@
+# Need to add string builtin function support for mutable string as well
 
 let str : `Hello world`
 
@@ -27,8 +28,6 @@ log str
 str[length{str}] : `` # Found an issue regrading out of index
 log str 
 
-# Poping a value from mutable string
-# log pop str # Error while executing
 
 # Length in Mutable String
 
@@ -91,3 +90,9 @@ e1[0] : `h`
 log "e2 : " , e2 
 log "e1 : " , e1
 
+# '+' operator with mutable string
+log `hello ` + `world`
+
+# log upper{`hello`} need to give support with string functions for mutable string. 
+# Poping a value from mutable string
+# log pop str # Error while executing

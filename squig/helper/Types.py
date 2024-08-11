@@ -537,7 +537,9 @@ class BuiltinFunction(BaseFunction):
 
         if isinstance(data_structure , Collection):
 
-            merge_sort(data_structure.elements , 0 , len(data_structure.elements) - 1)
+            status = merge_sort(data_structure.elements , 0 , len(data_structure.elements) - 1)
+            if status:
+                return None , status
         
         else:
             return None , RunTimeError(self.file , "sort is only implemented for colleciton")
