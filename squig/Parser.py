@@ -291,7 +291,7 @@ class Parser:
         return FunctionCallNode(variable , params) , None
 
     def atom(self):
-        print(self.current_token)
+        # print(self.current_token)
         if self.current_token.type == token_bitwise_not:
             return None , None
         if self.current_token.type in (token_int , token_float):
