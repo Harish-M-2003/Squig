@@ -22,15 +22,15 @@ class Parser:
             self.current_token = Token("eof")
 
     def parse(self):
-        try:
+        # try:
             result , error = self.statements()
             # print(result)
             if error:
                 return None , error
             return result , None
-        except Exception as e:
-            print(e)
-            return None , WrongSyntaxError(self.file , "Error occured due to inconsistent placing of brackets. check in parse function , if you get this is error kindly report this to us by raising an github issue in the repo https://github.com/Harish-M-2003/Squig" )
+        # except Exception as e:
+        #     print(e)
+        #     return None , WrongSyntaxError(self.file , "Error occured due to inconsistent placing of brackets. check in parse function , if you get this is error kindly report this to us by raising an github issue in the repo https://github.com/Harish-M-2003/Squig" )
     
     def statements(self):
         statements = []
@@ -113,7 +113,15 @@ class Parser:
             # return VariableNode(variable , expression) , None
             
             return LetNode(variable , expression , isConstant , type_mentioned) , None
-
+        
+        if self.current_token.type == token_bitwise_not:
+            operator = self.current_token
+            self.next()
+            factor , error = self.expression()
+            if error:
+                return None , error
+            return UnaryOperatorNode(operator , factor) , None
+        
         left , error = self.logical_expression()
         
         if error:
@@ -121,13 +129,14 @@ class Parser:
 
         # while self.current_token.type in (token_and , token_or):
 
-        while self.current_token.type in (token_bitwise_and , token_bitwise_not , token_bitwise_or , token_bitwise_xor , token_left_shift , token_right_shift):
+        while self.current_token.type in (token_bitwise_and , token_bitwise_or , token_bitwise_xor , token_left_shift , token_right_shift):
             operator = self.current_token
             self.next()
             right , error = self.relational_expression()
             if error:
                 return None , error
             left = BinaryOperatorNode(left , operator , right)
+        # print(left , "test")
 
 
 
@@ -157,6 +166,7 @@ class Parser:
     
     def relational_expression(self):
 
+        # print("Asdasd" , self.current_token.type)
         if self.current_token.type == token_not:
             self.next()
             relaion , error = self.relational_expression()
@@ -281,7 +291,9 @@ class Parser:
         return FunctionCallNode(variable , params) , None
 
     def atom(self):
-
+        print(self.current_token)
+        if self.current_token.type == token_bitwise_not:
+            return None , None
         if self.current_token.type in (token_int , token_float):
             token = self.current_token
             self.next()

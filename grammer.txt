@@ -2,9 +2,11 @@ statements : newline* expression (newline+ expression)* newline*
 
 expression : let variable assign expression
            | let variable assign at class_name
-           | logical-expression ((left_shift | right_shift | bitnot | bitand | bitor | bitxor ) logical-expression)*
+           | (bitnot)* logical-expression
+           | logical-expression ((left_shift | right_shift | bitand | bitor | bitxor ) logical-expression)*
 
-logical-expression : relational-expression ((and|or) relational-expression)*
+logical-expression :
+          | relational-expression ((and|or) relational-expression)*
 
 relational-expression : not relational-expression 
                       : arithmatic-expression ((lt|gt|lte|gte|nte) arithmatic-expression)*

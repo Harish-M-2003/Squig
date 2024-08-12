@@ -37,6 +37,80 @@ class BaseType:
         if type(value) == type(self):
             return True
         return False
+    
+    def modulo(self, number):
+
+        if isinstance(number, Number):
+            return Number(self.number % number.number), None
+        raise Error()
+    
+    def bit_and(self , number):
+
+        if isinstance(number , Number):
+            # if isinstance(self , Boolean):
+            #     return Number(self._get_() & number.number) , None
+            return Number(self.number & number.number) , None
+        # elif isinstance(number , Boolean):
+        #     if isinstance(self , Boolean):
+        #         return Number(self._get_() & number._get_()) , None
+        #     return Number(self.value & number._get_()) , None
+        raise Error()
+    
+    # def bit_not(self , number):
+
+    #     if isinstance(number , Number):
+    #         return Number(~number.number) , None
+    #     raise Error()
+    
+    def bit_xor(self , number):
+
+        if isinstance(number , Number):
+            # if isinstance(self , Boolean):
+            #     return Number(self._get_() ^ number.number) , None
+            return Number(self.number ^ number.number) , None
+        # elif isinstance(number , Boolean) and isinstance(self , Boolean):
+        #     return Number(self._get_() ^ number._get_()) , None
+        # elif isinstance(number , Boolean):
+        #     return Number(self.value ^ number._get_()) , None
+        raise Error()
+    
+    def bit_or(self , number):
+
+        if isinstance(number , Number):
+            # if isinstance(self , Boolean):
+            #     return Number(self._get_() | number.number) , None
+            return Number(self.number | number.number) , None
+        # elif isinstance(number , Boolean) and isinstance(self , Boolean):
+        #     return Number(self._get_() | number._get_()) , None
+        # elif isinstance(number , Boolean):
+        #     return Number(self.value | number._get_()) , None
+        raise Error()
+    
+    def bit_left_shift(self , number):
+
+        if isinstance(number , Number):
+            # if isinstance(self , Boolean):
+            #     return Number(self._get_() << number.number) , None
+            return Number(self.number << number.number) , None
+        # elif isinstance(number , Boolean) and isinstance(self , Boolean):
+        #     return Number(self._get_() << number._get_()) , None
+        # elif isinstance(number , Boolean):
+        #     return Number(self.value << number._get_()) , None
+        raise Error()
+    
+    def bit_right_shift(self , number):
+
+        if isinstance(number , Number):
+            # if isinstance(self , Boolean):
+            #     return Number(self._get_() >> number.number) , None
+            return Number(self.number >> number.number) , None
+        # elif isinstance(number , Boolean) and isinstance(self , Boolean):
+        #     return Number(self._get_() >> number._get_()) , None
+        # elif isinstance(number , Boolean):
+        #     return Number(self.value >> number._get_()) , None
+        raise Error()
+
+
 
     def add(self, right_operand):
 
@@ -354,11 +428,13 @@ class Boolean(BaseType):
         # self.value propertie . need to implement it in a better way.
 
     def __repr__(self):
-
         return f"{self.value}"
 
     def _not_(self):
         return Boolean("true" if self.value != "true" else "false")
+    
+    def _get_(self):
+        return True if self.value.strip() == 'true' else False
 
 
 class Number(BaseType):
@@ -380,50 +456,11 @@ class Number(BaseType):
         #     if number.string.isdigit():
         #         return Number(self.number ** int(number.string)) , None
         raise Error()
-
-    def modulo(self, number):
-
-        if isinstance(number, Number):
-            return Number(self.number % number.number), None
-        raise Error()
     
-    def bit_and(self , number):
+    def _not_(self):
+        return Number(~self.number)
 
-        if isinstance(number , Number):
-            return Number(self.number & number.number) , None
-        raise Error()
     
-    # def bit_not(self , number):
-
-    #     if isinstance(number , Number):
-    #         return Number(~number.number) , None
-    #     raise Error()
-    
-    def bit_xor(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number ^ number.number) , None
-        raise Error()
-    
-    def bit_or(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number | number.number) , None
-        raise Error()
-    
-    def bit_left_shift(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number << number.number) , None
-        raise Error()
-    
-    def bit_right_shift(self , number):
-
-        if isinstance(number , Number):
-            return Number(self.number >> number.number) , None
-        raise Error()
-
-
 class BaseFunction(BaseType):
 
     def __init__(self, file, variable, params, body, type_mentioned):

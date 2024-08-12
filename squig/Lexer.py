@@ -72,6 +72,8 @@ class Lexer:
             return Token(token_ne,token_position=self.position.copy_position()) , None
         elif self.current_char == "!":
             self.next()
+            # if self.current_char == "!":
+            #     return None , WrongSyntaxError(self.file , "'!' cannot be followed after '!'.")
             return Token(token_bitwise_not , token_position=self.position.copy_position() ) , None
         return Token(token_not,token_position=self.position.copy_position()) , None
 
