@@ -1176,20 +1176,45 @@ class Interpreter:
     def TryCatchNode(self , node):
 
         try_statement , error = self.process(node.try_block_statements)
-        catch_block_variable = node.catch_block_variable
+        # catch_block_variable = node.catch_block_variable
+        # return None ,  None
+        catch_variable = None
         if error:
-            self.global_symbol_table[node.catch_block_variable.variable.value] = (error , "type" , "is_constant")
-            # print("error")
-            catch_block , error = self.process(node.catch_block_statements)
-            if error:
-                return None ,error
+            # print(node.catch_block_statements)
+            
+            # catch_block , error = self.process(CollectionNode(elements=node.catch_block_statements))
+            # if error:
+            #     return None ,error
+            # print("testing" , node.catch_block_statements)
+            for catch_statement in node.catch_block_statements:
+
+                # print(catch_statement[-1] , catch_statement)
+
+                expected_error , error_status  = self.process(catch_statement[-1])
+                if error_status:
+                    return None ,error_status
+                
+                if type(error).__name__ == expected_error.value:
+                    catch_variable = catch_statement[1].value
+                    self.global_symbol_table[catch_variable] = (error , "type" , "is_constant")
+                    catch_block , error = self.process(catch_statement[0])
+                    # print(catch_statement)
+                    if error:
+                        return None ,error
+                    break
+    
+            #     if error:
+            #         return None , error
         
         if node.finally_block_statements:
             finally_statement , error = self.process(node.finally_block_statements)
             if error:
                 return None , error
-
-        return None , None 
+        try :
+            del self.global_symbol_table[catch_variable]
+        except:
+            pass
+        return Types.Null() , None 
     
     
 
