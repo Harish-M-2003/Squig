@@ -14,6 +14,14 @@ class Error:
         error_message += f"\t{self.name} : {self.details}\n"
         
         return error_message
+    
+    def __repr__(self):
+        
+        error_message = f"\n\tFile '{self.file}' at line {self.position.line_number if self.position else None}\n"
+        error_message += f"\t{self.name} : {self.details}\n"
+        
+        return error_message
+
 
 class RedeclarationError(Error):
 

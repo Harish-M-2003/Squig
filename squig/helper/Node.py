@@ -338,6 +338,15 @@ class DeepCopyNode:
     def __repr__(self):
 
         return f"{self.value}"
+    
+class TryCatchNode:
+
+    def __init__(self , try_block_statements , catch_block_statements , catch_block_variable , finally_block_statements = None):
+        
+        self.try_block_statements = try_block_statements
+        self.catch_block_statements = catch_block_statements
+        self.catch_block_variable = catch_block_variable
+        self.finally_block_statements = finally_block_statements
 
 # class ClassNode:
     

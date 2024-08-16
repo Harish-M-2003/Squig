@@ -75,6 +75,9 @@ keywords = (
     "null",
     "imu",
     "copy",
+    "try",
+    "catch",
+    "finally"
 )
 
 

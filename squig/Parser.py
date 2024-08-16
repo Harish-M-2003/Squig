@@ -610,6 +610,74 @@ class Parser:
                 return None , error
             
             return PopNode(variable=variable , index =acessNode )  , None
+        
+        elif self.current_token.type == token_keyword and self.current_token.value == "try":
+            self.next()
+            if self.current_token.type != token_colon:
+                return None , WrongSyntaxError(self.file , "Expected a ':' after try keyword")
+            self.next()
+            if self.current_token.type != token_lb:
+                return None , WrongSyntaxError(self.file , "Expected a '{' after the ':' in try statement")
+            self.next()
+            try :
+                try_block , error = self.statements()
+            except:
+                return None , WrongSyntaxError(self.file , "expected a '}' for try block")
+            
+            if error:
+                return None , error
+            
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a '}' for try statement")
+            self.next()
+
+            if self.current_token.type != token_keyword and self.current_token.value != "catch":
+                return None , WrongSyntaxError(self.file , "Expected atleast a single catch block")
+            self.next()
+            if self.current_token.type != token_lb:
+                return None , WrongSyntaxError(self.file , "Expected '{' after the catch block")
+            self.next()
+            if self.current_token.type != token_variable:
+                return None , WrongSyntaxError(self.file , "Expected a catch variable")
+            variable_name , error = self.expression()
+            if error:
+                return None , error
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a '}' in catch block after the catch variable")
+            self.next()
+            if self.current_token.type != token_colon:
+                return None , WrongSyntaxError(self.file , "Expected a ':' in catch block")
+            self.next()
+            if self.current_token.type != token_lb:
+                return None , WrongSyntaxError(self.file , "Expected a '{' in catch after ':'")
+            self.next()
+            
+            catch_block , error = self.statements()
+            if error:
+                return None , error
+            
+            if self.current_token.type != token_rb:
+                return None , WrongSyntaxError(self.file , "Expected a '}' in catch")
+            
+            self.next()
+
+            if self.current_token.type == token_keyword and self.current_token.value == "finally":
+                self.next()
+                if self.current_token.type != token_colon : 
+                    return None , WrongSyntaxError(self.file , "Expected a ':' in finally block")
+                self.next()
+                if self.current_token.type != token_lb:
+                    return None , WrongSyntaxError(self.file , "Expected a '{' after ':' in finally block")
+                self.next()
+                finally_block_statement , error = self.statements()
+                if error:
+                    return None , error
+                if self.current_token.type != token_rb :
+                    return None , WrongSyntaxError(self.file , "Expected a '}' after ':' in finally block")
+                self.next()
+                return TryCatchNode(try_block , catch_block , variable_name , finally_block_statement) , None
+            return TryCatchNode(try_block , catch_block , variable_name ) , None
+            
             # variable = self.current_token
             # self.next()
             # if self.current_token.type == token_ls:

@@ -37,8 +37,11 @@ atom : int|float|string|variable|input-string|Mutstring
      : class-statement
      : instantiation-statement
      : copy_statement
+     : try_catch_statement
 
 copy_statement : copy variable
+
+try_catch_statement : try colon lb statement rb catch lb variable rb colon lb statement  rb finally lb statements rb
 
 variable : variable (lsquare expression rsquare)*   
          | variable

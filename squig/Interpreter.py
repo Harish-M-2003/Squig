@@ -1173,6 +1173,24 @@ class Interpreter:
 
         return None , RunTimeError(self.file , "Deep copy is implemented only for collection.")
     
+    def TryCatchNode(self , node):
+
+        try_statement , error = self.process(node.try_block_statements)
+        catch_block_variable = node.catch_block_variable
+        if error:
+            self.global_symbol_table[node.catch_block_variable.variable.value] = (error , "type" , "is_constant")
+            # print("error")
+            catch_block , error = self.process(node.catch_block_statements)
+            if error:
+                return None ,error
+        
+        if node.finally_block_statements:
+            finally_statement , error = self.process(node.finally_block_statements)
+            if error:
+                return None , error
+
+        return None , None 
+    
     
 
     # def ObjectNode(self , node):
