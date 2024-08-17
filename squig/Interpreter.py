@@ -1159,18 +1159,18 @@ class Interpreter:
     def ClearNode(self , node):
 
         variable_name = node.variable_name.variable.value
-        if variable_name in self.global_symbol_table:
-            collection = self.global_symbol_table[variable_name]
-            if type(collection) == Types.Collection:
+        collection = self.global_symbol_table.get(variable_name , None)
+
+        if collection != None:
+
+            if isinstance(collection , Types.Collection):
                 # check this statemenet in newer versions.
                 collection.elements.clear()
-            elif type(collection) == tuple:
-                if type(collection[0]) == Types.Collection:
+            elif isinstance(collection , tuple):
+                if isinstance(collection[0] , Types.Collection):
                     collection[0].elements.clear()
-                elif type(collection[0]) == Types.String:
+                elif isinstance(collection[0] , Types.String) or isinstance(collection[0] , Types.MutableString) :
                     self.global_symbol_table[variable_name] = Types.Null()
-                elif type(collection[0]) == Types.MutableString:
-                    self.global_symbol_table[variable_name] =Types.Null()
                 else:
                     return None , RunTimeError(self.file , f"Cannot clear elements of type {type(collection).__name__}")
             else:
@@ -1183,10 +1183,13 @@ class Interpreter:
     def DeepCopyNode(self , node):
         
         variable = node.value.variable.value
-        if variable not in self.global_symbol_table:
+
+        value , is_constant , literal_value = self.global_symbol_table.get(variable , None)
+
+        if value == None:
             return None , RunTimeError(self.file , f"variable {variable} is undefined")
         
-        value , is_constant , literal_value = self.global_symbol_table[variable]
+        # value , is_constant , literal_value = self.global_symbol_table[variable]
         
         if isinstance(value , Types.Collection):
             return Types.Collection(filename=self.file , elements=value.elements.copy()) , None
@@ -1230,7 +1233,7 @@ class Interpreter:
     
             #     if error:
             #         return None , error
-            
+
         if not exception_handled:
             return None , error
         
