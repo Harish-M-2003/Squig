@@ -89,3 +89,8 @@ class WrongFileOperationError(Error):
     
     def __init__(self, file, name, details, position=None):
         super().__init__(file, name, details, position)
+
+class WrongIndexError(Error):
+
+    def __init__(self , file , details , position = None):
+        super().__init__(file , "WrongIndexError" , details)

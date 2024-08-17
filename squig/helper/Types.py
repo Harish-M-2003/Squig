@@ -411,8 +411,8 @@ class Collection(BaseType):
 
     def index(self, index):  # Need to check this method
 
-        if index > len(self.elements):
-            return Number(-1)
+        if index >= len(self.elements):
+            return WrongIndexError(self.file , "Index out of bound.")
 
         return self.elements[index]
 

@@ -243,49 +243,56 @@ class Interpreter:
         return Types.HashMap(processed_key_value , processed_index_key) , None
 
     def CollectionAccessNode(self , node):
-        # print("got the node")
+        
         variable = node.variable.value
-        value = None    
+        value = None
 
         if not variable in self.global_symbol_table :
             return None , RunTimeError(self.file , f"Collection '{variable}' is undefind.")
         
         indexs = []
         variable_value = self.global_symbol_table[variable][0]
-        # print(type(variable_value[0]))
-        # print(type(variable_value))
-        # print(node.index)
-        for idx in node.index:
-            index , error = self.process(idx)
-            # if not isinstance(self.global_symbol_table[variable] , Types.Collection):
-            # print(type(variable_value) , isinstance(variable_value , Types.MutableString))
-            if not isinstance(variable_value , Types.Collection) and \
+
+        
+        if not isinstance(variable_value , Types.Collection) and \
                 not isinstance(variable_value , Types.MutableString) and \
                 not isinstance(variable_value , Types.HashMap) and \
                 not isinstance(variable_value , Types.String):
-                # return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(self.global_symbol_table[variable]).__name__} cannot be indexed.")
                 return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(variable_value).__name__} cannot be indexed.")
-            
-            if not isinstance(index , Types.Number) and \
-                (isinstance(variable_value , Types.Collection) or \
-                isinstance(variable_value , Types.String)):
-                    return None , WrongTypeError(self.file , f"Type '{type(index).__name__}' connot be used for indexing Collection '{variable}'.")
+        
+        for idx in node.index:
+            index , error = self.process(idx)
             if error:
                 return None , error
+            
+            # if not isinstance(variable_value , Types.Collection) and \
+            #     not isinstance(variable_value , Types.MutableString) and \
+            #     not isinstance(variable_value , Types.HashMap) and \
+            #     not isinstance(variable_value , Types.String):
+            #     return None , WrongTypeError(self.file , f"variable '{variable}' of type {type(variable_value).__name__} cannot be indexed.")
+            
+            # if not isinstance(index , Types.Number) and \
+            #     (isinstance(variable_value , Types.Collection) or \
+            #     isinstance(variable_value , Types.String)):
+            if not isinstance(index , Types.Number):
+                    return None , WrongTypeError(self.file , f"Type '{type(index).__name__}' connot be used for indexing Collection '{variable}'.")
             indexs.append(index)
         
         # if isinstance(self.global_symbol_table[variable],Types.Collection) or isinstance(self.global_symbol_table[variable] , Types.String):
         if isinstance(variable_value,Types.Collection) or \
             isinstance(variable_value, Types.String):
-            
+           
             # value = self.global_symbol_table[variable].index(indexs[0].number)
             value = variable_value.index(indexs[0].number)
 
             if len(indexs) > 1:
-                if isinstance(value , CollectionNode) or isinstance(value,Types.String) or isinstance(value , StringNode) or isinstance(value , Types.Collection):
+                if isinstance(value , CollectionNode) or \
+                    isinstance(value,Types.String) or\
+                    isinstance(value , StringNode) or \
+                    isinstance(value , Types.Collection):
 
-                    for _ in indexs[1:]:
-                        value = value.index(_.number)
+                    for idx in range(1 , len(indexs)):
+                        value = value.index(indexs[idx].number)
                 else:
 
                     return None , InvalidOperationError(self.file , "Cannot slice a Number Type.")
@@ -297,13 +304,16 @@ class Interpreter:
 
 
             # value = self.global_symbol_table[variable].string
-            value = variable_value.string
-            if not value:
-                return None , RunTimeError(self.file , "Cannot slice a empty string")
+            # value = variable_value.string
+
+            # if not value:
+            if not variable_value.string:
+                return None , RunTimeError(self.file , "Cannot slice a empty mutable string")
             
-            if type(value) == Types.MutableString:
-                value = value.string
-            return Types.MutableString(value[indexs[0].number]) , None
+            # if isinstance(value , Types.MutableString):
+            #     value = value.string
+
+            return Types.MutableString(variable_value.string[indexs[0].number]) , None
         
         # elif isinstance(self.global_symbol_table[variable] ,Types.HashMap):
         elif isinstance(variable_value ,Types.HashMap):
