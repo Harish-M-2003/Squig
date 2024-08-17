@@ -25,7 +25,7 @@ class Interpreter:
 
         lines = []
         for statement in node.statement:
-
+            
                 line ,error = self.process(statement)
                 if error:
                     return None , error
@@ -243,15 +243,18 @@ class Interpreter:
         return Types.HashMap(processed_key_value , processed_index_key) , None
 
     def CollectionAccessNode(self , node):
-        
+
         variable = node.variable.value
         value = None
 
-        if not variable in self.global_symbol_table :
+        variable_value_tuple = self.global_symbol_table.get(variable , None)
+
+        if variable_value_tuple == None:
             return None , RunTimeError(self.file , f"Collection '{variable}' is undefind.")
         
         indexs = []
-        variable_value = self.global_symbol_table[variable][0]
+        variable_value = variable_value_tuple[0]
+        # print(variable_value)
 
         
         if not isinstance(variable_value , Types.Collection) and \
@@ -283,7 +286,10 @@ class Interpreter:
             isinstance(variable_value, Types.String):
            
             # value = self.global_symbol_table[variable].index(indexs[0].number)
-            value = variable_value.index(indexs[0].number)
+            # print(variable_value.index(indexs[0].number))
+            value , error = variable_value.index(indexs[0].number)
+            if error:
+                return None , error
 
             if len(indexs) > 1:
                 if isinstance(value , CollectionNode) or \
@@ -292,7 +298,10 @@ class Interpreter:
                     isinstance(value , Types.Collection):
 
                     for idx in range(1 , len(indexs)):
-                        value = value.index(indexs[idx].number)
+                        value , error = value.index(indexs[idx].number)
+                        print("testing" , value , error)
+                        if error:
+                            return None , error
                 else:
 
                     return None , InvalidOperationError(self.file , "Cannot slice a Number Type.")
@@ -457,10 +466,13 @@ class Interpreter:
         variable = node.variable.value
         members = node.members # Need to fix this for access nested props
 
-        if variable in self.global_symbol_table:
+        variable_value = self.global_symbol_table.get(variable , None)
+        if variable_value != None:
+        # if variable in self.global_symbol_table:
             # print(self.global_symbol_table)
-            variable_value = self.global_symbol_table[variable]
+            # variable_value = self.global_symbol_table[variable]
             # print("Testing" , variable_value)
+
             if type(variable_value) != tuple:
                 variable_value = (variable_value , False )
 
@@ -483,8 +495,8 @@ class Interpreter:
             #     return object_members[members.value] , None
 
             return variable_value[0] , None
-        else:
-            return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
+        
+        return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
 
     def InputStringNode(self , node):
 
@@ -1184,7 +1196,7 @@ class Interpreter:
         return None , RunTimeError(self.file , "Deep copy is implemented only for collection.")
     
     def TryCatchNode(self , node):
-
+        # print(type(node.try_block_statements) , node.try_block_statements)
         try_statement , error = self.process(node.try_block_statements)
         # catch_block_variable = node.catch_block_variable
         # return None ,  None
@@ -1196,6 +1208,8 @@ class Interpreter:
             # if error:
             #     return None ,error
             # print("testing" , node.catch_block_statements)
+
+            exception_handled = False
             for catch_statement in node.catch_block_statements:
 
                 # print(catch_statement[-1] , catch_statement)
@@ -1211,10 +1225,14 @@ class Interpreter:
                     # print(catch_statement)
                     if error:
                         return None ,error
+                    exception_handled = True
                     break
     
             #     if error:
             #         return None , error
+            
+        if not exception_handled:
+            return None , error
         
         if node.finally_block_statements:
             finally_statement , error = self.process(node.finally_block_statements)

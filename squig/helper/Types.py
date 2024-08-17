@@ -374,10 +374,10 @@ class String(BaseType):
 
     def index(self, index):  # Need to check this method
 
-        if index > len(self.string):
-            return -1
+        if index >= len(self.string):
+            return None , WrongIndexError(self.file , "Index out of bound")
 
-        return String(self.string[index])
+        return String(self.string[index]) , None
 
 
 class InputString:
@@ -410,11 +410,12 @@ class Collection(BaseType):
         return f"{self.elements}".replace("[", "{ ").replace("]", " }")
 
     def index(self, index):  # Need to check this method
-
+        # print(type(index) , index , len(self.elements))
         if index >= len(self.elements):
-            return WrongIndexError(self.file , "Index out of bound.")
+            # print("checking" , index)
+            return None , WrongIndexError(self.file , "Index out of bound.")
 
-        return self.elements[index]
+        return self.elements[index] , None
 
 
 class Boolean(BaseType):
