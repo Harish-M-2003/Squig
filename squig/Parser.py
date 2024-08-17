@@ -102,8 +102,10 @@ class Parser:
             # if self.current_token.type == token_keyword and self.current_token.value == "none":
             #     self.next()
             #     return LetNode(variable , NullNode()) , None
-            
-            expression , error = self.expression()
+            try:
+                expression , error = self.expression()
+            except:
+                return None , WrongSyntaxError(self.file , "a value must be give after : ")
             # print(expression , "in expression function")
             if not type_mentioned:
                 type_mentioned = type(expression).__name__.replace("Node" , "").strip().lower()

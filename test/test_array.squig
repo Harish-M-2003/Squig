@@ -71,5 +71,3 @@ let e2 : copy array
 # log e2 , array
 # e2[0] : 1234
 # log e2 , array
-
-# Need to handle Collection index out of bound exception

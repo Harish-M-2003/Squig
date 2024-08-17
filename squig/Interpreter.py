@@ -44,14 +44,11 @@ class Interpreter:
     
     def StringNode(self , node):
 
-        string = node.string.value
-        
-        return Types.String(string=string,filename=self.file) , None
+        return Types.String(node.string.value , self.file) , None
 
     def NumberNode(self , node):
 
-        number = node.factor.value
-        return Types.Number(number) , None
+        return Types.Number(node.factor.value) , None
 
     def BinaryOperatorNode(self , node):
 
@@ -187,12 +184,6 @@ class Interpreter:
             except:
                 return None , RunTimeError(self.file , f"'||' {error_message}")
         
-        # elif operator == token_bitwise_not:
-        #     try:
-        #         return left.bit_not(right)
-        #     except:
-        #         return None , RunTimeError(self.file , f"'&&' {error_message}")
-        
         elif operator == token_left_shift:
             try:
                 return left.bit_left_shift(right)
@@ -203,17 +194,15 @@ class Interpreter:
 
     def CollectionNode(self , node):
 
-        elements = node.elements
-        
-        processed_elements = []
+        elements = []
 
-        for every_element in elements:
-            element , error = self.process(every_element)
+        for element_node in node.elements:
+            element , error = self.process(element_node)
             if error:
                 return None , error
-            processed_elements.append(element)
+            elements.append(element)
 
-        return Types.Collection(filename=self.file,elements=processed_elements) , None
+        return Types.Collection(self.file,elements) , None
     
     def HashMapNode(self , node):
         # print("hasmap node")
@@ -414,18 +403,16 @@ class Interpreter:
         # if node.factor:
         # print(node.factor)
         value , error = self.process(node.factor)
+        if error:
+            return None , error
+        
         type_mentioned = None
 
-
-
-        if type(node.type_mentioned) != Token:
+        if not isinstance(node.type_mentioned , Token):
             type_mentioned = Types.DataType(node.type_mentioned)
         # print(value , "check")
         # else:
         #     value , error = None , None
-
-        if error:
-            return None , error
         
         if not type_mentioned:
 
@@ -652,7 +639,7 @@ class Interpreter:
 
         types = type(node).__name__.replace("Node" , '')
 
-        return Types.String(string=types , filename=self.file) , None
+        return Types.String(types , self.file) , None
 
 
     def IfNode(self , node):
@@ -740,8 +727,8 @@ class Interpreter:
         
         if not end_value.number:
 
-            if type(start_value) == Types.String or type(start_value) == Types.MutableString:
-                is_mutable = type(start_value) == Types.String
+            if isinstance(start_value,Types.String) or isinstance(start_value,Types.MutableString):
+                is_mutable = isinstance(start_value  , Types.String)
                 for var in start_value.string:
 
                     self.global_symbol_table[variable] = Types.String(var) if is_mutable else Types.MutableString(var)
@@ -752,7 +739,7 @@ class Interpreter:
                     elements.append(body)
                 del is_mutable
             
-            elif type(start_value) == Types.Number:
+            elif isinstance(start_value,Types.Number):
                 
                 for var in range(start_value.number):
 
@@ -763,7 +750,7 @@ class Interpreter:
                     
                     elements.append(body)
             
-            elif type(start_value) == Types.Collection:
+            elif isinstance(start_value,Types.Collection):
 
                 for var in start_value.elements:
                     self.global_symbol_table[variable] = var
@@ -784,7 +771,7 @@ class Interpreter:
                 
                 elements.append(body)
         
-        return Types.Collection(filename=self.file,elements=elements) , None
+        return Types.Collection(self.file,elements) , None
     
     def DeleteNode(self , node):
 
@@ -801,7 +788,7 @@ class Interpreter:
             if not var in self.global_symbol_table:
                 return None , RunTimeError(self.file , f"Variable '{variable}' is  undefined.")
         
-            self.global_symbol_table.pop(var) 
+            del self.global_symbol_table[var] 
 
         return Types.Null() , None
     
@@ -888,9 +875,11 @@ class Interpreter:
     def CloseNode(self , node):
 
         # file_name , error = self.process(node.filename)
-        file = node.filename.variable.value
-        self.global_symbol_table[file].close()
-        del self.global_symbol_table[file]
+        file = self.global_symbol_table.get(node.filename.variable.value , None)
+        if not file:
+            file[0].close()
+            del self.global_symbol_table[file]
+
         return Types.Null() , None
     
     def PopNode(self , node):
@@ -898,29 +887,30 @@ class Interpreter:
         # Need to fix this bug
 
         variable = node.variable.value
+        datastructure , is_constant , literal_type = self.global_symbol_table.get(variable , None)
         # print(node.)
         # local_symbol_table = self.global_symbol_table[variable].key_values
 
-        if variable not in self.global_symbol_table:
+        if datastructure == None:
             return None , RuntimeError(self.file , f"variable '{variable}' is undefined.")
         
         # print(self.global_symbol_table[variable] , node.index.index , "in Pop Node")
         # print(type(node.index.index[0]) , node.index.index)
         # print("testing " , type(node.index))
         index = Types.Number(-1)
-        if type(node.index) == CollectionAccessNode:
+        if isinstance(node.index , CollectionAccessNode):
             
             index , error = self.process(node.index.index[0])
             if error:
                 return None , error
         
-        datastructure , is_constant , literal_type = self.global_symbol_table[variable]
+        
 
-        if type(datastructure) == Types.HashMap and type(index) == Types.String:
+        if isinstance(datastructure,Types.HashMap) and isinstance(index,Types.String):
             datastructure.index_values.remove(index.string)
             return datastructure.key_values.pop(index.string) , None
         
-        elif type(datastructure) == Types.HashMap and  type(index) == Types.Number:
+        elif isinstance(datastructure,Types.HashMap) and  isinstance(index,Types.Number):
 
             key = datastructure.index_values[index.number]
             del datastructure.index_values[index.number]
@@ -928,7 +918,7 @@ class Interpreter:
             # print(type(key))
             return datastructure.key_values.pop(key) , None
         
-        elif type(datastructure) == Types.Collection and type(index) == Types.Number:
+        elif isinstance(datastructure,Types.Collection) and isinstance(index,Types.Number):
             if not datastructure.elements:
                 return None , RunTimeError(self.file , "Cannot pop from an Empty Collection")
             
@@ -940,7 +930,7 @@ class Interpreter:
             
             return value , None
         
-        elif type(datastructure[0]) == Types.MutableString and type(index) == Types.Number:
+        elif isinstance(datastructure[0],Types.MutableString) and isinstance(index,Types.Number):
 
             if index.number >= len(datastructure[0].mut_string):
                 
@@ -1027,7 +1017,7 @@ class Interpreter:
         if error:
             return None , error
         
-        return output , None
+        return Types.Null() , None
     
     def BooleanNode(self , node):
         
@@ -1035,9 +1025,7 @@ class Interpreter:
     
     def MutableStringNode(self , node):
 
-        string  = node.string.value
-        
-        return Types.MutableString(string) , None
+        return Types.MutableString(node.string.value) , None
     
     def VariableManipulationNode(self , node):
         # print("yeah" , type(node.value) , node.index)
@@ -1057,7 +1045,7 @@ class Interpreter:
         # if variable not in self.global_symbol_table and type(variable_value) == Types.HashMap:
         #     return None , RunTimeError(self.file , f"Variable '{variable}' is undefined.")
         
-        if type(variable_value) == Types.String:
+        if isinstance(variable_value , Types.String):
             return None , RunTimeError(self.file , f"'{variable}' is a immutable string which cannot be modified.")
         
         # print(node.index , "node.index")
@@ -1069,9 +1057,9 @@ class Interpreter:
         # if not variable_value.isType(target_value):
         #     return None , RunTimeError(self.file , "Cannot Manipulate a Mutable String with Another type.")
         # print(type(variable_value) , variable_value)
-        if type(variable_value) == Types.MutableString:
+        if isinstance(variable_value , Types.MutableString):
             # print("right" , target_value)
-            if type(target_value) != Types.MutableString:
+            if not isinstance(target_value , Types.MutableString):
                 return None , WrongTypeError(self.file , f"'{type(target_value).__name__}' cannot be combined with 'MutableString.'")
             value , error = variable_value.include(index.number , target_value.string)
             if error:
@@ -1079,12 +1067,12 @@ class Interpreter:
             if not value :
                 return None , RunTimeError(self.file , f"Manipulation Index out of range for MutableString '{variable_value.string}' stored in variable '{variable}'")
         
-        elif type(variable_value) == Types.HashMap:
+        elif isinstance(variable_value , Types.HashMap):
             # self.global_symbol_table[variable]
             # length = variable_value.length
             # variable_value.index_values[length] = index.string
             
-            if type(index) == Types.Number:
+            if isinstance(index , Types.Number):
                 if index.number > len(variable_value.key_values):
                     return None , RunTimeError(self.file , "Index out of range in 'Map' datatype.")
                 # if index.number < 0:
@@ -1092,7 +1080,7 @@ class Interpreter:
                 key = variable_value.index_values[index.number]
                 variable_value.key_values[key] = target_value
 
-            elif type(index) == Types.String:
+            elif isinstance(index,Types.String):
                 # print(index.string , "inex")
                 variable_value.key_values[index.string] = target_value
                 if index.string not in variable_value.index_values:
@@ -1103,7 +1091,7 @@ class Interpreter:
             # variable_value.key_values[index.string] = target_value
             # print(target_value , variable_value.key_values[index.string] , type(index))
 
-        elif type(variable_value) == Types.Collection:
+        elif isinstance(variable_value,Types.Collection):
             # print(type(variable_value.elements) , variable_value)
             # if type(variable_value.elements).__name__ == 'tuple':
             #     print("it's array")
@@ -1123,7 +1111,7 @@ class Interpreter:
         if error:
             return None , error
         
-        cases = node.cases.get(str(condition.value) , False)
+        cases = node.cases.get(str(condition.value) , None)
         
         if not cases :
             
@@ -1278,7 +1266,7 @@ class Interpreter:
     #     return  needed_member , None
 
     def no_process(self , node):
-
+        print("Unknown Node" , node)
         return Types.Null() , None
 
 FILE = "<core>"

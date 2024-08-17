@@ -43,4 +43,4 @@ log hashmap_1 , type hashmap_1
 # Create a null
 
 let Null_1 : null
-log Null , type Null
+log Null_1 , type Null_1
