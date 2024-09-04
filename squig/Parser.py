@@ -874,6 +874,9 @@ class Parser:
                 if error:
                     return None , WrongSyntaxError(self.file , 'something went worng in function deefinition.', position = self.current_token.position.copy_position() )
                 param_list.append(param_name.variable)
+        else:
+            return None , WrongSyntaxError(self.file , f"'{self.current_token.value}' cannot be a parameter while defining a function.")
+
 
         if self.current_token.type != token_rb:
             return None , WrongSyntaxError(self.file  , "Expected a '}' in " + f"{function_name.value} function definition.", position = self.current_token.position.copy_position() )
