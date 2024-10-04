@@ -316,11 +316,20 @@ class Lexer:
                 tokens.append(operator)
 
             elif self.current_char == '/':
-                tokens.append(Token(token_divide,token_position=self.position.copy_position()))
                 self.next()
                 if self.current_char == '/':
-                    return None , InvalidLiteral(self.file,f"Unexpected Literal '//'.", position = self.position.copy_position() )
-
+                    self.next()
+                    while self.current_char and self.current_char != "/":
+                        # 
+                        self.next()      
+                    if not self.current_char and self.current_char != '/':
+                        return None , InvalidLiteral(self.file , "Expected a the multiline comment end" , self.position.copy_position())    
+                    
+                    if self.current_char != '/':
+                        return None , InvalidLiteral(self.file , 'expected the multiline comment end', self.position.copy_position())
+                    self.next()          
+                else:
+                    tokens.append(Token(token_divide,token_position=self.position.copy_position()))
 
             elif self.current_char == '<':
                 operator , error = self.tokenize_lesser_or_lesserThanEqual()
