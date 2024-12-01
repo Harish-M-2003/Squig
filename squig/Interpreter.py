@@ -9,23 +9,17 @@ class Interpreter:
         self.global_symbol_table = global_symbol_table
 
     def process(self , node):
-        
         method = getattr(self , f"{type(node).__name__}" , self.no_process)
         # print(method)
         return method(node)
     
     def ShowNode(self , node):
 
-        # print(self.process(node.statement))
-        # print(type(node.statement))
-        # statement , error = self.process(node.statement)
         # print("working")
-        # print("in interpretor" , node.statement)
-        # print(node.statement)
-
+        
         lines = []
         for statement in node.statement:
-            
+                # print(type(statement))
                 line ,error = self.process(statement)
                 if error:
                     return None , error
@@ -51,8 +45,9 @@ class Interpreter:
         return Types.Number(node.factor.value) , None
 
     def BinaryOperatorNode(self , node):
-
+        # print(type(node.left))
         left , error = self.process(node.left)
+        # print(left)
         if error:
             return None , error
         
@@ -197,7 +192,9 @@ class Interpreter:
         elements = []
 
         for element_node in node.elements:
+            # print(type(element_node))
             element , error = self.process(element_node)
+    
             if error:
                 return None , error
             elements.append(element)
@@ -288,7 +285,7 @@ class Interpreter:
 
                     for idx in range(1 , len(indexs)):
                         value , error = value.index(indexs[idx].number)
-                        print("testing" , value , error)
+                        # print("testing" , value , error)
                         if error:
                             return None , error
                 else:
@@ -353,15 +350,30 @@ class Interpreter:
     def VariableNode(self , node):
 
         variable = node.variable.value
-        members = node.members
+        # members = node.members
         value , error = self.process(node.factor)
         
         
         if error:
             return None , error
         
-        object_name = self.global_symbol_table.get(variable , -1)
-        if object_name == -1:
+        # object_name = self.global_symbol_table.get(variable , -1)
+        parent = node.parent
+        # print(parent)
+        variable_value = None
+        object_name = None
+
+        while parent:
+            # object_name = variable_value 
+            object_name = parent.scope.get(variable , None)
+            # print(parent , "testeing" , object_name)
+            if not object_name:
+                parent = parent.parent
+            else:
+                break
+        
+        # print(type(object_name[0]) , parent)
+        if object_name == None:
             return None , RunTimeError(self.file , f"Variable {variable} is undefined.")
 
         # if  type(object_name) == Types.String and "@" not in object_name.value:
@@ -383,7 +395,9 @@ class Interpreter:
             #     type_mentioned  = object_name[-1].value
             #     type_mentioned = type_mentioned if type_mentioned != "bool" else "boolean"
             #     return None , WrongTypeError(self.file , f"'{current_value_type}' cannot be assigned to variable '{variable}' of type '{type_mentioned}'")
-            self.global_symbol_table[variable] = (value , object_name[1] , object_name[-1])
+            
+            # self.global_symbol_table[variable] = (value , object_name[1] , object_name[-1])
+            parent.scope[variable] = (value , object_name[1] , object_name[-1])
         else:
             return None , RunTimeError(self.file , f"immutable variable '{variable}' cannot be modified")
         # else:
@@ -424,7 +438,16 @@ class Interpreter:
         #     return None , WrongTypeError(self.file , f"'{current_value_type.value}' cannot be assigned to variable '{variable}' of type '{type_mentioned.value}'")
 
         
-        self.global_symbol_table[variable] = (value , node.isConstant , type_mentioned)
+        # self.global_symbol_table[variable] = (value , node.isConstant , type_mentioned)
+
+        if node.parent and isinstance(node.parent , BlockLevelNode): # if not the root node:
+
+            node.parent.scope[variable] = (value , node.isConstant , type_mentioned)
+        else: 
+            # need check this case 
+            node.scope[variable] = (value , node.isConstant , type_mentioned)
+
+        # print(node.parent.scope)
         
         return Types.Null() , None
     
@@ -449,11 +472,20 @@ class Interpreter:
 
 
     def VariableAccessNode(self , node):
-
         variable = node.variable.value
         members = node.members # Need to fix this for access nested props
-
-        variable_value = self.global_symbol_table.get(variable , None)
+        
+        # variable_value = self.global_symbol_table.get(variable , None) # find the variable in the parent until it is found
+        parent = node.parent # need to set the parent for binary operator node
+        variable_value = None
+        while parent:
+            variable_value = parent.scope.get(variable , None)
+            if not variable_value:
+                parent = parent.parent
+            else:
+                break
+        
+        # print(parent , variable_value)
         if variable_value != None:
         # if variable in self.global_symbol_table:
             # print(self.global_symbol_table)
@@ -646,10 +678,12 @@ class Interpreter:
 
         cases = node.cases
         else_case = node.else_case
-
+        # print(node.parent.scope)
         for condition , statement in cases:
-           
+            # print("testing" , condition)
+            # print(type(condition))
             predicate , error = self.process(condition)
+            
             if error:
                 return None , error
             if predicate.value == 'true':
@@ -660,6 +694,7 @@ class Interpreter:
             
 
         if else_case:
+            # print(type(else_case))
             block , error = self.process(else_case)
             if error:
                 return None , error
@@ -708,6 +743,7 @@ class Interpreter:
         # need to fix the bugs ....
 
         variable = node.variable.value
+        # print(variable)
         elements = []
         start_value , error = self.process(node.start_value)
         end_value = Types.Number(0)
@@ -731,7 +767,7 @@ class Interpreter:
                 is_mutable = isinstance(start_value  , Types.String)
                 for var in start_value.string:
 
-                    self.global_symbol_table[variable] = Types.String(var) if is_mutable else Types.MutableString(var)
+                    node.scope[variable] = Types.String(var) if is_mutable else Types.MutableString(var)
                     body , error = self.process(node.body)
                     if error:
                         return None , error
@@ -740,10 +776,10 @@ class Interpreter:
                 del is_mutable
             
             elif isinstance(start_value,Types.Number):
-                
+                # print("number loop " , type(node))
                 for var in range(start_value.number):
 
-                    self.global_symbol_table[variable] = Types.Number(var)
+                    node.scope[variable] = Types.Number(var)
                     body , error = self.process(node.body)
                     if error:
                         return None , error
@@ -753,7 +789,7 @@ class Interpreter:
             elif isinstance(start_value,Types.Collection):
 
                 for var in start_value.elements:
-                    self.global_symbol_table[variable] = var
+                    node.scope[variable] = var
                     body , error = self.process(node.body)
                     if error:
                         return None , error
@@ -764,7 +800,7 @@ class Interpreter:
 
             for var in range(start_value.number , end_value.number , step_value.number):
 
-                self.global_symbol_table[variable] = Types.Number(var)
+                node.scope[variable] = Types.Number(var)
                 body , error = self.process(node.body)
                 if error:
                     return None , error
@@ -810,10 +846,11 @@ class Interpreter:
 
         # if error:
         #     return None , error
-        
         function =  Types.UserDefinedFunction(self.file , variable , params  , body , return_type)
 
-        self.global_symbol_table[variable] = function 
+        node.parent.scope[variable] = function 
+        # print(variable , type(node))
+        # print(node.parent.scope)
         
         return  Types.Null() , None 
 
@@ -821,8 +858,21 @@ class Interpreter:
         
     def FunctionCallNode(self , node):
 
+
         variable = node.variable.value
-        if variable not in self.global_symbol_table:
+
+        parent = node.parent
+        
+        function_value = None
+
+        while parent:
+            function_value = parent.scope.get(variable , None)
+            if not function_value:
+                parent = parent.parent
+            else:
+                break
+
+        if parent == None:
             return None , RunTimeError(self.file , f"Function {variable} is undefined.")
         
         args = []
@@ -831,10 +881,14 @@ class Interpreter:
             if error:
                 return None , error
             args.append(value)
-
+        
+        # print(args)
         # print(self.global_symbol_table[variable])
-        function_output  = self.global_symbol_table[variable]
-        output , error = function_output.execute(args , self.global_symbol_table) # changing for fix
+        function_output  = parent.scope[variable]
+        # print(function_output.params , args)
+        # print(function_output.params , "tesing harish" , args , )
+        # output , error = function_output.execute(args , function_output.params) # changing for fix
+        output , error = function_output.execute(args) # changing for fix
         # print(type(output) , "asdasd")
         # if output and function_output.type_mentioned.value != "null" and  type(output.elements[0]).__name__.lower().strip() != function_output.type_mentioned.value:
         #     return None , WrongTypeError(self.file , f"Mistached return type '{function_output.type_mentioned.value}' found in function '{variable}'.")

@@ -478,6 +478,7 @@ class BaseFunction(BaseType):
 
     def check_param_and_arg_length(self, params, args):
 
+        # print(params , args , "testing")
         if len(params) < len(args):
 
             return None, RunTimeError(
@@ -509,23 +510,28 @@ class UserDefinedFunction(BaseFunction):
 
         return f"Function< {id(self)} >"
 
-    def execute(self, args, global_symbol_table=None):
+    def execute(self, args, global_symbol_table = None):
 
-        local_symbol_table = {}
-        local_symbol_table.update(global_symbol_table)
-        function_processor = Interpreter.Interpreter(self.file, local_symbol_table)
+        # print(args , self.params)
 
         status, error = self.check_param_and_arg_length(self.params, args)
         if error:
             return None, error
-
-        self.update_local_symnol_table(self.params, args, local_symbol_table)
-        # print("executing")
+        
+        # local_symbol_table = {}
+        # print(self.params , args)
+        
+        self.update_local_symnol_table(self.params, args , self.body.parent.scope)
+        
+        function_processor = Interpreter.Interpreter(self.file, self.body.parent.scope)
+        # print(self.body)
+        # self.body.parent = local_symbol_table
 
         function_expression, error = function_processor.process(self.body)
 
         if error:
             return None, error
+        
         return function_expression, None
 
 
