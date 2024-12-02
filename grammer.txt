@@ -22,7 +22,7 @@ power : call ( power factor)*
 
 call : atom (lb (expression (comma expression)*)? rb)?
 
-atom : int|float|string|variable|input-string|Mutstring
+atom : int|float|string|variable|input-string|Mutstring|break
      : lp expression rp
      : log  expression (comma expression)*
      : if-statement

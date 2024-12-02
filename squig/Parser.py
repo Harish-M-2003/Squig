@@ -1016,6 +1016,12 @@ class Parser:
             try_catch_node.catch_block_statements = catch_blocks
             try_catch_node.parent = parent
             return try_catch_node, None
+        
+        elif self.current_token.type == token_keyword and self.current_token.value == "break":
+            self.next()
+            break_node = BreakNode() 
+            break_node.parent = parent
+            return break_node , None
 
             # variable = self.current_token
             # self.next()

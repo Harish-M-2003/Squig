@@ -161,6 +161,7 @@ class ForNode(BlockLevelNode):
         self.step_value = step
         self.body = body
         self.multi_value = multi_value
+        self.is_broken = False
         super().__init__(parent)
 
     def __repr__(self):
@@ -365,7 +366,9 @@ class TryCatchNode(BlockLevelNode):
         # self.catch_block_variable = catch_block_variable
         self.finally_block_statements = finally_block_statements
         super().__init__(parent)
-
+class BreakNode(NonBlockLevelNode): 
+    def __init__(self , parent = None):
+        super().__init__(parent)
 
 # class ClassNode:
 

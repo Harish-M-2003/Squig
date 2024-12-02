@@ -472,23 +472,18 @@ class BaseFunction(BaseType):
         self.body = body
         self.type_mentioned = type_mentioned
 
-    def generate_local_symbol_table(self):
-
-        return {}
-
     def check_param_and_arg_length(self, params, args):
 
-        # print(params , args , "testing")
         if len(params) < len(args):
 
             return None, RunTimeError(
-                self.file, f"'{self.variable}' function got too high arguments."
+                self.file, f"'{self.variable}' function got too high arguments. expected {len(params)} , got {len(args)}."
             )
 
         if len(params) > len(args):
 
             return None, RunTimeError(
-                self.file, f"'{self.variable}' function got too low arguments."
+                self.file, f"'{self.variable}' function got too low arguments. expected {len(params)} , got {len(args)}"
             )
 
         return None, None
@@ -497,8 +492,6 @@ class BaseFunction(BaseType):
 
         for idx in range(len(args)):
             symbol_table[params[idx]] = args[idx]
-
-        return None
 
 
 class UserDefinedFunction(BaseFunction):
@@ -1290,3 +1283,12 @@ class Null(BaseType):
 
     def __repr__(self) -> str:
         return "null"
+
+class Break(BaseType):
+
+    def __init__(self, name="null", value=None, file=None):
+        super().__init__(name, value, file)
+
+    def __repr__(self) -> str:
+        return "null"
+    
