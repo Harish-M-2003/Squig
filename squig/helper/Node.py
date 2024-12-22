@@ -62,7 +62,7 @@ class BinaryOperatorNode(NonBlockLevelNode):
     def __repr__(self):
 
         return f"({self.left},{self.operator},{self.right})"
-class AssignmentOperatorNode(BinaryOperatorNode, NonBlockLevelNode):
+class AssignmentOperatorNode(BinaryOperatorNode , NonBlockLevelNode):
 
     def __init__(self, parent=None):
 
@@ -369,29 +369,27 @@ class TryCatchNode(BlockLevelNode):
 class BreakNode(NonBlockLevelNode): 
     def __init__(self , parent = None):
         super().__init__(parent)
+class ClassNode(BlockLevelNode):
 
-# class ClassNode:
+    def __init__(self , class_name , class_body = [] , parent = None):
 
-#     def __init__(self , class_name , class_body = []):
+        self.class_name = class_name
+        self.class_body = class_body
+        super().__init__(parent)
 
-#         self.class_name = class_name
-#         self.class_body = class_body
+    def __repr__(self) -> str:
 
-#     def __repr__(self) -> str:
+        return f"Class { self.class_name } "
+class ObjectNode(NonBlockLevelNode):
 
-#         return f"Class{self.class_name}"
+    def __init__(self , class_name , parent=None):
 
+        # self.object_name = object_name
+        self.class_name = class_name
+        super().__init__(parent)
+class ObjectAccessNode(NonBlockLevelNode):
 
-# class ObjectNode:
-
-#     def __init__(self , object_name , class_name):
-
-#         self.object_name = object_name
-#         self.class_name = class_name
-
-# class ObjectPropAccessNode:
-
-#     def __init__(self , object_name , prop_name):
-
-#         self.object_name = object_name
-#         self.prop_name = prop_name
+    def __init__(self, class_name , parent = None):
+        self.class_name = class_name
+        self.object = None
+        super().__init__(parent)

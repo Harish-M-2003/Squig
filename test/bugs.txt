@@ -1,0 +1,2 @@
+1. issues in parsing binary operator node , getting issue while trying to access methods,
+rewrite the entire code for parsing token_dot

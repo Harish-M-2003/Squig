@@ -2,6 +2,9 @@
 # Collection Operations
 # Insertion , Deletion , Update , Length , Sort , Search , copy , deep 
 
+let empty_array : {}
+log empty_array
+
 # Remaning operation
 # Slicing
 

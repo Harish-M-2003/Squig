@@ -3,64 +3,175 @@ import helper.Types as Types
 import sys
 
 
+# Travers the ObjectAccessNode subtree in ast using preorder traversal
+
+
 class Interpreter:
 
     def __init__(self, file, global_symbol_table):
         self.file = file
         self.global_symbol_table = global_symbol_table
+    
+    def travers(self , root , execute_right_subtree = True):
+        if isinstance(root , BinaryOperatorNode):
+
+            left , error = self.travers(root.left , True)
+            if error:
+                return None , error
+                    
+            # do stuff here , if the statement is chained object access
+
+            # print(id(left) , "example line at 23 in interpreter")
+
+            # the issue for that unexpected behaviour of the object assignmet statement if in this part of the code
+
+                # print(left, type(left) , "final value")
+            
+            if not isinstance(left , Types.Object) and execute_right_subtree and root.right.variable.value:
+                # this statement should execute if the chained object access is not consistent , 
+                # meaning it should throw an error , is the object becomes a different type other than object ,
+                # but still we are trying to access it with attributes
+                # print("trying to access the Non object type as obejct" , root.right.variable.value)
+                return None , RunTimeError(self.file , "Trying to use Non Object type as Object")
+
+            
+            if isinstance(left , Types.Object) and execute_right_subtree:
+                left = left.object[root.right.variable.value]
+            
+            if isinstance(left , tuple):
+                left = left[0]
+            # print(id(left))
+            return left , None
+        
+        object_ , error = self.process(root)
+        if error:
+            return None , error
+        return object_ , None
 
     def process(self, node):
+        
+        # getattr return the attribute from the current class , if exists
         method = getattr(self, f"{type(node).__name__}", self.no_process)
-        # print(method)
         return method(node)
 
     def ShowNode(self, node):
 
-        # print("working")
+        # this method is automatically invoked by the ShowNode 
+        # in the ast given to the interpreter and returns Null type
+        # will print the node which is of type ShowNode.
 
         lines = []
         for statement in node.statement:
-            # print(type(statement))
+            # print(statement , "testing")
             line, error = self.process(statement)
             if error:
                 return None, error
 
             lines.append(line)
 
-        # print(lines)
-        # print(*lines)
-        # print(self.process(node.statement))
-
-        # if error:
-        #     return None , error
-
         print(*lines)
         return Types.Null(), None
 
     def StringNode(self, node):
 
+        # this method is automatically invoked by the StringNode node in ast.
+        # it converts the StringNode to StringType which Squig can understand.
+
         return Types.String(node.string.value, self.file), None
 
     def NumberNode(self, node):
 
+        # this method is automatically invoked by the NumberNode node in ast
+        # it converts the NumberNode to NumberType which squig can understand.
+
         return Types.Number(node.factor.value), None
 
     def BinaryOperatorNode(self, node):
-        # print(type(node.left))
+
+        # This method is automatically invoked by th BinaryOperatorNode node in ast.
+        # This method is reposible for processing the binary operator statements
+        # represeneted in ast, and returns the final evaluated results
+        # and it is responsible for interpreting the dot operator statements.
+        # in short , all the operators are evaluated in the function
+
+        # The final result of the operation in depended on the type of the operater
+        # and the operands , so first we'll capture of the operator
+        operator = node.operator.type
+
+        # if the operator is of type dot , then we know we are dealing with objects.
+        # if operator == token_dot:
+
+        #     try:
+                
+        #         # need to include support for accessing attribute
+        #         # methods
+        #         # assignment
+
+        #         left, error = self.process(node.left)
+        #         # print(node , type(left) , type(node.right))
+        #         # print(node.scope)
+        #         # print("interpretor")
+        #         # def inorder_traversal(root):
+        #         #     #implement a inorder traversal
+
+        #         #     if isinstance(root.left , BinaryOperatorNode):
+        #         #         return
+                    
+        #         #     left = inorder_traversal(root.left)
+
+        #         #     right = inorder_traversal(root.right)
+
+        #         # print(type(left) ,  left)
+        #         if isinstance(node.right, BinaryOperatorNode):
+        #             pass
+        #         else:
+        #             value = left.object[node.right.variable.value]
+                    
+        #             if isinstance(value, tuple):
+        #                 value = value[0]
+        #             # elif isinstance(value , Types.UserDefinedFunction):
+        #             #     print(type(value))
+        #             #     # value
+        #             # print(right_operand , "example")
+        #             # print(left.object)
+        #             if isinstance(value, Types.UserDefinedFunction):
+                    
+        #                 # print(node.scope)
+        #                 args  , error = self.process(node.scope[node.right.variable.value])
+        #                 # print(type(args.elements) , args.elements , error)
+        #                 # print(node.scope[node.right.variable.value])
+        #                 print(args , error)
+        #                 if error:
+        #                     return None ,error
+        #                 return value.execute(args.elements)
+                
+        #         return value, None
+
+            # except Exception as e:
+            #     print(e)
+            #     return None, RunTimeError(
+            #         self.file, f"Error in dot operator accessing part"
+            #     )
+            
+        # get the result of the expression we need to first convert the left and right operand to 
+        # Appropriate type , i.e NumberType , BooleanType , etc.
+        # So we'll process the left child of the current node.
         left, error = self.process(node.left)
-        # print(left)
+        if error:
+            return None, error
+        
+        # Similarly we'll process the right child of the current node.
+        right, error = self.process(node.right)
         if error:
             return None, error
 
-        operator = node.operator.type
-
-        right, error = self.process(node.right)
         error_message = (
             f"cannot be used between {type(left).__name__} and {type(right).__name__}."
         )
 
-        if error:
-            return None, error
+        # Based on the type of operation , we perform the appropriate operation.
+        # Once the expression is evaluated , the methods i.e 'add' , 'mul' , 'lte' ,etc
+        # will return (output , None)
 
         if operator == token_plus:
             try:
@@ -105,7 +216,6 @@ class Interpreter:
                     if right.number != 0:
                         return None, RunTimeError(self.file, f"'/' {error_message}")
                 except:
-                    # return None , WrongTypeError(self.file  ,f"'/' cannot be used between {type(left).__name__} and {type(right).__name__}")
                     return None, WrongTypeError(self.file, f"'/' {error_message}")
                 return None, RunTimeError(
                     self.file, f"{left.number} cannot be divided by zero."
@@ -207,9 +317,7 @@ class Interpreter:
 
         for element_node in node.elements:
             # print(type(element_node))
-
             element, error = self.process(element_node)
-
             if error:
                 return None, error
 
@@ -218,6 +326,7 @@ class Interpreter:
             if isinstance(element_node, BreakNode) or (
                 parent and isinstance(parent, ForNode) and parent.is_broken
             ):
+                break
                 # parent = node.parent
                 # while parent :
                 #     if isinstance(parent , ForNode):
@@ -230,14 +339,15 @@ class Interpreter:
                 #     return None , RunTimeError("Break can be used only within the loops")
                 # else:
                 #     parent.is_broken = True
-                break
-        
-        # print(len(elements) , type(elements[0]))
+
         return Types.Collection(self.file, elements), None
 
     def HashMapNode(self, node):
-        # print("hasmap node")
 
+        # this function is invoked automatically when the HashMapNode node in ast found.
+        # it create a HashMap datastructure and return the Map
+
+        # to construct the hashmap we need to know the list of keys 
         key_values = node.key_value
         index_key = node.index_key
 
@@ -255,9 +365,6 @@ class Interpreter:
             processed_index_key.append(processed_index)
             index += 1
 
-        # print(processed_index_key , processed_key_value)
-
-        #     # print(type(processed_index_key[0]))
         return Types.HashMap(processed_key_value, processed_index_key), None
 
     def CollectionAccessNode(self, node):
@@ -410,60 +517,63 @@ class Interpreter:
 
     def VariableNode(self, node):
 
-        variable = node.variable.value
-        # members = node.members
-        value, error = self.process(node.factor)
+        is_object = isinstance(node.variable , ObjectAccessNode)
 
+        if not is_object:
+            variable = node.variable.value
+        else:
+            variable = node.variable
+        
+        value, error = self.process(node.factor)
+        
         if error:
             return None, error
 
-        # object_name = self.global_symbol_table.get(variable , -1)
         parent = node.parent
-        # print(parent)
-        variable_value = None
+
         object_name = None
 
-        while parent:
-            # object_name = variable_value
-            object_name = parent.scope.get(variable, None)
-            # print(parent , "testeing" , object_name)
-            if not object_name:
-                parent = parent.parent
-            else:
-                break
+        if is_object:
+                
+            # for assigning new value to object attribute , we should not process the last attribute in the chain
+            # forexample -> node.data.data : 20
+            # for assigning 20 to node.data.data we should not access the data of node.data
+            # instead we should assign the value 20 to node.data
+            # so that's why we passed execute_right_subtree = False in traverse function.
+            object_name , error = self.travers(node.variable.object , execute_right_subtree = False)
+            if error:
+                return None , error
+            
+        else:
 
-        # print(type(object_name[0]) , parent)
+            while parent:
+                object_name = parent.scope.get(variable, None)
+                if not object_name:
+                    parent = parent.parent
+                else:
+                    break
+
+
         if object_name == None:
             return None, RunTimeError(self.file, f"Variable {variable} is undefined.")
-
-        # if  type(object_name) == Types.String and "@" not in object_name.value:
-
-        #     self.global_symbol_table[variable] = value
-
-        # elif type(self.global_symbol_table[object_name[:object_name.find("@")]]) == dict:
-
-        #     object_member = self.global_symbol_table[object_name[:object_name.find("@")]]
-        #     object_member[members.value] = value
-        # else:
-        if not object_name[1]:
-            # current_value_type = type(value).__name__.lower().strip()
-
-            # if current_value_type == "boolean" :
-            #     current_value_type = "bool"
-
-            # if current_value_type != object_name[-1].value:
-            #     type_mentioned  = object_name[-1].value
-            #     type_mentioned = type_mentioned if type_mentioned != "bool" else "boolean"
-            #     return None , WrongTypeError(self.file , f"'{current_value_type}' cannot be assigned to variable '{variable}' of type '{type_mentioned}'")
-
-            # self.global_symbol_table[variable] = (value , object_name[1] , object_name[-1])
-            parent.scope[variable] = (value, object_name[1], object_name[-1])
+        
+        # print(object_name.object["data"])
+        # if not object_name[1]: this condition is not checking mutability
+        attribute = node.variable.object.right.variable.value
+        if not is_object:
+                parent.scope[variable] = (value, object_name[1], object_name[-1])
         else:
-            return None, RunTimeError(
-                self.file, f"immutable variable '{variable}' cannot be modified"
-            )
+                # print(object_name , value , "first")
+                object_name.object[attribute] = (value, False , False)
+
+        # print(object_name.object , value , is_object)
+        # else:
+        #     return None, RunTimeError(
+        #         self.file, f"immutable variable '{variable}' cannot be modified"
+        #     )
         # else:
         #     print("constant node")
+        # print(object_name[0].object["data"][0].object ,)
         return Types.Null(), None
 
     def NullNode(self, node):
@@ -546,6 +656,7 @@ class Interpreter:
         members = node.members  # Need to fix this for access nested props
 
         # variable_value = self.global_symbol_table.get(variable , None) # find the variable in the parent until it is found
+        
         parent = node.parent  # need to set the parent for binary operator node
         variable_value = None
         while parent:
@@ -555,7 +666,7 @@ class Interpreter:
             else:
                 break
 
-        # print(parent , variable_value)
+        # print("value", variable)
         if variable_value != None:
             # if variable in self.global_symbol_table:
             # print(self.global_symbol_table)
@@ -908,9 +1019,9 @@ class Interpreter:
 
                 elements.append(body)
                 if node.is_broken:
-                        # print(elements)
-                        node.is_broken = False
-                        break
+                    # print(elements)
+                    node.is_broken = False
+                    break
 
         return Types.Collection(self.file, elements), None
 
@@ -940,6 +1051,7 @@ class Interpreter:
         return Types.Null(), None
 
     def FunctionNode(self, node):
+
         variable = node.variable.value
 
         return_type = node.type_mentioned
@@ -968,7 +1080,24 @@ class Interpreter:
 
     def FunctionCallNode(self, node):
 
+        # using the name of the function , reterview the FunctionNode object from then scope
+        # once reterving the FunctionNode Object , we have access to execute method
+        # it is this method that executes the function based on the given args.
+        # Current issue in functionCallNode is that , we need to somehow reterview the
+        # FunctionNode object from the scope for object statement
+        # the current logic of this function works well for ordinary function.
+
+        # First we need to get the name of the function so that we can reterview it's
+        # body from the parent scope where it is available
+
         variable = node.variable.value
+
+        # After getting the name of the function we need to find where this function is decleared
+        # so we'll check in the parent scope of the FunctionCallNode, we'll go up the ast tree
+        # until we find the function name in parent scope
+        # if the function name is not found in the any of the parent scope , it means that 
+        # the function is not decleared in the program , so we'll throw an error
+        # if the function name is found in any of the scope , we'll get it and use futher
 
         parent = node.parent
 
@@ -980,7 +1109,8 @@ class Interpreter:
                 parent = parent.parent
             else:
                 break
-
+        
+        # if the function name is not found in any of the parent scope , parent will be None.
         if parent == None:
             return None, RunTimeError(self.file, f"Function {variable} is undefined.")
 
@@ -990,26 +1120,36 @@ class Interpreter:
             if error:
                 return None, error
             args.append(value)
+        
+        # the issue is how do we take the method body function the class
+        # and use that to execute it , the execute method is avaible in the functionNode not in functionCallNOde
 
-        # print(args)
-        # print(self.global_symbol_table[variable])
+        # Once the arguments are processed , we'll get the function from the scope from the parent
         function_output = parent.scope[variable]
-        # print(function_output.params , args)
-        # print(function_output.params , "tesing harish" , args , )
-        # output , error = function_output.execute(args , function_output.params) # changing for fix
-        output, error = function_output.execute(args)  # changing for fix
-        # print(type(output) , "asdasd")
-        # if output and function_output.type_mentioned.value != "null" and  type(output.elements[0]).__name__.lower().strip() != function_output.type_mentioned.value:
-        #     return None , WrongTypeError(self.file , f"Mistached return type '{function_output.type_mentioned.value}' found in function '{variable}'.")
+
+        # print(type(function_output))
+
+        # object_ = node.parent
+        # while not isinstance(object_ , VariableAccessNode):
+        #     object_ = object_.left
+        
+        # print(type(object_))
+
+        # from here there is an issue in the implementation of the code.
+        # this current implementation need to be rewritten from here after. 
+        
+        if isinstance(function_output , FunctionCallNode):
+            function_output = parent.parent.scope["Os"][variable]
+
+        output, error = function_output.execute(args)
+        # print(type(output))
         if error:
             return None, error
 
-        if isinstance(output, Types.Collection):
-            return output, None
+        # if isinstance(output, Types.Collection):
+        #     return output, None
 
         return output, None
-
-        # return output.elements[-1] if isinstance(output , Types.Collection) else output , None
 
     def FileNode(self, node):
 
@@ -1327,20 +1467,90 @@ class Interpreter:
 
             return statement, None
 
-    # def ClassNode(self , node):
+    def ClassNode(self, node):
 
-    #     class_name = node.class_name.value
-    #     class_scope = {}
-    #     interpreter = Interpreter(self.file , class_scope)
-    #     result , error = interpreter.process(node.class_body)
-    #     if error:
-    #         return None , error
+        class_name = node.class_name
+        class_body, error = self.process(node.class_body)
+        if error:
+            return None, error
 
-    #     if class_name not in self.global_symbol_table:
-    #         self.global_symbol_table[class_name] = class_scope
-    #     else:
-    #         return None , RunTimeError(self.file , f"{class_name} cannot be used again for declaring a class.")
-    #     return None , None
+        if class_name.value not in node.parent.scope:
+            node.parent.scope[class_name.value] = node.class_body.scope.copy()
+        else:
+            return None, RunTimeError(
+                self.file, f"class with name {class_name.value} already exists."
+            )
+
+        # print(node.class_body.scope)
+        return Types.Null(), None
+        # return node , None
+
+    def ObjectNode(self, node):
+
+        class_name = node.class_name.value
+
+        parent = node.parent
+        while parent:
+            if class_name in parent.scope:
+                break
+            parent = parent.parent
+ 
+        if parent == None:
+            return RunTimeError(self.file , f"Class '{class_name}' is not defined.")
+        
+        object_body = parent.scope[class_name].copy()
+        # print(class_name)
+        return Types.Object(object_=object_body , class_name=class_name), None
+        # object_ = ObjectAccessNode(class_name=class_name)
+        # object_.object = object_body
+        # return object_ , None
+    
+    
+    def ObjectAccessNode(self , node):
+
+        # Object node contains the should contain the BinaryOpeartor Node.
+        # Try to implement it properly or reimplement
+
+        # class_name = node.class_name.value
+        # parent = node.parent
+        # print(parent.parent.scope["os"][0].object)
+        # class_name = node.parent.parent.scope[node.object.left.variable.value]
+        
+        
+        # print(node.object)
+        object_ , error = self.travers(node.object)
+        # print("testing" , object_.object)
+        if error:
+            return None , error
+
+        # if the object_memeber is a class_variable then a tuple will be returned to attribute
+        # else if the object_member is method then the method will be return to attribute
+        # print(type(object_))
+        # attribute = object_.object[node.object.right.variable.value]
+        attribute = object_
+        
+        if isinstance(attribute , Types.UserDefinedFunction):
+            function_call = node.object.scope[node.object.right.variable.value]
+            args = []
+
+            for arg in function_call.param:
+                value , error = self.process(arg)
+                if error:
+                    return None , error
+                args.append(value)
+            
+            if error:
+                return None , error
+            return attribute.execute(args)
+        
+        elif isinstance(attribute , Types.Object):
+            
+            return attribute , None
+        
+        elif isinstance(attribute , tuple):
+            return attribute[0] , None
+    
+        return attribute , None
 
     def ClearNode(self, node):
 
@@ -1468,34 +1678,7 @@ class Interpreter:
             parent.is_broken = True
 
         return Types.Break(), None
-
-    # def ObjectNode(self , node):
-
-    #     object_name = node.object_name.value
-    #     class_name = node.class_name.value
-
-    #     if object_name not in self.global_symbol_table :
-    #         self.global_symbol_table[object_name] = class_name+"@"+ str(id(self.global_symbol_table[class_name]))
-
-    #     return None , None
-
-    # def ObjectPropAccessNode(self , node):
-
-    #     object_name = node.object_name.value
-    #     prop_name = node.prop_name.value
-
-    #     if object_name not in self.global_symbol_table :
-    #         return None , RuntimeError(self.file , f"Object '{object_name}' is undefined.")
-
-    #     elif type(self.global_symbol_table[self.global_symbol_table[object_name][:self.global_symbol_table[object_name].find("@")]]) != dict:
-    #         # print(type(self.global_symbol_table[self.global_symbol_table[object_name][:self.global_symbol_table[object_name].find("@")]]))
-    #         return None , RunTimeError(self.file , f"'{object_name}' is not a valid class.")
-
-    #     object_members = self.global_symbol_table[self.global_symbol_table[object_name][:self.global_symbol_table[object_name].find("@")]]
-
-    #     needed_member = object_members[prop_name]
-    #     # print(self.global_symbol_table)
-    #     return  needed_member , None
+    
 
     def no_process(self, node):
         print("Unknown Node", node)

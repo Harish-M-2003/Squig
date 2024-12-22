@@ -6,7 +6,7 @@ from Parser import Parser
 from Interpreter import Interpreter
 from pyfiglet import figlet_format
 
-
+#  rewrite this program to support handling interrupts
 
 print("\n\tNote: If you happen to find any bugs, kindly report them to us on GitHub: https://github.com/Harish-M-2003/Squig")
 print()
@@ -30,9 +30,12 @@ while True:
                 if not code: break
 
             else:
-                # code = open("testing_final.squig").read()
-                code = input("squig >") 
-                code = code.strip()
+                # code = open(r"C:\Users\Harish\harish\Projects\language\test\testing_final.squig").read() # debugging
+                try:
+                    code = input("squig >") 
+                    code = code.strip()
+                except EOFError:
+                    break
             
         except FileNotFoundError:
             print(f"\tInvalid file {file} , check is that a squig file\n")

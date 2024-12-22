@@ -350,6 +350,12 @@ class BaseType:
 
         raise Error()
 
+class ClassType(BaseType):
+
+    def __init__(self , scope , body):
+
+        self.scope = scope
+        self.body = body
 
 class DataType(BaseType):
 
@@ -1275,7 +1281,6 @@ class MutableString(BaseType):
 
         return len(self.mut_string)
 
-
 class Null(BaseType):
 
     def __init__(self, name="null", value=None, file=None):
@@ -1291,4 +1296,11 @@ class Break(BaseType):
 
     def __repr__(self) -> str:
         return "null"
-    
+
+class Object(BaseType):
+
+    def __init__(self, name=None, value=None, file=None , class_name =  None, scope = None , object_ = None):
+        super().__init__(f"Object <{name}>", value, file)
+        self.scope = scope
+        self.object = object_
+        self.class_name = class_name

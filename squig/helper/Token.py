@@ -77,7 +77,8 @@ keywords = (
     "copy",
     "try",
     "catch",
-    "finally"
+    "finally",
+    "class"
 )
 
 

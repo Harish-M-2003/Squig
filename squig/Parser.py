@@ -2,8 +2,6 @@ from Lexer import *
 import numpy as np
 from helper.Error import *
 from helper.Node import *
-
-
 class Parser:
 
     def __init__(self, tokens, file):
@@ -23,11 +21,12 @@ class Parser:
             self.current_token = Token("eof")
 
     def parse(self):
-        # try:
+
         result, error = self.statements()
-        # print(result)
+
         if error:
             return None, error
+        
         return result, None
 
     # except Exception as e:
@@ -41,19 +40,14 @@ class Parser:
 
         collection_node = CollectionNode(elements=[], parent=None)
         statement, error = self.expression(collection_node)
-        # if parent:
-        #     statement.parent = parent
-        # else:
-        #     statement.parent = collection_node
-        # print("let Node" , statements)
+       
         if error:
             return None, error
 
         collection_node.elements.append(statement)
 
         while self.current_token.type != token_eof:
-            # while self.current_token.type == token_newline:
-            #     self.next()
+            
             if self.current_token.type == token_eof:
                 break
 
@@ -91,7 +85,6 @@ class Parser:
 
             self.next()
             if self.current_token.type != token_variable:
-                # print(self.current_token)
                 return None, WrongSyntaxError(
                     self.file,
                     "Expected a variable after the 'let' keyword.",
@@ -114,15 +107,19 @@ class Parser:
 
             type_mentioned = None
             if self.current_token.type == token_type_specifier:
+                
                 self.next()
                 type_mentioned = self.current_token
                 self.next()
+
                 if self.current_token.type != token_colon:
+
                     let_node.variable = variable
                     let_node.isConstant = isConstant
                     let_node.type_mentioned = type_mentioned
                     let_node.factor = None
                     let_node.parent = parent
+
                     return let_node, None
 
             self.next()
@@ -139,6 +136,7 @@ class Parser:
             # if self.current_token.type == token_keyword and self.current_token.value == "none":
             #     self.next()
             #     return LetNode(variable , NullNode()) , None
+            
             try:
                 expression, error = self.expression(let_node)
             except:
@@ -315,35 +313,49 @@ class Parser:
     def factor(self, parent=None):
 
         if self.current_token.type in (token_plus, token_minus):
+            
             operator = self.current_token
             self.next()
+            
             factor, error = self.factor(parent)
+
             if error:
                 return None, error
+            
             unary_operator_node = UnaryOperatorNode(operator, factor)
             unary_operator_node.parent = parent
+
             return unary_operator_node, None
 
         power, error = self.power(parent)
+
         if error:
             return None, error
+        
         return power, None
 
     def power(self, parent=None):
+
         atom_rule, error = self.atom(parent)
+
         if error:
             return None, error
 
         while self.current_token.type == token_power:
+
             operator = self.current_token
             self.next()
+            
             factor, error = self.factor(atom_rule)
+
             if error:
                 return None, error
+            
             atom_rule = BinaryOperatorNode(atom_rule, operator, factor)
             atom_rule.parent = parent
 
         atom_rule.parent = parent
+
         return atom_rule, None
 
     def call(self, variable, parent=None):
@@ -392,6 +404,7 @@ class Parser:
         # print(self.current_token)
         if self.current_token.type == token_bitwise_not:
             return None, None
+
         if self.current_token.type in (token_int, token_float):
             token = self.current_token
             self.next()
@@ -487,78 +500,50 @@ class Parser:
                     self.next()
                     indexs.append(index)
 
-                # string_access_node = StringAccessNode(Token(token_type=token_string  , token_value=string.value) , indexs)
                 string_access_node.string = Token(
                     token_type=token_string, token_value=string.value
                 )
+
                 string_access_node.indexs = indexs
                 string_access_node.parent = parent
                 return string_access_node, None
 
-            # return StringNode(Token(token_type=token_string , token_value=string.value)) , None
-            # string_node = StringNode(string)
             string_node.string = string
             string_node.parent = parent
             return string_node, None
 
         elif self.current_token.type == token_mutstring:
+
             mutstring = self.current_token
             self.next()
 
             mutable_string_node = MutableStringNode(mutstring)
             mutable_string_node.parent = parent
+
             return mutable_string_node, None
 
         elif self.current_token.type == token_variable:
+
             variable = self.current_token
             indexs = []
             self.next()
 
-            # if self.current_token.type == token_keyword and self.current_token.value == "class":
-            #     class_statement , error = self.class_statement(variable)
-            #     if error:
-            #         return None , error
-            #     return class_statement , None
-
             if self.current_token.type == token_colon:
+
                 self.next()
                 variable_node = VariableNode(None, None)
                 expression, error = self.expression(variable_node)
 
                 if error:
                     return None, error
-                # variable_node = VariableNode(variable , expression)
+
                 variable_node.variable = variable
                 variable_node.factor = expression
                 variable_node.parent = parent
 
                 return variable_node, None
 
-            if self.current_token.type == token_dot:
-
-                self.next()
-                prop_node = self.current_token
-                self.next()
-                # if self.current_token.type == token_lb:
-                #     print("it function call")
-                if self.current_token.type != token_colon:
-                    variable_access_node = VariableAccessNode(variable, prop_node)
-                    variable_access_node.parent = parent
-                    return variable_access_node, None
-
-                self.next()
-                variable_node = VariableNode(None, None, None)
-                value, error = self.expression(variable_node)
-
-                if error:
-                    return None, error
-
-                variable_node.factor = value
-                variable_node.variable = variable
-                variable_node.parent = parent
-
-                return variable_node, None
-
+                
             if self.current_token.type == token_writetofile:
                 self.next()
                 file_write_node = FileWriteNode(None, None)
@@ -623,7 +608,6 @@ class Parser:
                 return assignment_operation_node, None
 
             if self.current_token.type == token_ls:
-                # isHashmap = False
                 while self.current_token.type == token_ls:
                     self.next()
                     if self.current_token.type == token_rs:
@@ -633,8 +617,7 @@ class Parser:
                             position=self.current_token.position.copy_position(),
                         )
                     index, error = self.expression(parent)
-                    # if type(index) == StringNode:
-                    #     isHashmap = True
+                    
                     if error:
                         return None, error
 
@@ -646,24 +629,18 @@ class Parser:
                         )
                     self.next()
                     indexs.append(index)
-                    # print(isHashmap)cls
 
                 if self.current_token.type == token_colon:
                     self.next()
-                    # value = self.current_token
 
                     variable_manipulation_node = VariableManipulationNode(
                         None, None, None
                     )
                     value, error = self.expression(variable_manipulation_node)
-                    # print("koay" , type(value) , value)
+
                     if error:
                         return None, error
-                    # print(value , variable)
-                    # print(type(value))
-
-                    # if isHashmap:
-                    # print("working")
+                    
                     variable_manipulation_node.variable = variable
                     variable_manipulation_node.index = indexs
                     variable_manipulation_node.value = value
@@ -671,20 +648,135 @@ class Parser:
 
                     return variable_manipulation_node, None
 
-                    # if type(value) == MutableStringNode:
-                    # return VariableManipulationNode(variable , indexs , MutableStringNode(value)) , None
-                    # return VariableManipulationNode(variable , indexs , value) , None
-                    # else:
-                    # return None , RunTimeError(self.file , "Trying to Manipulate Unsupported types")
-                    # return VariableManipulationNode(variable , indexs , StringNode(value)) , None
-                    # return VariableManipulationNode(variable , indexs , value) , None
-
                 collection_access_node = CollectionAccessNode(variable, indexs)
                 collection_access_node.parent = parent
+
                 return collection_access_node, None
+
+            if (
+                self.current_token.type == token_keyword
+                and self.current_token.value == "class"
+            ):
+                class_node = ClassNode(None, [])
+                self.next()
+                if self.current_token.type != token_lb:
+                    return None, WrongSyntaxError(
+                        self.file, "expected a opening parenthesis for class {variable}"
+                    )
+
+                self.next()
+                if self.current_token.type == token_rb:
+                    class_node.class_name = variable
+                    class_node.class_body = NullNode(parent=class_node)
+                    class_node.parent = parent
+                    self.next()
+                    return class_node , None
+                
+                class_body, error = self.statements(class_node)
+                if error:
+                    return None, error
+
+                if self.current_token.type != token_rb:
+                    return None, WrongSyntaxError(
+                        self.file,
+                        f"expected a closing parenthesis for class {variable.value}",
+                    )
+
+                self.next()
+
+                class_node.class_name = variable
+                class_node.class_body = class_body
+                class_node.parent = parent
+
+                return class_node, None
+
+            if self.current_token.type == token_dot:
+
+                object_access_node = ObjectAccessNode(None , None)
+
+                aux_stack = []
+                binary_operator_node = BinaryOperatorNode(None , None , None)
+                left = VariableAccessNode(variable , parent=binary_operator_node)
+                binary_operator_node.left = left
+                
+                while self.current_token.type == token_dot:
+
+                    if aux_stack:
+
+                        node = aux_stack.pop()
+                        operator = self.current_token
+                        self.next()
+
+                        if self.current_token.type != token_variable:
+                            return None , RunTimeError(self.file , "Expected a property name for '.' operater")
+                        
+                        binary_operator_node = BinaryOperatorNode(node , operator , None)
+
+                        right = VariableAccessNode(self.current_token , parent = binary_operator_node)
+
+                        node.parent = binary_operator_node
+                        binary_operator_node.left = node
+                        binary_operator_node.right = right
+                        
+                    else:
+
+                        binary_operator_node.operator = self.current_token
+                        
+                        self.next()
+
+                        if self.current_token.type != token_variable:
+                            return None, RunTimeError(
+                                self.file, "expected a property name for '.' operator"
+                            )
+                        
+                        right = VariableAccessNode(self.current_token , parent=binary_operator_node)
+                        # left = BinaryOperatorNode(
+                        #     left,
+                        #     token_dot,
+                        #     parent=binary_operator_node
+                        # )
+                        binary_operator_node.right = right
+
+                    aux_stack.append(binary_operator_node)
+                    self.next()
+                
+                if self.current_token.type == token_lb:
+                    
+                    args , error = self.call(binary_operator_node.right.variable , binary_operator_node)
+                    binary_operator_node.scope[right.variable.value] = args
+                
+                elif self.current_token.type == token_colon:
+                    
+                    variable_node = VariableNode(None , None)
+
+                    object_access_node.parent = variable_node
+                    object_access_node.class_name = variable
+                    object_access_node.object = aux_stack.pop()
+
+                    self.next()
+                    value , error = self.expression(object_access_node)
+
+                    if error:
+                        return None , error
+                    
+                    variable_node.factor = value
+                    variable_node.parent = parent
+                    variable_node.variable = object_access_node
+                    binary_operator_node.parent = object_access_node
+
+                    return variable_node , None
+
+                binary_operator_node.parent = object_access_node
+                
+                object_access_node.parent = parent
+                object_access_node.class_name = variable
+                object_access_node.object = aux_stack.pop()
+
+                return object_access_node , None
 
             variable_access_node = VariableAccessNode(variable)
             variable_access_node.parent = parent
+            
             return variable_access_node, None
 
         elif self.current_token.type == token_input:
@@ -1016,12 +1108,50 @@ class Parser:
             try_catch_node.catch_block_statements = catch_blocks
             try_catch_node.parent = parent
             return try_catch_node, None
-        
-        elif self.current_token.type == token_keyword and self.current_token.value == "break":
+
+        elif (
+            self.current_token.type == token_keyword
+            and self.current_token.value == "break"
+        ):
             self.next()
-            break_node = BreakNode() 
+            break_node = BreakNode()
             break_node.parent = parent
-            return break_node , None
+            return break_node, None
+
+        elif self.current_token.type == token_at:
+
+            object_node = ObjectNode(None)
+            self.next()
+            if self.current_token.type != token_variable:
+                return None, RunTimeError(self.file, "Expected a class for @ operator")
+
+            class_name = self.current_token
+            
+            self.next()
+
+            if self.current_token.type != token_lb:
+                return None, RunTimeError(
+                    self.file,
+                    f"Expected a opening parenthesis for constructor {class_name}.",
+                )
+
+            self.next()
+
+            if self.current_token.type != token_rb:
+                return None, RunTimeError(
+                    self.file,
+                    f"Expected a closing parenthesis for constructor {class_name}",
+                )
+
+            self.next()
+            # variable_access_node = VariableAccessNode(class_name)
+            # variable_access_node.parent = object_node
+            # object_node.class_name = variable_access_node
+            object_node.class_name = class_name
+            object_node.parent = parent
+            # print(object_node , "testing" , object_node.parent)
+            return object_node, None
+            # if self.current_token.type == token_variable:
 
             # variable = self.current_token
             # self.next()
@@ -1241,6 +1371,8 @@ class Parser:
         function_node = FunctionNode(None, None, None, None)
         self.next()
 
+        # print(self.current_token)
+
         if self.current_token.type != token_lb:
             return None, WrongSyntaxError(
                 self.file,
@@ -1251,7 +1383,6 @@ class Parser:
         self.next()
         param_list = []
         if self.current_token.type == token_variable:
-            # print("it's a function call")
             param_name, error = self.expression(function_node)
             if error:
                 return None, WrongSyntaxError(
@@ -1277,7 +1408,6 @@ class Parser:
                     self.file,
                     f"'{self.current_token.value}' cannot be a parameter while defining a function.",
                 )
-            
 
         if self.current_token.type != token_rb:
             return None, WrongSyntaxError(
@@ -1309,6 +1439,14 @@ class Parser:
             self.next()
             # while self.current_token.type == token_newline:
             #     self.next()
+            # print(self.current_token)
+            
+            if self.current_token.type == token_rb:
+                self.next()
+                return None, WrongSyntaxError(
+                    self.file, "Expected a closing '}' in function ."
+                )
+            
             statement, error = self.statements(function_node)
 
             if error:
@@ -1326,7 +1464,7 @@ class Parser:
             function_node.body = statement
             function_node.type_mentioned = type_mentioned
             function_node.parent = parent
-            
+
             return function_node, None
 
         function_body, error = self.expression(function_node)
@@ -1346,6 +1484,7 @@ class Parser:
         function_node.body = function_body
         function_node.type_mentioned = type_mentioned
         function_node.parent = parent
+        # print(function_name , "function_statement")
         return function_node, None
         # return FunctionNode(function_name , param_list , function_body , type_mentioned) , None
 
@@ -1699,6 +1838,7 @@ class Parser:
         #     self.next()
 
         if self.current_token.type == token_rb:
+            self.next()
             return CollectionNode(elements), None
 
         element, error = self.expression(collection_node)
@@ -1807,7 +1947,6 @@ class Parser:
             )
         self.next()
         # print(type(elements))
-
         collection_node.elements = elements
         collection_node.parent = parent
         return collection_node, None

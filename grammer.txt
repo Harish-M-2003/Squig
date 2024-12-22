@@ -22,7 +22,7 @@ power : call ( power factor)*
 
 call : atom (lb (expression (comma expression)*)? rb)?
 
-atom : int|float|string|variable|input-string|Mutstring|break
+atom : int|float|string|variable|input-string|Mutstring|break|
      : lp expression rp
      : log  expression (comma expression)*
      : if-statement
@@ -35,7 +35,7 @@ atom : int|float|string|variable|input-string|Mutstring|break
      : file-statement
      : switch-statement
      : class-statement
-     : instantiation-statement
+     : @ class_name { (param ( comma param )*)? }
      : copy_statement
      : try_catch_statement
 
