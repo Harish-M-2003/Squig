@@ -366,9 +366,8 @@ class Parser:
                 "Expected '{'" + f" after {variable.value} function call.",
                 position=self.current_token.position.copy_position(),
             )
-
+        
         self.next()
-
         if self.current_token.type == token_rb:
             self.next()
             function_call_node = FunctionCallNode(variable)
@@ -1125,28 +1124,36 @@ class Parser:
                 return None, RunTimeError(self.file, "Expected a class for @ operator")
 
             class_name = self.current_token
+
+            # Since constructor is a special type of function , we can use call method for it.
+
+            self.next()
+            constructor , error = self.call(class_name , object_node)
+            if error:
+                return None , error
             
-            self.next()
+            # self.next()
 
-            if self.current_token.type != token_lb:
-                return None, RunTimeError(
-                    self.file,
-                    f"Expected a opening parenthesis for constructor {class_name}.",
-                )
+            # if self.current_token.type != token_lb:
+            #     return None, RunTimeError(
+            #         self.file,
+            #         f"Expected a opening parenthesis for constructor {class_name}.",
+            #     )
 
-            self.next()
+            # self.next()
 
-            if self.current_token.type != token_rb:
-                return None, RunTimeError(
-                    self.file,
-                    f"Expected a closing parenthesis for constructor {class_name}",
-                )
+            # if self.current_token.type != token_rb:
+            #     return None, RunTimeError(
+            #         self.file,
+            #         f"Expected a closing parenthesis for constructor {class_name}",
+            #     )
 
-            self.next()
+            # self.next()
+
             # variable_access_node = VariableAccessNode(class_name)
             # variable_access_node.parent = object_node
             # object_node.class_name = variable_access_node
-            object_node.class_name = class_name
+            object_node.class_name = constructor
             object_node.parent = parent
             # print(object_node , "testing" , object_node.parent)
             return object_node, None

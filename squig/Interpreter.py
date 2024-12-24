@@ -1476,8 +1476,8 @@ class Interpreter:
         
         # print("\nbody" , node.class_body.scope)
         if class_name.value not in node.parent.scope:
-            # node.parent.scope[class_name.value] = node.class_body.scope.copy()
-            node.parent.scope[class_name.value] = node.class_body.scope
+            node.parent.scope[class_name.value] = node.class_body.scope.copy()
+            # node.parent.scope[class_name.value] = node.class_body.scope
         else:
             return None, RunTimeError(
                 self.file, f"class with name {class_name.value} already exists."
@@ -1490,7 +1490,9 @@ class Interpreter:
 
     def ObjectNode(self, node):
 
-        class_name = node.class_name.value
+        # class_name = node.class_name.value
+
+        class_name = node.class_name.variable.value
         parent = node.parent
         while parent:
             if class_name in parent.scope:
@@ -1502,7 +1504,27 @@ class Interpreter:
         
         object_body = parent.scope[class_name].copy()
         # print(class_name)
-        return Types.Object(object_=object_body , class_name=class_name), None
+        args_length = len(node.class_name.param)
+        if args_length == 0:
+            return Types.Object(object_=object_body , class_name=class_name), None
+        else:
+            args = node.class_name.param
+            args_list = [Types.Object(object_=object_body , class_name=class_name)]
+            for arg in args:
+                processed_arg , error = self.process(arg)
+                if error:
+                    return None , error
+                args_list.append(processed_arg)
+            
+            constructor = object_body.get(class_name , None)
+            if not constructor:
+                return None , RunTimeError(self.file , f"Constructor of parameter length {args_length} not found in class {class_name}")
+            output , error = constructor.execute(args_list)
+            if error:
+                return None , error
+            
+            # print(args_list[0].object)
+            return args_list[0] , None
         # object_ = ObjectAccessNode(class_name=class_name)
         # object_.object = object_body
         # return object_ , None
