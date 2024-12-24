@@ -1,6 +1,6 @@
 output
 packages
-vscode
+.vscode
 __pycache__
 harish.squig
 testing_final.squig
