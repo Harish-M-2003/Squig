@@ -270,7 +270,10 @@ class BaseType:
 
         if isinstance(self, String) and isinstance(self, String):
             return Boolean(self.string == right_operand.string), None
-
+        
+        if isinstance(self, Object) and isinstance(self, Object):
+            return Boolean(id(self.object) == id(right_operand.object)) , None
+        
         if isinstance(self, Number) and isinstance(self, Number):
             return Boolean(self.number == right_operand.number), None
 
@@ -525,7 +528,8 @@ class UserDefinedFunction(BaseFunction):
         function_processor = Interpreter.Interpreter(self.file, self.body.parent.scope)
         # print(self.body)
         # self.body.parent = local_symbol_table
-
+        # print(self.body.parent.parent.scope)
+        # print(type(self.body))
         function_expression, error = function_processor.process(self.body)
 
         if error:
@@ -1304,3 +1308,7 @@ class Object(BaseType):
         self.scope = scope
         self.object = object_
         self.class_name = class_name
+
+    def eql(self, right_operand):
+
+        return  Boolean(id(self) == id(right_operand)) , None

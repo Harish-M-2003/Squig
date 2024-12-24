@@ -2,10 +2,6 @@ from Parser import *
 import helper.Types as Types
 import sys
 
-
-# Travers the ObjectAccessNode subtree in ast using preorder traversal
-
-
 class Interpreter:
 
     def __init__(self, file, global_symbol_table):
@@ -13,20 +9,19 @@ class Interpreter:
         self.global_symbol_table = global_symbol_table
     
     def travers(self , root , execute_right_subtree = True):
+        
+        # this function travers the binary operator node inorder to reterview the object.
+
         if isinstance(root , BinaryOperatorNode):
 
+            # the updated values of the class attribute are not available inside this function , instead it has the old value
             left , error = self.travers(root.left , True)
             if error:
                 return None , error
                     
             # do stuff here , if the statement is chained object access
-
-            # print(id(left) , "example line at 23 in interpreter")
-
             # the issue for that unexpected behaviour of the object assignmet statement if in this part of the code
 
-                # print(left, type(left) , "final value")
-            
             if not isinstance(left , Types.Object) and execute_right_subtree and root.right.variable.value:
                 # this statement should execute if the chained object access is not consistent , 
                 # meaning it should throw an error , is the object becomes a different type other than object ,
@@ -34,18 +29,19 @@ class Interpreter:
                 # print("trying to access the Non object type as obejct" , root.right.variable.value)
                 return None , RunTimeError(self.file , "Trying to use Non Object type as Object")
 
-            
             if isinstance(left , Types.Object) and execute_right_subtree:
+                # print(left.object[root.right.variable.value])
                 left = left.object[root.right.variable.value]
             
             if isinstance(left , tuple):
                 left = left[0]
-            # print(id(left))
+
             return left , None
-        
+
         object_ , error = self.process(root)
         if error:
             return None , error
+        
         return object_ , None
 
     def process(self, node):
@@ -62,8 +58,9 @@ class Interpreter:
 
         lines = []
         for statement in node.statement:
-            # print(statement , "testing")
+            # print(statement. , "testing")
             line, error = self.process(statement)
+            
             if error:
                 return None, error
 
@@ -517,15 +514,15 @@ class Interpreter:
 
     def VariableNode(self, node):
 
+        
         is_object = isinstance(node.variable , ObjectAccessNode)
-
+        # print(is_object)
         if not is_object:
             variable = node.variable.value
         else:
             variable = node.variable
-        
+        # print(variable , type(node.factor))
         value, error = self.process(node.factor)
-        
         if error:
             return None, error
 
@@ -541,6 +538,7 @@ class Interpreter:
             # instead we should assign the value 20 to node.data
             # so that's why we passed execute_right_subtree = False in traverse function.
             object_name , error = self.travers(node.variable.object , execute_right_subtree = False)
+            # print(object_name)
             if error:
                 return None , error
             
@@ -552,6 +550,7 @@ class Interpreter:
                     parent = parent.parent
                 else:
                     break
+            # print(parent , "\n" , object_name , variable)
 
 
         if object_name == None:
@@ -559,14 +558,15 @@ class Interpreter:
         
         # print(object_name.object["data"])
         # if not object_name[1]: this condition is not checking mutability
-        attribute = node.variable.object.right.variable.value
+        # print(node.variable , is_object)
         if not is_object:
                 parent.scope[variable] = (value, object_name[1], object_name[-1])
+                # print(parent.scope[variable] , value)
         else:
+                attribute = node.variable.object.right.variable.value
                 # print(object_name , value , "first")
                 object_name.object[attribute] = (value, False , False)
 
-        # print(object_name.object , value , is_object)
         # else:
         #     return None, RunTimeError(
         #         self.file, f"immutable variable '{variable}' cannot be modified"
@@ -652,6 +652,7 @@ class Interpreter:
         return Types.Null(), None
 
     def VariableAccessNode(self, node):
+        # print(node , "testing")
         variable = node.variable.value
         members = node.members  # Need to fix this for access nested props
 
@@ -665,8 +666,7 @@ class Interpreter:
                 parent = parent.parent
             else:
                 break
-
-        # print("value", variable)
+        
         if variable_value != None:
             # if variable in self.global_symbol_table:
             # print(self.global_symbol_table)
@@ -674,7 +674,7 @@ class Interpreter:
             # print("Testing" , variable_value)
 
             if type(variable_value) != tuple:
-                variable_value = (variable_value, False)
+                variable_value = (variable_value, False , "Type : null")
 
             # print(variable_value)
             # if isinstance(self.global_symbol_table[variable][0] , Types.File): # comment this line , because got Type Error
@@ -697,7 +697,9 @@ class Interpreter:
             #     # print("it is a class")
             #     object_members = self.global_symbol_table[self.global_symbol_table[variable][:self.global_symbol_table[variable].find("@")]]
             #     return object_members[members.value] , None
-
+            # print(parent.scope , "\n")
+            # if isinstance(variable_value[0] , Types.Object):
+            # print(variable_value)
             return variable_value[0], None
 
         return None, RunTimeError(self.file, f"Variable '{variable}' is undefined.")
@@ -870,13 +872,12 @@ class Interpreter:
         return Types.String(types, self.file), None
 
     def IfNode(self, node):
-
+        
         cases = node.cases
         else_case = node.else_case
-        # print(node.parent.scope)
+
         for condition, statement in cases:
-            # print("testing" , condition)
-            # print(type(condition))
+          
             predicate, error = self.process(condition)
 
             if error:
@@ -888,12 +889,11 @@ class Interpreter:
                 return block, None
 
         if else_case:
-            # print(type(else_case))
             block, error = self.process(else_case)
             if error:
                 return None, error
             return block, None
-
+        
         return Types.Null(), None
 
     def UnaryOperatorNode(self, node):
@@ -937,7 +937,6 @@ class Interpreter:
         # need to fix the bugs ....
 
         variable = node.variable.value
-        # print(variable)
         elements = []
         start_value, error = self.process(node.start_value)
         end_value = Types.Number(0)
@@ -1019,7 +1018,6 @@ class Interpreter:
 
                 elements.append(body)
                 if node.is_broken:
-                    # print(elements)
                     node.is_broken = False
                     break
 
@@ -1051,7 +1049,7 @@ class Interpreter:
         return Types.Null(), None
 
     def FunctionNode(self, node):
-
+        # print("testing")
         variable = node.variable.value
 
         return_type = node.type_mentioned
@@ -1071,7 +1069,7 @@ class Interpreter:
         function = Types.UserDefinedFunction(
             self.file, variable, params, body, return_type
         )
-
+        # print("\n" , node.parent)
         node.parent.scope[variable] = function
         # print(variable , type(node))
         # print(node.parent.scope)
@@ -1079,7 +1077,7 @@ class Interpreter:
         return Types.Null(), None
 
     def FunctionCallNode(self, node):
-
+        
         # using the name of the function , reterview the FunctionNode object from then scope
         # once reterving the FunctionNode Object , we have access to execute method
         # it is this method that executes the function based on the given args.
@@ -1109,7 +1107,6 @@ class Interpreter:
                 parent = parent.parent
             else:
                 break
-        
         # if the function name is not found in any of the parent scope , parent will be None.
         if parent == None:
             return None, RunTimeError(self.file, f"Function {variable} is undefined.")
@@ -1470,17 +1467,23 @@ class Interpreter:
     def ClassNode(self, node):
 
         class_name = node.class_name
+        
         class_body, error = self.process(node.class_body)
+        
+        # print(node.parent)
         if error:
             return None, error
-
+        
+        # print("\nbody" , node.class_body.scope)
         if class_name.value not in node.parent.scope:
-            node.parent.scope[class_name.value] = node.class_body.scope.copy()
+            # node.parent.scope[class_name.value] = node.class_body.scope.copy()
+            node.parent.scope[class_name.value] = node.class_body.scope
         else:
             return None, RunTimeError(
                 self.file, f"class with name {class_name.value} already exists."
             )
 
+        # print("\nbody" , node.class_body.scope)
         # print(node.class_body.scope)
         return Types.Null(), None
         # return node , None
@@ -1488,7 +1491,6 @@ class Interpreter:
     def ObjectNode(self, node):
 
         class_name = node.class_name.value
-
         parent = node.parent
         while parent:
             if class_name in parent.scope:
@@ -1518,8 +1520,9 @@ class Interpreter:
         
         
         # print(node.object)
-        object_ , error = self.travers(node.object)
-        # print("testing" , object_.object)
+        # object_ , error = self.travers(node.object)
+        object_ , error = self.travers(node.object , execute_right_subtree=False)
+        # print("testing" , object_)
         if error:
             return None , error
 
@@ -1527,11 +1530,12 @@ class Interpreter:
         # else if the object_member is method then the method will be return to attribute
         # print(type(object_))
         # attribute = object_.object[node.object.right.variable.value]
-        attribute = object_
-        
+        attribute = object_.object[node.object.right.variable.value]
+        # print(type(attribute) , attribute)
         if isinstance(attribute , Types.UserDefinedFunction):
+
             function_call = node.object.scope[node.object.right.variable.value]
-            args = []
+            args = [object_]
 
             for arg in function_call.param:
                 value , error = self.process(arg)
@@ -1541,7 +1545,9 @@ class Interpreter:
             
             if error:
                 return None , error
-            return attribute.execute(args)
+            
+            output , error = attribute.execute(args)
+            return output , error
         
         elif isinstance(attribute , Types.Object):
             

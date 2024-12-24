@@ -687,7 +687,6 @@ class Parser:
                 class_node.class_name = variable
                 class_node.class_body = class_body
                 class_node.parent = parent
-
                 return class_node, None
 
             if self.current_token.type == token_dot:

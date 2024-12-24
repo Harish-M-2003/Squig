@@ -30,9 +30,9 @@ while True:
                 if not code: break
 
             else:
-                # code = open(r"C:\Users\Harish\harish\Projects\language\test\testing_final.squig").read() # debugging
                 try:
-                    code = input("squig >") 
+                    code = open(r"C:\Users\Harish\harish\Projects\language\test\testing_final.squig").read() # debugging
+                    # code = input("squig >") 
                     code = code.strip()
                 except EOFError:
                     break
