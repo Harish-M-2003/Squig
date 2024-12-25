@@ -1,0 +1,26 @@
+use "std:collections:linkedlist"
+
+Stack class {
+
+    let stack : @linkedlist.LinkedList{}
+
+    push fn {ref , data} : {
+        ref.stack.addFirst{data}
+    }
+
+    peek fn {ref , data} : {
+        log ref.stack.head.data
+    }
+
+    print fn {ref} : {
+
+        let temp : ref.stack.head
+
+        for index{ref.stack.size} : {
+            log temp.data
+            temp : temp.next
+        }
+
+    }
+
+}

@@ -1,0 +1,17 @@
+
+Heap class {
+
+    let priorityQueue : {}
+    let priority : null
+
+    Heap fn {priority} : {
+        ref.priority : priority # if the priority is negative , it's a min heap
+    }
+
+    push fn {ref , data} : {
+        log ref.priorityQueue
+    }
+
+    # shift_up fn {ref}
+
+}

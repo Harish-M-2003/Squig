@@ -1,0 +1,30 @@
+use "std:collections:linkedlist"
+
+Queue class {
+
+    let queue : @linkedlist.LinkedList{}
+
+    push fn {ref , data} : {
+        ref.queue.addLast{data}
+    }
+
+    peek fn {ref , data} : {
+        log ref.queue.head.data
+    }
+
+    print fn {ref} : {
+
+        let temp : ref.queue.head
+
+        for index{ref.queue.size} : {
+            log temp.data
+            temp : temp.next
+        }
+
+    }
+
+    size fn {ref} : {
+        log ref.queue.size
+    }  
+
+}

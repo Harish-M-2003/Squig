@@ -31,6 +31,21 @@ LinkedList class {
         ref.size : ref.size + 1
     }
 
+    addLast fn {ref , data} : {
+
+        let node : @Node{data}
+        
+        if {ref.head = null} : {
+            ref.head : node
+            ref.tail : node
+        } else : {
+            ref.tail.next : node
+            ref.tail : node
+        }
+
+        ref.size : ref.size + 1
+    }
+
     print fn {ref} : {
 
         let temp : ref.head
