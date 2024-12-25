@@ -48,10 +48,11 @@ class Interpreter:
         
         # getattr return the attribute from the current class , if exists
         method = getattr(self, f"{type(node).__name__}", self.no_process)
+        
         return method(node)
 
     def ShowNode(self, node):
-
+        # print(node.parent.elements[1].scope)
         # this method is automatically invoked by the ShowNode 
         # in the ast given to the interpreter and returns Null type
         # will print the node which is of type ShowNode.
@@ -336,7 +337,8 @@ class Interpreter:
                 #     return None , RunTimeError("Break can be used only within the loops")
                 # else:
                 #     parent.is_broken = True
-
+        
+        # print(elements)
         return Types.Collection(self.file, elements), None
 
     def HashMapNode(self, node):
@@ -1294,10 +1296,10 @@ class Interpreter:
     def UseNode(self, node):
 
         import os
-
         module_name = os.path.join(
             os.getcwd(), node.name.string.value.replace(":", "\\")
         )
+
         code = ""
         isRead = False
 
@@ -1333,10 +1335,19 @@ class Interpreter:
         ast, error = parser.parse()
         if error:
             return None, error
+        # print(type(node.parent))
+        ast.parent = node.parent
+        # interpreter = Interpreter(file, self.global_symbol_table)
 
-        interpreter = Interpreter(file, self.global_symbol_table)
+        module_name = node.name.string.value.split(":")[-1].strip()
+        # output, error = self.process(ast)
+        
+        node.parent.elements.insert(1 , ast)
+        # print(ast.scope)
+        node.parent.scope[module_name] = Types.Object(object_=ast.scope , class_name=module_name)
 
-        output, error = interpreter.process(ast)
+        # print(ast.parent.parent , "in UseNode interpretor")
+        # print(node.parent.elements , ast.parent.parent , ast)
         if error:
             return None, error
 
@@ -1490,9 +1501,16 @@ class Interpreter:
 
     def ObjectNode(self, node):
 
-        # class_name = node.class_name.value
+        binary_operator_node = node.class_name.variable
+        class_name = binary_operator_node.left.variable.value
+        object_body = None
 
-        class_name = node.class_name.variable.value
+        if binary_operator_node.right != None:
+            object_body , error = self.travers(binary_operator_node)
+            if error:
+                return None , error
+            object_body = object_body.copy()
+
         parent = node.parent
         while parent:
             if class_name in parent.scope:
@@ -1500,10 +1518,11 @@ class Interpreter:
             parent = parent.parent
  
         if parent == None:
-            return RunTimeError(self.file , f"Class '{class_name}' is not defined.")
-        
-        object_body = parent.scope[class_name].copy()
-        # print(class_name)
+            # print(not object_body , parent)
+            return None , RunTimeError(self.file , f"Class '{class_name}' is not defined.")
+        if not object_body:
+            object_body = parent.scope[class_name].copy()
+
         args_length = len(node.class_name.param)
         if args_length == 0:
             return Types.Object(object_=object_body , class_name=class_name), None
@@ -1516,7 +1535,12 @@ class Interpreter:
                     return None , error
                 args_list.append(processed_arg)
             
-            constructor = object_body.get(class_name , None)
+            if binary_operator_node.right == None:
+                constructor = object_body.get(class_name , None)
+            else:
+                class_name = binary_operator_node.right.variable.value
+                constructor = object_body.get(class_name , None)
+
             if not constructor:
                 return None , RunTimeError(self.file , f"Constructor of parameter length {args_length} not found in class {class_name}")
             output , error = constructor.execute(args_list)

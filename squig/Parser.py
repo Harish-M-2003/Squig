@@ -930,6 +930,9 @@ class Parser:
 
             if error:
                 return None, error
+            
+            use_node.name = module_name
+            use_node.parent = parent
             module_name.parent = use_node
             return use_node, None
 
@@ -1122,13 +1125,31 @@ class Parser:
             self.next()
             if self.current_token.type != token_variable:
                 return None, RunTimeError(self.file, "Expected a class for @ operator")
+            
 
             class_name = self.current_token
-
-            # Since constructor is a special type of function , we can use call method for it.
-
             self.next()
-            constructor , error = self.call(class_name , object_node)
+            binary_operator_node = BinaryOperatorNode(left=None,right=None , operator=None , parent=None)
+            left_node = VariableAccessNode(variable = class_name , parent=binary_operator_node)
+            binary_operator_node.left = left_node
+
+            if self.current_token.type == token_dot:
+                self.next()
+                if self.current_token.type != token_variable:
+                        return None, RunTimeError(self.file, "Expected a proper variable name after . operator in object creation")
+                
+                right_node = VariableAccessNode(variable = self.current_token , parent=binary_operator_node)
+                binary_operator_node.right = right_node
+                binary_operator_node.operator = token_dot
+                binary_operator_node.parent = object_node
+                
+                self.next()
+                
+            # Since constructor is a special type of function , we can use call method for it.
+            # constructor , error = self.call(class_name , object_node)
+            # print(self.current_token)
+            constructor , error = self.call(binary_operator_node , object_node)
+
             if error:
                 return None , error
             

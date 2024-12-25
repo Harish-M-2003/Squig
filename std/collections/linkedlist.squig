@@ -1,0 +1,45 @@
+
+Node class {
+
+    let data : null
+    let next : null
+
+    Node fn {ref , data} : {
+        ref.data : data
+    }
+}
+
+LinkedList class {
+
+    let head : null
+    let tail : null
+    let size : 0
+
+    addFirst fn {ref , data} : {
+
+        let node : @Node{data}
+        
+        if {ref.head = null} : {
+            ref.head : node
+            ref.tail : node
+        } else : {
+
+            node.next : ref.head
+            ref.head : node
+        }
+
+        ref.size : ref.size + 1
+    }
+
+    print fn {ref} : {
+
+        let temp : ref.head
+
+        for index{ref.size} : {
+            log temp.data
+            temp : temp.next
+        }
+
+    }
+
+}
