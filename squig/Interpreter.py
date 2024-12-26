@@ -1539,6 +1539,7 @@ class Interpreter:
             return None , RunTimeError(self.file , f"Class '{class_name}' is not defined.")
         if not object_body:
             object_body = parent.scope[class_name].copy()
+        # print(object_body["parent"][0].object )
 
         args_length = len(node.class_name.param)
         if args_length == 0:
@@ -1584,8 +1585,9 @@ class Interpreter:
         
         # print(node.object)
         # object_ , error = self.travers(node.object)
+        
+        # print("testing" , node.object)
         object_ , error = self.travers(node.object , execute_right_subtree=False)
-        # print("testing" , object_)
         if error:
             return None , error
 
@@ -1593,9 +1595,12 @@ class Interpreter:
         # else if the object_member is method then the method will be return to attribute
         # print(type(object_))
         # attribute = object_.object[node.object.right.variable.value]
-        attribute_name = node.object.right.variable.value
-        attribute = object_.object.get( attribute_name, None)
 
+        attribute_name = node.object.right.variable.value
+        # if attribute_name == "get_value":
+        #     print(object_.object , attribute_name)
+        attribute = object_.object.get( attribute_name, None)
+        # print(attribute , attribute_name , object_.object)
         if not attribute and "parent" in object_.object:
             
             # parent_class = object_.object["parent"]
@@ -1608,15 +1613,20 @@ class Interpreter:
             #     parent_class = parent_class.get("parent")
 
             bfs = object_.object["parent"]
+            bfs_index = 0
+            # print(attribute_name , "finding" , bfs)
+            
+            while bfs_index < len(bfs):
 
-            while bfs:
-                current_node = bfs.pop(0)
-
+                current_node = bfs[bfs_index]
+                # print(current_node.object)
                 attribute = current_node.object.get(attribute_name , None)
+                # print(current_node.object , attribute_name)
                 if attribute:
                     break
                 
                 if "parent" in current_node.object:
+                    # print("parent" , current_node.object["parent"][0].object)
                     for parent in current_node.object["parent"]:
                         # attribute = parent.object.get(attribute_name , None)
                         # if attribute:
@@ -1625,6 +1635,8 @@ class Interpreter:
                         # parent_node = parent.object.get("parent" , None)
                         # if parent_node:
                         bfs.append(parent)
+                    
+                bfs_index += 1
         
         if not attribute:
             return None , RunTimeError(self , f"attribute {attribute_name} not found.")
