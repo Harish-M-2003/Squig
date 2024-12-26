@@ -657,20 +657,37 @@ class Parser:
                 and self.current_token.value == "class"
             ):
                 class_node = ClassNode(None, [])
+                parent_class = []
                 self.next()
+
+                if self.current_token.type == token_colon:
+                    
+                    
+                    self.next()
+                    parent_class.append(VariableAccessNode(self.current_token , parent=class_node))
+                    self.next()
+
+
+                    while self.current_token.type == token_plus:
+                        self.next()
+                        parent_class.append(VariableAccessNode(self.current_token , parent=class_node))
+                        self.next()
+                
                 if self.current_token.type != token_lb:
                     return None, WrongSyntaxError(
                         self.file, "expected a opening parenthesis for class {variable}"
                     )
 
-                self.next()
+                
                 if self.current_token.type == token_rb:
                     class_node.class_name = variable
                     class_node.class_body = NullNode(parent=class_node)
                     class_node.parent = parent
+                    class_node.parent_class = parent_class
                     self.next()
                     return class_node , None
                 
+                self.next()
                 class_body, error = self.statements(class_node)
                 if error:
                     return None, error
@@ -685,7 +702,9 @@ class Parser:
 
                 class_node.class_name = variable
                 class_node.class_body = class_body
+                class_node.parent_class = parent_class
                 class_node.parent = parent
+
                 return class_node, None
 
             if self.current_token.type == token_dot:

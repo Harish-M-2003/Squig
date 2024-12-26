@@ -1478,16 +1478,33 @@ class Interpreter:
     def ClassNode(self, node):
 
         class_name = node.class_name
+        parent_class = None
+        parents = []
+
+        if node.parent_class:
+            
+            # parent_class , error  = self.process(node.parent_class)
+            # if error:
+            #     return None , error
+            for parent in node.parent_class:
+                parent_class , error  = self.process(parent)
+                # print(type(parent_class))
+                if error:
+                    return None , error
+                parents.append(Types.Object(object_=parent_class , class_name=class_name))
         
         class_body, error = self.process(node.class_body)
         
-        # print(node.parent)
         if error:
             return None, error
         
         # print("\nbody" , node.class_body.scope)
         if class_name.value not in node.parent.scope:
             node.parent.scope[class_name.value] = node.class_body.scope.copy()
+            # if node.parent_class:
+            if parents:
+                node.parent.scope[class_name.value]["parent"] = parents
+                # print(node.parent.scope[class_name.value]["parent"])
             # node.parent.scope[class_name.value] = node.class_body.scope
         else:
             return None, RunTimeError(
@@ -1576,7 +1593,41 @@ class Interpreter:
         # else if the object_member is method then the method will be return to attribute
         # print(type(object_))
         # attribute = object_.object[node.object.right.variable.value]
-        attribute = object_.object[node.object.right.variable.value]
+        attribute_name = node.object.right.variable.value
+        attribute = object_.object.get( attribute_name, None)
+
+        if not attribute and "parent" in object_.object:
+            
+            # parent_class = object_.object["parent"]
+
+            # while not attribute and "parent" in object_.object:
+            #     # check in parent class
+            #     attribute = parent_class.get(attribute_name , None)
+            #     if attribute:
+            #         break
+            #     parent_class = parent_class.get("parent")
+
+            bfs = object_.object["parent"]
+
+            while bfs:
+                current_node = bfs.pop(0)
+
+                attribute = current_node.object.get(attribute_name , None)
+                if attribute:
+                    break
+                
+                if "parent" in current_node.object:
+                    for parent in current_node.object["parent"]:
+                        # attribute = parent.object.get(attribute_name , None)
+                        # if attribute:
+                        #     break
+
+                        # parent_node = parent.object.get("parent" , None)
+                        # if parent_node:
+                        bfs.append(parent)
+        
+        if not attribute:
+            return None , RunTimeError(self , f"attribute {attribute_name} not found.")
         # print(type(attribute) , attribute)
         if isinstance(attribute , Types.UserDefinedFunction):
 
