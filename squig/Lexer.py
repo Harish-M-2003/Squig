@@ -406,5 +406,4 @@ if __name__ == "__main__":
         lexer = Lexer("<core>",input("Enter a expression : "))
         tokens = lexer.tokenize()
         print(tokens)
-            
 

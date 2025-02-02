@@ -46,6 +46,11 @@ LinkedList class {
         ref.size : ref.size + 1
     }
 
+    len fn {ref} : {
+        return ref.size
+    }
+
+
     print fn {ref} : {
 
         let temp : ref.head

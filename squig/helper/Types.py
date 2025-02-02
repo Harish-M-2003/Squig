@@ -471,16 +471,58 @@ class Number(BaseType):
         return Number(~self.number)
 
     
-class BaseFunction(BaseType):
+# class BaseFunction(BaseType):
+
+#     def __init__(self, file, variable, params, body, type_mentioned):
+
+#         self.file = file
+#         self.variable = variable
+#         self.params = params
+#         self.body = body
+#         self.returned = False
+#         self.type_mentioned = type_mentioned
+
+#     def check_param_and_arg_length(self, params, args):
+
+#         if len(params) < len(args):
+
+#             return None, RunTimeError(
+#                 self.file, f"'{self.variable}' function got too high arguments. expected {len(params)} , got {len(args)}."
+#             )
+
+#         if len(params) > len(args):
+
+#             return None, RunTimeError(
+#                 self.file, f"'{self.variable}' function got too low arguments. expected {len(params)} , got {len(args)}"
+#             )
+
+#         return None, None
+
+#     def update_local_symbol_table(self, params, args, symbol_table):
+
+#         for idx in range(len(args)):
+#             symbol_table[params[idx]] = args[idx]
+    
+class UserDefinedFunction(BaseType):
 
     def __init__(self, file, variable, params, body, type_mentioned):
-
         self.file = file
         self.variable = variable
         self.params = params
         self.body = body
+        self.returned = False
         self.type_mentioned = type_mentioned
+        # super().__init__(file, variable, params, body, type_mentioned)
+    
+    def update_local_symbol_table(self, params, args, symbol_table):
 
+        for idx in range(len(args)):
+            symbol_table[params[idx]] = args[idx]
+
+    def __repr__(self):
+
+        return f"Function< {id(self)} >"
+    
     def check_param_and_arg_length(self, params, args):
 
         if len(params) < len(args):
@@ -497,39 +539,17 @@ class BaseFunction(BaseType):
 
         return None, None
 
-    def update_local_symnol_table(self, params, args, symbol_table):
-
-        for idx in range(len(args)):
-            symbol_table[params[idx]] = args[idx]
-
-
-class UserDefinedFunction(BaseFunction):
-
-    def __init__(self, file, variable, params, body, type_mentioned):
-        super().__init__(file, variable, params, body, type_mentioned)
-
-    def __repr__(self):
-
-        return f"Function< {id(self)} >"
-
     def execute(self, args, global_symbol_table = None):
 
-        # print(args , self.params)
-
         status, error = self.check_param_and_arg_length(self.params, args)
+
         if error:
             return None, error
-        
-        # local_symbol_table = {}
-        # print(self.params , args)
-        
-        self.update_local_symnol_table(self.params, args , self.body.parent.scope)
+
+        self.update_local_symbol_table(self.params, args , self.body.parent.scope)
         
         function_processor = Interpreter.Interpreter(self.file, self.body.parent.scope)
-        # print(self.body)
-        # self.body.parent = local_symbol_table
-        # print(self.body.parent.parent.scope)
-        # print(type(self.body))
+        
         function_expression, error = function_processor.process(self.body)
 
         if error:
@@ -537,667 +557,666 @@ class UserDefinedFunction(BaseFunction):
         
         return function_expression, None
 
+# class BuiltinFunction(BaseFunction):
 
-class BuiltinFunction(BaseFunction):
+#     def __init__(self, file, variable):
 
-    def __init__(self, file, variable):
+#         self.file = file
+#         self.variable = variable
 
-        self.file = file
-        self.variable = variable
+#     def execute(self, args, global_symbol_table=None):
 
-    def execute(self, args, global_symbol_table=None):
+#         local_symbol_table = {}
+#         method = getattr(self, f"execute_{self.variable}", self.no_function)
 
-        local_symbol_table = {}
-        method = getattr(self, f"execute_{self.variable}", self.no_function)
+#         self.update_local_symnol_table(method.params, args, local_symbol_table)
 
-        self.update_local_symnol_table(method.params, args, local_symbol_table)
+#         return method(local_symbol_table)
 
-        return method(local_symbol_table)
+#     def execute_int(self, symbol_table):
 
-    def execute_int(self, symbol_table):
+#         value = symbol_table["value"]
+#         if isinstance(value, Number):
+#             return Number(int(value.value)), None
 
-        value = symbol_table["value"]
-        if isinstance(value, Number):
-            return Number(int(value.value)), None
+#     execute_int.params = ["value"]
 
-    execute_int.params = ["value"]
+#     def execute_isUpper(self, symbol_table):
 
-    def execute_isUpper(self, symbol_table):
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.isupper()), None
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.isupper()), None
+#     execute_isUpper.params = ["value"]
 
-    execute_isUpper.params = ["value"]
+#     def execute_remove(self , symbol_table):
+#         data_structure = symbol_table["data_structure"]
+#         index = symbol_table["index"]
 
-    def execute_remove(self , symbol_table):
-        data_structure = symbol_table["data_structure"]
-        index = symbol_table["index"]
+#         if type(index) != Number:
+#             return Null(None) , RunTimeError(self.file , "Index must be a 'Number'.")
 
-        if type(index) != Number:
-            return Null(None) , RunTimeError(self.file , "Index must be a 'Number'.")
-
-        if isinstance(data_structure , Collection):
-            if index.number > len(data_structure.elements):
-                return Null(None) , OutOfBoundError(self.file , "Collection index out of bound")
+#         if isinstance(data_structure , Collection):
+#             if index.number > len(data_structure.elements):
+#                 return Null(None) , OutOfBoundError(self.file , "Collection index out of bound")
             
-            del data_structure.elements[index.number]
+#             del data_structure.elements[index.number]
         
-        else:
-            return None , RunTimeError(self.file , "remove is only implemented for colleciton")
+#         else:
+#             return None , RunTimeError(self.file , "remove is only implemented for colleciton")
         
-        return Boolean(True) , None
+#         return Boolean(True) , None
         
-    execute_remove.params = ["data_structure" , "index"]
+#     execute_remove.params = ["data_structure" , "index"]
 
-    def execute_insert(self , symbol_table):
+#     def execute_insert(self , symbol_table):
 
-        data_structure = symbol_table["data_structure"]
-        index = symbol_table["index"]
-        value = symbol_table["value"]
+#         data_structure = symbol_table["data_structure"]
+#         index = symbol_table["index"]
+#         value = symbol_table["value"]
 
-        if type(index) != Number:
-            return Null(None) , RunTimeError(self.file , "Index must be a 'Number'.")
+#         if type(index) != Number:
+#             return Null(None) , RunTimeError(self.file , "Index must be a 'Number'.")
 
-        if isinstance(data_structure , Collection):
-            if index.number > len(data_structure.elements):
-                return Null(None) , OutOfBoundError(self.file , "Collection index out of bound")
+#         if isinstance(data_structure , Collection):
+#             if index.number > len(data_structure.elements):
+#                 return Null(None) , OutOfBoundError(self.file , "Collection index out of bound")
             
-            data_structure.elements.insert(index.number , value)
+#             data_structure.elements.insert(index.number , value)
         
-        else:
-            return None , RunTimeError(self.file , "insert is only implemented for colleciton")
+#         else:
+#             return None , RunTimeError(self.file , "insert is only implemented for colleciton")
         
-        return Boolean(True) , None
+#         return Boolean(True) , None
     
-    execute_insert.params = ["data_structure" , "index" , "value"]
+#     execute_insert.params = ["data_structure" , "index" , "value"]
     
-    def execute_sort(self , symbol_table):
+#     def execute_sort(self , symbol_table):
 
-        from util.sorting import merge_sort
+#         from util.sorting import merge_sort
 
-        data_structure = symbol_table["data_structure"]
+#         data_structure = symbol_table["data_structure"]
 
-        if isinstance(data_structure , Collection):
+#         if isinstance(data_structure , Collection):
 
-            status = merge_sort(data_structure.elements , 0 , len(data_structure.elements) - 1)
-            if status:
-                return None , status
+#             status = merge_sort(data_structure.elements , 0 , len(data_structure.elements) - 1)
+#             if status:
+#                 return None , status
         
-        else:
-            return None , RunTimeError(self.file , "sort is only implemented for colleciton")
+#         else:
+#             return None , RunTimeError(self.file , "sort is only implemented for colleciton")
         
-        return Boolean(True) , None
+#         return Boolean(True) , None
         
     
-    execute_sort.params = ["data_structure"]
+#     execute_sort.params = ["data_structure"]
 
 
-    def execute_lsearch(self , symbol_table):
+#     def execute_lsearch(self , symbol_table):
 
-        from util.searching import linear_search
+#         from util.searching import linear_search
         
-        data_structure = symbol_table["data_structure"]
-        value = symbol_table["value"]
+#         data_structure = symbol_table["data_structure"]
+#         value = symbol_table["value"]
 
-        if isinstance(data_structure , Collection):
+#         if isinstance(data_structure , Collection):
 
-            index = linear_search(data_structure.elements , value.value)
+#             index = linear_search(data_structure.elements , value.value)
             
-            return Number(index) , None
+#             return Number(index) , None
         
-        else:
-            return None , RunTimeError(self.file , "lsearch is only implemented for colleciton")
+#         else:
+#             return None , RunTimeError(self.file , "lsearch is only implemented for colleciton")
     
-    execute_lsearch.params = ["data_structure" , "value"]
+#     execute_lsearch.params = ["data_structure" , "value"]
 
-    def execute_bsearch(self , symbol_table):
+#     def execute_bsearch(self , symbol_table):
 
-        from util.searching import interpolationSearch
-        data_structure = symbol_table["data_structure"]
-        value = symbol_table["value"]
+#         from util.searching import interpolationSearch
+#         data_structure = symbol_table["data_structure"]
+#         value = symbol_table["value"]
 
-        if isinstance(data_structure , Collection):
+#         if isinstance(data_structure , Collection):
 
-            index = interpolationSearch(data_structure.elements , len(data_structure.elements) , value.value)
-            return Number(index) , None
+#             index = interpolationSearch(data_structure.elements , len(data_structure.elements) , value.value)
+#             return Number(index) , None
         
-        else :
-            return None , RunTimeError(self.file , "bsearch is only implemented for collection")
+#         else :
+#             return None , RunTimeError(self.file , "bsearch is only implemented for collection")
 
-    execute_bsearch.params = ["data_structure" , "value"]
+#     execute_bsearch.params = ["data_structure" , "value"]
 
-    def execute_isLower(self, symbol_table):
+#     def execute_isLower(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.islower()), None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.islower()), None
 
-    execute_isLower.params = ["value"]
+#     execute_isLower.params = ["value"]
 
-    def execute_MutableString(self, symbol_table):
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return MutableString(value.string), None
-        if isinstance(value, MutableString):
-            return MutableString(value.string), None
-        return None, WrongTypeError(
-            self.file, f"Cannot convert {type(value).__name__} to MutableString."
-        )
+#     def execute_MutableString(self, symbol_table):
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return MutableString(value.string), None
+#         if isinstance(value, MutableString):
+#             return MutableString(value.string), None
+#         return None, WrongTypeError(
+#             self.file, f"Cannot convert {type(value).__name__} to MutableString."
+#         )
 
-    execute_MutableString.params = ["value"]
+#     execute_MutableString.params = ["value"]
 
-    def execute_title(self, symbol_table):
+#     def execute_title(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.title()), None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.title()), None
 
-    execute_title.params = ["value"]
+#     execute_title.params = ["value"]
 
-    def execute_split(self, symbol_table):
+#     def execute_split(self, symbol_table):
 
-        value = symbol_table["value"]
-        pattern = symbol_table["pattern"]
-        if isinstance(value, String):
-            return (
-                Collection(
-                    filename=self.file,
-                    elements=list(map(String, value.string.split(pattern.string))),
-                ),
-                None,
-            )
+#         value = symbol_table["value"]
+#         pattern = symbol_table["pattern"]
+#         if isinstance(value, String):
+#             return (
+#                 Collection(
+#                     filename=self.file,
+#                     elements=list(map(String, value.string.split(pattern.string))),
+#                 ),
+#                 None,
+#             )
 
-    execute_split.params = ["value", "pattern"]
+#     execute_split.params = ["value", "pattern"]
 
-    def execute_is_string(self, symbol_table):
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(True), None
-        return Boolean(False), None
+#     def execute_is_string(self, symbol_table):
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(True), None
+#         return Boolean(False), None
 
-    execute_is_string.params = ["value"]
+#     execute_is_string.params = ["value"]
 
-    def execute_is_number(self, symbol_table):
+#     def execute_is_number(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, Number):
-            return Boolean(True), None
-        elif isinstance(value, String):
-            if value.string.isdigit() or isFloat(value.string):
-                return Boolean(True), None
-        return Boolean(False), None
+#         value = symbol_table["value"]
+#         if isinstance(value, Number):
+#             return Boolean(True), None
+#         elif isinstance(value, String):
+#             if value.string.isdigit() or isFloat(value.string):
+#                 return Boolean(True), None
+#         return Boolean(False), None
 
-    execute_is_number.params = ["value"]
+#     execute_is_number.params = ["value"]
 
-    def execute_is_bool(self, symbol_table):
+#     def execute_is_bool(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, Boolean):
-            return Boolean(True), None
-        return Boolean(False), None
+#         value = symbol_table["value"]
+#         if isinstance(value, Boolean):
+#             return Boolean(True), None
+#         return Boolean(False), None
 
-    execute_is_bool.params = ["value"]
+#     execute_is_bool.params = ["value"]
 
-    def execute_Bool(self, symbol_table):
-        value = symbol_table["value"]
-        if isinstance(value, String) or isinstance(value , MutableString):
-            if value.string:
-                return Boolean(True), None
-            else:
-                return Boolean(False), None
+#     def execute_Bool(self, symbol_table):
+#         value = symbol_table["value"]
+#         if isinstance(value, String) or isinstance(value , MutableString):
+#             if value.string:
+#                 return Boolean(True), None
+#             else:
+#                 return Boolean(False), None
 
-        if isinstance(value, Number):
-            if value.number:
-                return Boolean(True), None
-            else:
-                return Boolean(False), None
+#         if isinstance(value, Number):
+#             if value.number:
+#                 return Boolean(True), None
+#             else:
+#                 return Boolean(False), None
 
-        if isinstance(value, Collection):
+#         if isinstance(value, Collection):
 
-            if value.elements:
-                return Boolean(True), None
-            else:
-                return Boolean(False), None
+#             if value.elements:
+#                 return Boolean(True), None
+#             else:
+#                 return Boolean(False), None
 
-        if isinstance(value, Boolean):
+#         if isinstance(value, Boolean):
 
-            if value.value:
-                return Boolean(True), None
-            else:
-                return Boolean(False), None
+#             if value.value:
+#                 return Boolean(True), None
+#             else:
+#                 return Boolean(False), None
 
-        return None, WrongTypeError(
-            self.file, f"Cannot convert {type(value).__name__} to Bool."
-        )
+#         return None, WrongTypeError(
+#             self.file, f"Cannot convert {type(value).__name__} to Bool."
+#         )
 
-    execute_Bool.params = ["value"]
+#     execute_Bool.params = ["value"]
 
-    def execute_find(self, symbol_table):
+#     def execute_find(self, symbol_table):
 
-        value = symbol_table["value"]
-        target = symbol_table["target"]
+#         value = symbol_table["value"]
+#         target = symbol_table["target"]
 
-        if isinstance(value, String):
-            if isinstance(target, String):
-                return Number(value.string.find(target.string)), None
-            elif isinstance(target, Number):
-                return Number(value.string.find(str(target.number))), None
-            else:
-                return None, RunTimeError(
-                    self.file, "got unexpected 'target' for String."
-                )
+#         if isinstance(value, String):
+#             if isinstance(target, String):
+#                 return Number(value.string.find(target.string)), None
+#             elif isinstance(target, Number):
+#                 return Number(value.string.find(str(target.number))), None
+#             else:
+#                 return None, RunTimeError(
+#                     self.file, "got unexpected 'target' for String."
+#                 )
 
-        elif isinstance(value, Collection):
-            if isinstance(value, Number):
-                return Number(value.elements.index(target.number)), None
-            elif isinstance(value, String):
-                return Number(value.elements.index(target.string)), None
-            elif isinstance(value, Boolean):
-                return Number(value.elements.index(target.value)), None
+#         elif isinstance(value, Collection):
+#             if isinstance(value, Number):
+#                 return Number(value.elements.index(target.number)), None
+#             elif isinstance(value, String):
+#                 return Number(value.elements.index(target.string)), None
+#             elif isinstance(value, Boolean):
+#                 return Number(value.elements.index(target.value)), None
 
-        elif isinstance(value, Number):
-            if isinstance(target, Number):
-                return Number(str(value.number).find(str(target.number))), None
-            elif isinstance(target, String):
-                if target.string.isdigit() and isFloat(target.string):
-                    return Number(str(value.number).find(target.string)), None
+#         elif isinstance(value, Number):
+#             if isinstance(target, Number):
+#                 return Number(str(value.number).find(str(target.number))), None
+#             elif isinstance(target, String):
+#                 if target.string.isdigit() and isFloat(target.string):
+#                     return Number(str(value.number).find(target.string)), None
 
-        return None, RunTimeError(self.file, f"'Collection' has not function 'find'.")
+#         return None, RunTimeError(self.file, f"'Collection' has not function 'find'.")
 
-    execute_find.params = ["value", "target"]
+#     execute_find.params = ["value", "target"]
 
-    def execute_String(self, symbol_table):
+#     def execute_String(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, Number):
-            return String(str(value.number)), None
-        elif isinstance(value, String):
-            return String(value.string), None
-        elif isinstance(value, Collection):
-            return String(str(value.elements)), None
-        elif isinstance(value , MutableString):
-            return String(value.string) , None
+#         value = symbol_table["value"]
+#         if isinstance(value, Number):
+#             return String(str(value.number)), None
+#         elif isinstance(value, String):
+#             return String(value.string), None
+#         elif isinstance(value, Collection):
+#             return String(str(value.elements)), None
+#         elif isinstance(value , MutableString):
+#             return String(value.string) , None
         
-        return None , RunTimeError(self.file , f"Cannot convert type {type(value).__name__} to String.")
+#         return None , RunTimeError(self.file , f"Cannot convert type {type(value).__name__} to String.")
 
-    execute_String.params = ["value"]
+#     execute_String.params = ["value"]
 
-    def execute_is_palindrome(self, symbol_table):
+#     def execute_is_palindrome(self, symbol_table):
 
-        value = symbol_table["value"]
+#         value = symbol_table["value"]
 
-        if isinstance(value, Number):
-            number = str(value.number)
-            return Boolean(number[::-1] == number), None
-        elif isinstance(value, String):
-            string = value.string
-            return Boolean(string[::-1] == string), None
+#         if isinstance(value, Number):
+#             number = str(value.number)
+#             return Boolean(number[::-1] == number), None
+#         elif isinstance(value, String):
+#             string = value.string
+#             return Boolean(string[::-1] == string), None
 
-        return None, WrongTypeError(
-            self.file, f"Collection has no function 'is_palindorme."
-        )
+#         return None, WrongTypeError(
+#             self.file, f"Collection has no function 'is_palindorme."
+#         )
 
-    execute_is_palindrome.params = ["value"]
+#     execute_is_palindrome.params = ["value"]
 
-    def execute_replace(self, symbol_table):
+#     def execute_replace(self, symbol_table):
 
-        value = symbol_table["value"]
-        old_value = symbol_table["old_value"]
-        new_value = symbol_table["new_value"]
+#         value = symbol_table["value"]
+#         old_value = symbol_table["old_value"]
+#         new_value = symbol_table["new_value"]
 
-        if isinstance(value, String):
+#         if isinstance(value, String):
 
-            if not isinstance(old_value, String):
-                return None, RunTimeError(
-                    self.file, "'Old' string must be String type."
-                )
-            elif old_value.string not in value.string:
-                return None, RunTimeError(
-                    self.file, f"'{value.string}' doesn't contains {old_value}"
-                )
+#             if not isinstance(old_value, String):
+#                 return None, RunTimeError(
+#                     self.file, "'Old' string must be String type."
+#                 )
+#             elif old_value.string not in value.string:
+#                 return None, RunTimeError(
+#                     self.file, f"'{value.string}' doesn't contains {old_value}"
+#                 )
 
-            return (
-                String(value.string.replace(old_value.string, new_value.string)),
-                None,
-            )
+#             return (
+#                 String(value.string.replace(old_value.string, new_value.string)),
+#                 None,
+#             )
 
-    execute_replace.params = ["value", "old_value", "new_value"]
+#     execute_replace.params = ["value", "old_value", "new_value"]
 
-    def execute_length(self, symbol_table):
+#     def execute_length(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, Number):
-            return Number(len(str(value.number))), None
-        if isinstance(value, String):
-            return Number(len(value.string)), None
+#         value = symbol_table["value"]
+#         if isinstance(value, Number):
+#             return Number(len(str(value.number))), None
+#         if isinstance(value, String):
+#             return Number(len(value.string)), None
 
-        if isinstance(value, Collection):
-            return Number(len(value.elements)), None
+#         if isinstance(value, Collection):
+#             return Number(len(value.elements)), None
 
-        if isinstance(value, HashMap):
-            return Number(len(value.key_values)), None
+#         if isinstance(value, HashMap):
+#             return Number(len(value.key_values)), None
 
-        if isinstance(value, MutableString):
-            return Number(len(value.string)), None
+#         if isinstance(value, MutableString):
+#             return Number(len(value.string)), None
 
-        return None, WrongTypeError(
-            self.file, f"Cannot convert {value} to Number type."
-        )
+#         return None, WrongTypeError(
+#             self.file, f"Cannot convert {value} to Number type."
+#         )
 
-    execute_length.params = ["value"]
+#     execute_length.params = ["value"]
 
-    def execute_Number(self, symbol_table):
+#     def execute_Number(self, symbol_table):
 
-        value = symbol_table["value"]
-        if isinstance(value, Number):
-            return Number(value.number), None
+#         value = symbol_table["value"]
+#         if isinstance(value, Number):
+#             return Number(value.number), None
 
-        elif isinstance(value, Collection):
-            if not value.elements:
-                return Number(0), None
+#         elif isinstance(value, Collection):
+#             if not value.elements:
+#                 return Number(0), None
 
-        elif isinstance(value, String) or isinstance(value , MutableString):
-            if value.string.isdigit():
-                return Number(int(value.string)), None
-            elif isFloat(value.string):
-                return Number(float(value.string)), None
-            elif not value.string:
-                return Number(0), None
+#         elif isinstance(value, String) or isinstance(value , MutableString):
+#             if value.string.isdigit():
+#                 return Number(int(value.string)), None
+#             elif isFloat(value.string):
+#                 return Number(float(value.string)), None
+#             elif not value.string:
+#                 return Number(0), None
 
-        elif isinstance(value, Boolean):
-            if value.value:
-                return Number(1), None
-            else:
-                return Number(0), None
+#         elif isinstance(value, Boolean):
+#             if value.value:
+#                 return Number(1), None
+#             else:
+#                 return Number(0), None
             
-        return None, WrongTypeError(
-            self.file, f"Cannot convert {value} to Number type."
-        )
+#         return None, WrongTypeError(
+#             self.file, f"Cannot convert {value} to Number type."
+#         )
 
-    execute_Number.params = ["value"]
+#     execute_Number.params = ["value"]
 
-    def execute_is_collection(self, symbol_table):  # Types Checked
-        value = symbol_table["value"]
-        if isinstance(value, Collection):
-            return Boolean(True), None
-        return Boolean(False), None
+#     def execute_is_collection(self, symbol_table):  # Types Checked
+#         value = symbol_table["value"]
+#         if isinstance(value, Collection):
+#             return Boolean(True), None
+#         return Boolean(False), None
 
-    execute_is_collection.params = ["value"]
+#     execute_is_collection.params = ["value"]
 
-    def execute_is_function(self, symbol_table):  # Types Checked
-        value = symbol_table["value"]
-        if isinstance(value, BaseFunction):
-            return Boolean(True), None
-        return Boolean(False), None
+#     def execute_is_function(self, symbol_table):  # Types Checked
+#         value = symbol_table["value"]
+#         if isinstance(value, BaseFunction):
+#             return Boolean(True), None
+#         return Boolean(False), None
 
-    execute_is_function.params = ["value"]
+#     execute_is_function.params = ["value"]
 
-    def execute_ltrim(self, symbol_table):  # Types Checked
+#     def execute_ltrim(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.lstrip()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'ltrim'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.lstrip()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'ltrim'."
+#         )
 
-    execute_ltrim.params = ["value"]
+#     execute_ltrim.params = ["value"]
 
-    def execute_rtrim(self, symbol_table):  # Types Checked
+#     def execute_rtrim(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.rstrip()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'rtrim'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.rstrip()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'rtrim'."
+#         )
 
-    execute_rtrim.params = ["value"]
+#     execute_rtrim.params = ["value"]
 
-    def execute_trim(self, symbol_table):  # Types Checked
+#     def execute_trim(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.strip()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'trim'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.strip()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'trim'."
+#         )
 
-    execute_trim.params = ["value"]
+#     execute_trim.params = ["value"]
 
-    def execute_is_int(self, symbol_table):  # Types Checked
+#     def execute_is_int(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            if value.string.isdigit():
-                return Boolean(True), None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             if value.string.isdigit():
+#                 return Boolean(True), None
 
-        elif isinstance(value, Number):
-            if str(value.number).isdigit():
-                return Boolean(True), None
-        return Boolean(False), None
+#         elif isinstance(value, Number):
+#             if str(value.number).isdigit():
+#                 return Boolean(True), None
+#         return Boolean(False), None
 
-    execute_is_int.params = ["value"]
+#     execute_is_int.params = ["value"]
 
-    def execute_is_float(self, symbol_table):  # Types Checked
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            if isFloat(value.string):
-                return Boolean(True), None
-        elif isinstance(value, Number):
-            if isFloat(str(value.number)):
-                return Boolean(True), None
+#     def execute_is_float(self, symbol_table):  # Types Checked
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             if isFloat(value.string):
+#                 return Boolean(True), None
+#         elif isinstance(value, Number):
+#             if isFloat(str(value.number)):
+#                 return Boolean(True), None
 
-        return Boolean(False), None
+#         return Boolean(False), None
 
-    execute_is_float.params = ["value"]
+#     execute_is_float.params = ["value"]
 
-    def execute_is_alpha(self, symbol_table):  # Types Checked
+#     def execute_is_alpha(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.isalpha()), None
-        # elif isinstance(value , Number):
-        #     return Boolean(str(value.number).isalpha()) , None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.isalpha()), None
+#         # elif isinstance(value , Number):
+#         #     return Boolean(str(value.number).isalpha()) , None
 
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'is_alpha'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'is_alpha'."
+#         )
 
-    execute_is_alpha.params = ["value"]
+#     execute_is_alpha.params = ["value"]
 
-    def execute_is_ascii(self, symbol_table):  # Types Checked
+#     def execute_is_ascii(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.isascii()), None
-        # elif isinstance(value , Number):
-        #     return Boolean(str(value.number).isascii()) , None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.isascii()), None
+#         # elif isinstance(value , Number):
+#         #     return Boolean(str(value.number).isascii()) , None
 
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'is_ascii'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'is_ascii'."
+#         )
 
-    execute_is_ascii.params = ["value"]
+#     execute_is_ascii.params = ["value"]
 
-    def execute_is_title(self, symbol_table):  # Types Checked
+#     def execute_is_title(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.istitle()), None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.istitle()), None
 
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'isTitle'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'isTitle'."
+#         )
 
-    execute_is_title.params = ["value"]
+#     execute_is_title.params = ["value"]
 
-    def execute_lower(self, symbol_table):  # Types Checked
+#     def execute_lower(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.lower()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'lower'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.lower()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'lower'."
+#         )
 
-    execute_lower.params = ["value"]
+#     execute_lower.params = ["value"]
 
-    def execute_upper(self, symbol_table):  # Types Checked
+#     def execute_upper(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.upper()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'upper'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.upper()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'upper'."
+#         )
 
-    execute_upper.params = ["value"]
+#     execute_upper.params = ["value"]
 
-    def execute_is_space(self, symbol_table):  # Types Checked
+#     def execute_is_space(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.isspace()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'is_space'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.isspace()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'is_space'."
+#         )
 
-    execute_is_space.params = ["value"]
+#     execute_is_space.params = ["value"]
 
-    def execute_slice(self, symbol_table):  # Types Checked
+#     def execute_slice(self, symbol_table):  # Types Checked
 
-        string = symbol_table["string"]
-        start = symbol_table["start"]
-        stop = symbol_table["stop"]
+#         string = symbol_table["string"]
+#         start = symbol_table["start"]
+#         stop = symbol_table["stop"]
 
-        if isinstance(string, String):
-            return String(string.string[start.number : stop.number]), None
+#         if isinstance(string, String):
+#             return String(string.string[start.number : stop.number]), None
 
-        return None, RunTimeError(
-            self.file, f"{type(string).__name__} has no function 'slice'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"{type(string).__name__} has no function 'slice'."
+#         )
 
-    execute_slice.params = ["string", "start", "stop"]
+#     execute_slice.params = ["string", "start", "stop"]
 
-    def execute_is_alnum(self, symbol_table):  # Types Checked
+#     def execute_is_alnum(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return Boolean(value.string.isalnum()), None
-        # elif isinstance(value , Number):
-        #     return Boolean(str(value.number).isalnum()) , None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return Boolean(value.string.isalnum()), None
+#         # elif isinstance(value , Number):
+#         #     return Boolean(str(value.number).isalnum()) , None
 
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'is_alnum'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'is_alnum'."
+#         )
 
-    execute_is_alnum.params = ["value"]
+#     execute_is_alnum.params = ["value"]
 
-    def execute_toCap(self, symbol_table):  # Types Checked
+#     def execute_toCap(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.capitalize()), None
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'toCap'."
-        )
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.capitalize()), None
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'toCap'."
+#         )
 
-    execute_toCap.params = ["value"]
+#     execute_toCap.params = ["value"]
 
-    def execute_endswith(self, symbol_table):  # Types Checked
+#     def execute_endswith(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, Collection):
-            return None, RunTimeError(
-                self.file, "Collection has no function 'endswith'."
-            )
-        target = symbol_table["target"]
+#         value = symbol_table["value"]
+#         if isinstance(value, Collection):
+#             return None, RunTimeError(
+#                 self.file, "Collection has no function 'endswith'."
+#             )
+#         target = symbol_table["target"]
 
-        if isinstance(value, String) and isinstance(target, String):
-            return Boolean(value.string.endswith(target.number)), None
-        #     elif isinstance(target , Number):
-        #         return Boolean(value.string.endswith(str(target.number))) , None
-        # elif isinstance(value , Number):
-        #     if isinstance(target , Number):
-        #         return Boolean(str(value.number).endswith(str(target.number))) , None
-        #     elif isinstance(target , String):
-        #         return Boolean(str(value.number).endswith(target.string)) , None
+#         if isinstance(value, String) and isinstance(target, String):
+#             return Boolean(value.string.endswith(target.number)), None
+#         #     elif isinstance(target , Number):
+#         #         return Boolean(value.string.endswith(str(target.number))) , None
+#         # elif isinstance(value , Number):
+#         #     if isinstance(target , Number):
+#         #         return Boolean(str(value.number).endswith(str(target.number))) , None
+#         #     elif isinstance(target , String):
+#         #         return Boolean(str(value.number).endswith(target.string)) , None
 
-        return None, RunTimeError(self.file, f"Collection has no function 'endswith'.")
+#         return None, RunTimeError(self.file, f"Collection has no function 'endswith'.")
 
-    execute_endswith.params = ["value", "target"]
+#     execute_endswith.params = ["value", "target"]
 
-    def execute_startswith(self, symbol_table):  # Types Checked
+#     def execute_startswith(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, Collection):
-            return None, RunTimeError(
-                self.file, "Collection has no function 'startswith'."
-            )
-        target = symbol_table["target"]
+#         value = symbol_table["value"]
+#         if isinstance(value, Collection):
+#             return None, RunTimeError(
+#                 self.file, "Collection has no function 'startswith'."
+#             )
+#         target = symbol_table["target"]
 
-        if isinstance(value, String) and isinstance(target, String):
-            return Boolean(value.string.startswith(target.string)), None
-        # elif isinstance(target , Number):
-        #     return Boolean(value.string.startswith(str(target.number))) , None
-        # elif isinstance(value , Number):
-        #     if isinstance(target , Number):
-        #         return Boolean(str(value.number).startswith(str(target.number))) , None
-        #     elif isinstance(target , String):
-        #         return Boolean(str(value.number).startswith(target.string)) , None
+#         if isinstance(value, String) and isinstance(target, String):
+#             return Boolean(value.string.startswith(target.string)), None
+#         # elif isinstance(target , Number):
+#         #     return Boolean(value.string.startswith(str(target.number))) , None
+#         # elif isinstance(value , Number):
+#         #     if isinstance(target , Number):
+#         #         return Boolean(str(value.number).startswith(str(target.number))) , None
+#         #     elif isinstance(target , String):
+#         #         return Boolean(str(value.number).startswith(target.string)) , None
 
-        return None, RunTimeError(
-            self.file, f"Collection has no function 'startswith'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"Collection has no function 'startswith'."
+#         )
 
-    execute_startswith.params = ["value", "target"]
+#     execute_startswith.params = ["value", "target"]
 
-    def execute_swapcase(self, symbol_table):  # Types Checked
+#     def execute_swapcase(self, symbol_table):  # Types Checked
 
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string.swapcase()), None
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string.swapcase()), None
 
-        return None, RunTimeError(
-            self.file, f"{type(value).__name__} has no function 'lower'."
-        )
+#         return None, RunTimeError(
+#             self.file, f"{type(value).__name__} has no function 'lower'."
+#         )
 
-    execute_swapcase.params = ["value"]
+#     execute_swapcase.params = ["value"]
 
-    def execute_charat(self, symbol_table):  # Types checked
+#     def execute_charat(self, symbol_table):  # Types checked
 
-        value = symbol_table["value"]
-        index = symbol_table["index"]
+#         value = symbol_table["value"]
+#         index = symbol_table["index"]
 
-        # if not isinstance(index , Number):
-        #     return None , RunTimeError(self.file , f"index cannot be a {type(index).__name__}.")
+#         # if not isinstance(index , Number):
+#         #     return None , RunTimeError(self.file , f"index cannot be a {type(index).__name__}.")
 
-        if not str(index.number).isdigit():
-            return None, RunTimeError(self.file, f"index cannot be a 'float'.")
+#         if not str(index.number).isdigit():
+#             return None, RunTimeError(self.file, f"index cannot be a 'float'.")
 
-        if isinstance(value, String):
-            return String(value.string[index.number]), None
+#         if isinstance(value, String):
+#             return String(value.string[index.number]), None
 
-    execute_charat.params = ["value", "index"]
+#     execute_charat.params = ["value", "index"]
 
-    def execute_reverse(self, symbol_table):  # Types checked
-        value = symbol_table["value"]
-        if isinstance(value, String):
-            return String(value.string[::-1]), None
-        if isinstance(value , Collection):
-            return Collection(filename=self.file , elements=value.elements[::-1]) , None
-        # elif isinstance(value , Number):
-        #     return Number(int(str(value.number)[::-1])) , None
-        # elif isinstance(value , Collection):
-        #     return Collection(value.elements[::-1]) , None
+#     def execute_reverse(self, symbol_table):  # Types checked
+#         value = symbol_table["value"]
+#         if isinstance(value, String):
+#             return String(value.string[::-1]), None
+#         if isinstance(value , Collection):
+#             return Collection(filename=self.file , elements=value.elements[::-1]) , None
+#         # elif isinstance(value , Number):
+#         #     return Number(int(str(value.number)[::-1])) , None
+#         # elif isinstance(value , Collection):
+#         #     return Collection(value.elements[::-1]) , None
 
-    execute_reverse.params = ["value"]
+#     execute_reverse.params = ["value"]
 
-    def no_function(self, symbol_table):
+#     def no_function(self, symbol_table):
 
-        return None, "undefined function"
+#         return None, "undefined function"
 
 
 class File:
@@ -1223,8 +1242,6 @@ class File:
     def close(self):
 
         self.file.close()
-
-
 class HashMap(BaseType):
 
     def __init__(self, key_values, index_values):
@@ -1246,8 +1263,6 @@ class HashMap(BaseType):
         # formatted = formatted[:-2].strip() +  " }"
 
         # return formatted if self.key_values else ''
-
-
 class MutableString(BaseType):
 
     def __init__(self, string):
@@ -1284,7 +1299,6 @@ class MutableString(BaseType):
     def __len__(self):
 
         return len(self.mut_string)
-
 class Null(BaseType):
 
     def __init__(self, name="null", value=None, file=None):
@@ -1300,7 +1314,6 @@ class Break(BaseType):
 
     def __repr__(self) -> str:
         return "null"
-
 class Object(BaseType):
 
     def __init__(self, name=None, value=None, file=None , class_name =  None, scope = None , object_ = None):

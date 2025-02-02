@@ -966,6 +966,17 @@ class Parser:
                 return None, error
 
             return switchNode, None
+        
+        elif (self.current_token.type == token_keyword
+        and self.current_token.value == "return"
+        ):
+            self.next()
+            return_ = ReturnNode(None , parent=parent)
+            returnNode , error = self.expression(return_)
+            if error:
+                return None , error
+            return_.value = returnNode
+            return return_ , None
 
         elif (
             self.current_token.type == token_keyword

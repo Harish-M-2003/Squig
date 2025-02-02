@@ -1,10 +1,16 @@
 from helper.Token import *
-class BlockLevelNode:
+
+class Node :
+
+    def __init__(self):
+
+        self.is_inside_function = False
+class BlockLevelNode(Node):
 
     def __init__(self, parent):
         self.parent = parent
         self.scope = {}
-class NonBlockLevelNode:
+class NonBlockLevelNode(Node):
 
     def __init__(self, parent):
 
@@ -174,6 +180,7 @@ class FunctionNode(BlockLevelNode):
         self.variable = variable
         self.param = param
         self.body = body
+        self.isreturned = False
         self.type_mentioned = type_mentioned
         super().__init__(parent)
 

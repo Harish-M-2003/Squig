@@ -306,24 +306,36 @@ class Interpreter:
         elements = []
 
         parent = node.parent
+        is_function = False
 
         while parent:
-            if isinstance(parent, ForNode):
+            if isinstance(parent, ForNode) or isinstance(parent , FunctionNode):
+                is_function = isinstance(parent , FunctionNode)
                 break
             else:
                 parent = parent.parent
 
+        
         for element_node in node.elements:
             # print(type(element_node))
             element, error = self.process(element_node)
             if error:
                 return None, error
 
-            elements.append(element)
+            if not isinstance(element , Types.Null): 
+                elements.append(element)
 
             if isinstance(element_node, BreakNode) or (
                 parent and isinstance(parent, ForNode) and parent.is_broken
             ):
+                break
+
+            if isinstance(element_node, ReturnNode) or (
+                parent and isinstance(parent, FunctionNode) and parent.isreturned
+            ):
+                # this block is for return statement , need to implement it
+                
+                # print(parent , element_node)
                 break
                 # parent = node.parent
                 # while parent :
@@ -1109,6 +1121,8 @@ class Interpreter:
                 parent = parent.parent
             else:
                 break
+
+        # print(function_value.body , variable)
         # if the function name is not found in any of the parent scope , parent will be None.
         if parent == None:
             return None, RunTimeError(self.file, f"Function {variable} is undefined.")
@@ -1124,9 +1138,9 @@ class Interpreter:
         # and use that to execute it , the execute method is avaible in the functionNode not in functionCallNOde
 
         # Once the arguments are processed , we'll get the function from the scope from the parent
-        function_output = parent.scope[variable]
+        # function_output = parent.scope[variable]
 
-        # print(type(function_output))
+        # print(function_output)
 
         # object_ = node.parent
         # while not isinstance(object_ , VariableAccessNode):
@@ -1137,18 +1151,15 @@ class Interpreter:
         # from here there is an issue in the implementation of the code.
         # this current implementation need to be rewritten from here after. 
         
-        if isinstance(function_output , FunctionCallNode):
-            function_output = parent.parent.scope["Os"][variable]
+        # if isinstance(function_output , FunctionCallNode):
+        #     function_output = parent.parent.scope["Os"][variable]
 
-        output, error = function_output.execute(args)
+        output, error = function_value.execute(args)
         # print(type(output))
         if error:
             return None, error
-
-        # if isinstance(output, Types.Collection):
-        #     return output, None
-
-        return output, None
+        
+        return output.elements[0], None
 
     def FileNode(self, node):
 
@@ -1307,6 +1318,7 @@ class Interpreter:
 
             try:
                 path = module_name + ".squig"
+                # print(path)
                 with open(path) as script:
                     code = script.read()
                     isRead = True
@@ -1700,6 +1712,24 @@ class Interpreter:
             )
 
         return Types.Null(), None
+    
+    def ReturnNode(self , node):
+
+        # print(node.value.operator , "Testing")
+        parent = node.parent
+
+        while parent:
+            if isinstance(parent , FunctionNode):
+                break
+            parent = parent.parent
+        
+        parent.isreturned = True
+        return_value , error = self.process(node.value)
+
+        if error:
+            return None , error
+        # print(return_value)
+        return return_value , None
 
     def DeepCopyNode(self, node):
 
