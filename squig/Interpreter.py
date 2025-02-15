@@ -317,7 +317,7 @@ class Interpreter:
 
         
         for element_node in node.elements:
-            # print(type(element_node))
+            
             element, error = self.process(element_node)
             if error:
                 return None, error
@@ -381,9 +381,19 @@ class Interpreter:
     def CollectionAccessNode(self, node):
 
         variable = node.variable.value
+        # print("working" , node.parent.parent.scope)
         value = None
 
-        variable_value_tuple = self.global_symbol_table.get(variable, None)
+        # variable_value_tuple = self.global_symbol_table.get(variable, None)
+        variable_value_tuple =  None
+
+        parent = node.parent
+
+        while parent:
+            if parent.scope.get(variable , False):
+                variable_value_tuple = parent.scope[variable]
+                break
+            parent = parent.parent
 
         if variable_value_tuple == None:
             return None, RunTimeError(
