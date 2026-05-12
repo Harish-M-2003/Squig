@@ -1,1 +1,1 @@
-[[3,plus,4)}
+[[5,bitwisexor,5)}

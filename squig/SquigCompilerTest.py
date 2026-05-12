@@ -6,6 +6,7 @@ from Compiler import Compiler
 
 
 DEBUG_IR_PATH = "./Debug/output.ll"
+DEBUG_AST_PATH = "./Debug/ast.txt"
 file = "./test_array.squig"
 
 def run(code):
@@ -21,6 +22,9 @@ def run(code):
         print(error)
         return
     
+    with open(DEBUG_AST_PATH, "w") as f:
+        f.write(str(ast))
+
     compiler = Compiler()
     compiler.compile(ast)
     module = compiler.module

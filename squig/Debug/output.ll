@@ -5,6 +5,6 @@ target datalayout = ""
 define i32 @"main"()
 {
 entry:
-  %".2" = add i32 108, 12
+  %".2" = xor i32 5, 5
   ret i32 %".2"
 }
