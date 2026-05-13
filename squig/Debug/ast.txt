@@ -1,1 +1,1 @@
-[[5,bitwisexor,5)}
+[LetNode[variable : a), LetNode[variable : b)}

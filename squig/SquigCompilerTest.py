@@ -1,13 +1,13 @@
 import os
+import time
 
 from Lexer import Lexer
 from Parser import Parser
 from Compiler import Compiler
 
-
 DEBUG_IR_PATH = "./Debug/output.ll"
 DEBUG_AST_PATH = "./Debug/ast.txt"
-file = "./test_array.squig"
+file = r'D:\projects\Squig\test\compilerTest.squig'
 
 def run(code):
     lexer = Lexer(file, source_code=code)
@@ -35,17 +35,42 @@ def run(code):
         f.write(str(module))
 
 def main():
-
-    while True:
+    if os.path.exists(file):
         try:
-            code = input("Squig > ").strip()
-            if code == "exit":
-                break
+            code = open(file).read().strip()
             if not code:
-                continue
+                print("Empty file.")
+                return
+
+            start = time.perf_counter()
             run(code)
+            end = time.perf_counter()
+
+            print(f"\nProgram executed successfully in {(end - start):.4f}s")
+
+        except FileNotFoundError:
+            print(f"File not found: {file}")
+
         except KeyboardInterrupt:
-            break
+            print("Stopped.")
+
+    else:
+        while True:
+            try:
+                code = input("Squig > ").strip()
+                if code == "exit":
+                    break
+
+                if not code:
+                    continue
+                run(code)
+
+            except KeyboardInterrupt:
+                print("\nStopped.")
+                break
+
+            except EOFError:
+                break
 
 if __name__ == "__main__":
     main()

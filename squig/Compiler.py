@@ -1,6 +1,9 @@
 from llvmlite import ir
 from helper.Token import token_plus, token_minus, token_mul, token_divide, token_modulo, token_or, token_and # Arithmetics
 from helper.Token import token_bitwise_and, token_bitwise_or, token_bitwise_not, token_bitwise_xor # BitWise Arithmetics
+from helper.Token import token_int # Data Types
+
+from Environment import Environment
 
 class Compiler:
     def __init__(self):
@@ -8,6 +11,8 @@ class Compiler:
         self.module = ir.Module(name="main")
         self.builder = None
         self.func = None
+
+        self.environment: Environment = Environment()
 
         self.zero = ir.Constant(ir.IntType(32), 0) # For or, and comparison
 
@@ -94,4 +99,19 @@ class Compiler:
             last = self.process(element)
 
         return last
-        
+    
+    def LetNode(self, node):
+        name: str = node.variable.value
+        value = self.process(node.factor)
+        type: ir.Type = value.type
+
+        ptr = self.builder.alloca(type, name=name)
+        self.builder.store(value, ptr)
+        self.environment.set(name=name, value=ptr, type=type)
+
+        return value
+
+    def VariableAccessNode(self, node):
+        ptr, type = self.environment.get(node.variable.value)
+
+        return self.builder.load(ptr)
