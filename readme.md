@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./banner-Photoroom.png" width="900" alt="Squig Banner"/>
+  <img src="./banner-Photoroom.png" width="500" alt="Squig Banner"/>
 </p>
 
 <h1 align="center">⚡ Squig Programming Language ⚡</h1>
