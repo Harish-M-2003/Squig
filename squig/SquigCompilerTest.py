@@ -7,7 +7,7 @@ from Compiler import Compiler
 
 DEBUG_IR_PATH = "./Debug/output.ll"
 DEBUG_AST_PATH = "./Debug/ast.txt"
-file = r'D:\projects\Squig\test\compilerTest.squig'
+file = r'\test\compilerTest.squig'
 
 def run(code):
     lexer = Lexer(file, source_code=code)
