@@ -6,12 +6,15 @@ from Parser import Parser
 from Interpreter import Interpreter
 from pyfiglet import figlet_format
 
+from Debug.debug import WriteDebugger
+
 #  rewrite this program to support handling interrupts
 
 print("\n\tNote: If you happen to find any bugs, kindly report them to us on GitHub: https://github.com/Harish-M-2003/Squig")
 print()
 
-file = sys.argv[-1]
+# file = sys.argv[-1]
+file = r"D:\projects\Squig\test\test_array.squig"
 
 if len(sys.argv) == 1:
     print(figlet_format("Squig" , font="cybermedium"))
@@ -31,8 +34,8 @@ while True:
 
             else:
                 try:
-                    code = open(r"C:\Users\Harish\harish\Projects\language\test\testing_final.squig").read() # debugging
-                    # code = input("squig >") 
+                    # code = open(file).read() # debugging
+                    code = input("squig >") 
                     code = code.strip()
                 except EOFError:
                     break
@@ -64,6 +67,12 @@ while True:
             # try :
             parser = Parser(tokens , file)
             ast , error = parser.parse()
+
+            #AST DEBUGGING:
+            writer = WriteDebugger()
+            writer.dump(ast)
+            # writer.dump(tokens)
+
             # except Exception:
             #     print("Squig : \nSomething went wrong while trying to parse your code , kindly raise an issue in github , attach the code that caused this error in the issue.")
             #     break

@@ -203,7 +203,7 @@ class Lexer:
 
         self.next()
         if self.current_char != "&":
-            return Token(token_and, self.current_char,token_position=self.position.copy_position()) , None
+            return Token(token_and,token_position=self.position.copy_position()) , None
         
         self.next()
         return Token(token_bitwise_and , self.current_char,token_position=self.position.copy_position()) , None
@@ -212,7 +212,7 @@ class Lexer:
 
         self.next()
         if self.current_char != "|":
-            return Token(token_or, self.current_char,token_position=self.position.copy_position()) , None
+            return Token(token_or,token_position=self.position.copy_position()) , None
         
         self.next()
         return Token(token_bitwise_or , self.current_char,token_position=self.position.copy_position()) , None
